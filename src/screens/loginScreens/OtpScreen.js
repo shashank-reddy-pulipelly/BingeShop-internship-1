@@ -1,16 +1,17 @@
 import React, { memo, useState, useRef } from 'react';
-import { Text,TextInput, StyleSheet, TouchableOpacity,View } from 'react-native';
-import BackButton from '../components/BackButton';
-import { theme } from '../core/theme';
+import { Text,TextInput, StyleSheet,
+   TouchableOpacity,View } from 'react-native';
+import BackButton from '../../components/BackButton';
+import { theme } from '../../core/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import CountDown from 'react-native-countdown-component';
 import CodeInput from 'react-native-confirmation-code-input';
 import { Button } from "react-native-elements";
-const  OtpScreen = ({ navigation }) => {
+const  OtpScreen = ({route,navigation }) => {
 
 
-    const number= navigation.getParam('number', '')
+    const {number}=route.params;
 
 
 
@@ -31,7 +32,7 @@ const  OtpScreen = ({ navigation }) => {
   const _onSendPressed = () => {
    
 
-    navigation.navigate('Dashboard');
+    
   };
 
   return (

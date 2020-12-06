@@ -1,63 +1,43 @@
 import React, { memo, useState } from 'react';
 import { TouchableOpacity, StyleSheet, Text, View,SafeAreaView,ScrollView} from 'react-native';
-import Logo from '../components/Logo';
-import TextInput from '../components/TextInput';
-import BackButton from '../components/BackButton';
-import { theme } from '../core/theme';
-import { LinearGradient } from 'expo-linear-gradient';
-import {
-  emailValidator,
-  passwordValidator,
-  nameValidator,numberValidator 
-} from '../core/utils';
-const  RegisterScreen = ({ navigation }) => {
 
-  const [number, setNumber] = useState({ value: '', error: '' });
-  const [name, setName] = useState({ value: '', error: '' });
+import Logo from '../../components/Logo';
+
+import TextInput from '../../components/TextInput';
+import BackButton from '../../components/BackButton';
+import { theme } from '../../core/theme';
+import { emailValidator, passwordValidator } from '../../core/utils';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState({ value: '', error: '' });
   const [password, setPassword] = useState({ value: '', error: '' });
 
-  const _onSignUpPressed = () => {
-  
-     const nameError = nameValidator(name.value);
-      const emailError = emailValidator(email.value);
+  const _onLoginPressed = () => {
+    const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value);
-    const numberError = numberValidator(number.value);
 
-  
-    if (emailError || passwordError || nameError || numberError) {
-      setName({ ...name, error: nameError });
+    if (emailError || passwordError) {
       setEmail({ ...email, error: emailError });
-      setNumber({ ...number, error: numberError });
       setPassword({ ...password, error: passwordError });
       return;
     }
 
-    navigation.navigate('Dashboard');
+    
   };
 
   return (
     <SafeAreaView style={styles.container} >
     <ScrollView >
 <View style={styles.screen}>
-      <BackButton goBack={() => navigation.navigate('HomeScreen')} />
+      <BackButton goBack={() => navigation.navigate('OpenScreen')} />
     <View style={styles.logo}><Logo /></View>
       
 
-     <Text style={styles.text1}>Create Account</Text>
-
-     <TextInput
-        label="Name"
-        returnKeyType="next"
-        value={name.value}
-        onChangeText={text => setName({ value: text, error: '' })}
-        error={!!name.error}
-        errorText={name.error}
-        dense='true'
-      />
+     <Text style={styles.text1}>Welcome !</Text>
 
       <TextInput
-        label="Email Id"
+        label="Email / mobile number"
         returnKeyType="next"
         value={email.value}
         onChangeText={text => setEmail({ value: text, error: '' })}
@@ -67,20 +47,9 @@ const  RegisterScreen = ({ navigation }) => {
         autoCompleteType="email"
         textContentType="emailAddress"
         keyboardType="email-address"
-        dense='true'
-      />
-    <TextInput
-        label="Mobile Number"
-        returnKeyType="done"
-        value={number.value}
-        onChangeText={text => setNumber({ value: text, error: '' })}
-        error={!!number.error}
-        errorText={number.error}
-      
-        keyboardType="numeric"
-        dense='true'
-      />
      
+      />
+
       <TextInput
         label="Password"
         returnKeyType="done"
@@ -89,14 +58,11 @@ const  RegisterScreen = ({ navigation }) => {
         error={!!password.error}
         errorText={password.error}
         secureTextEntry
-        dense='true'
       />
 
-
-    
       <TouchableOpacity
                     style={styles.signIn}
-                    onPress={_onSignUpPressed}
+                    onPress={_onLoginPressed}
                 >
                 <LinearGradient
                     colors={['#600EE6','#311B92']}
@@ -104,16 +70,34 @@ const  RegisterScreen = ({ navigation }) => {
                 >
                     <Text style={[styles.textSign, {
                         color:'#fff'
-                    }]}>Register</Text>
+                    }]}>Sign In</Text>
                 </LinearGradient>
                 </TouchableOpacity>
-    
+      <View style={styles.forgotPassword}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('ForgotPasswordScreen')}
+        >
+          <Text style={styles.label}>Forgot your password?</Text>
+        </TouchableOpacity>
+      </View>
      
-   
-            <View style={styles.row}>
-        <Text style={styles.label2}>Already have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
-          <Text style={styles.link}>Login</Text>
+      <TouchableOpacity
+                    onPress={() => navigation.navigate('MobileLoginScreen')}
+                    style={[styles.signIn, {
+                        borderColor: '#311B92',
+                        borderWidth: 1,
+                        marginTop: 20,
+                        backgroundColor:'#fff'
+                    }]}
+                >
+                    <Text style={[styles.textSign, {
+                        color: '#311B92'
+                    }]}>Login with Mobile OTP</Text>
+                </TouchableOpacity>
+                <View style={styles.row}>
+        <Text style={styles.label2}>Don't have an account? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')}>
+          <Text style={styles.link}>Register</Text>
         </TouchableOpacity>
       </View>
       </View></ScrollView>
@@ -143,9 +127,8 @@ const styles = StyleSheet.create({
   text1:{
     fontSize:27,
     fontFamily:'Roboto',
-    paddingTop:10,
-    paddingBottom:10,
-    textAlign:'center'
+    paddingTop:30,
+    paddingBottom:20
   },
   row: {
     flexDirection: 'row',
@@ -177,4 +160,4 @@ textSign: {
 },
 });
 
-export default memo(RegisterScreen);
+export default memo(LoginScreen);

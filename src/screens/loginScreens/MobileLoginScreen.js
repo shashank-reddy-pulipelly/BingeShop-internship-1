@@ -1,50 +1,50 @@
+
 import React, { memo, useState } from 'react';
 import { Text, StyleSheet, TouchableOpacity,View } from 'react-native';
-import { emailValidator } from '../core/utils';
-import BackButton from '../components/BackButton';
+import { numberValidator } from '../../core/utils';
+import BackButton from '../../components/BackButton';
 
-import TextInput from '../components/TextInput';
-import { theme } from '../core/theme';
+import TextInput from '../../components/TextInput';
+import { theme } from '../../core/theme';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const ForgotPasswordScreen = ({ navigation }) => {
-  const [email, setEmail] = useState({ value: '', error: '' });
+const MobileLoginScreen = ({ navigation }) => {
+  const [number, setNumber] = useState({ value: '', error: '' });
 
   const _onSendPressed = () => {
-    const emailError = emailValidator(email.value);
+    
+    const numberError = numberValidator(number.value);
 
-    if (emailError) {
-      setEmail({ ...email, error: emailError });
+    if (numberError) {
+      setNumber({ ...number, error: numberError });
       return;
     }
 
-    navigation.navigate('LoginScreen');
+    navigation.navigate('OtpScreen',{number:number.value});
   };
 
   return (
  <View style={styles.container}>
       <BackButton goBack={() => navigation.navigate('LoginScreen')} />
-
-      <View style={styles.phone}>
-<Icon name="unlock-alt" size={100} color={ theme.colors.primary} />
+<View style={styles.phone}>
+<Icon name="mobile" size={150} color={ theme.colors.primary} />
 </View>
+      
 
     
-      <Text style={styles.text1}>Forgot your password ?</Text>
-      <Text style={styles.text2} >Enter your email and we will send the password reset link</Text>
+      <Text style={styles.text1}>Login with Mobile Number</Text>
+      <Text style={styles.text2} >Enter your mobile number  we will send you OTP to verify</Text>
       <TextInput
-        label="E-mail address"
+        label="Mobile Number"
         returnKeyType="done"
-        value={email.value}
-        onChangeText={text => setEmail({ value: text, error: '' })}
-        error={!!email.error}
-        errorText={email.error}
-        autoCapitalize="none"
-        autoCompleteType="email"
-        textContentType="emailAddress"
-        keyboardType="email-address"
+        value={number.value}
+        onChangeText={text => setNumber({ value: text, error: '' })}
+        error={!!number.error}
+        errorText={number.error}
+      
+        keyboardType="numeric"
       />
 
       <TouchableOpacity
@@ -57,7 +57,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
                 >
                     <Text style={[styles.textSign, {
                         color:'#fff'
-                    }]}>Reset Password</Text>
+                    }]}>Continue</Text>
                 </LinearGradient>
                 </TouchableOpacity>
       <TouchableOpacity
@@ -76,8 +76,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1, 
     backgroundColor: '#fff',
+    
     paddingHorizontal:30,
     justifyContent: 'center',
+    paddingBottom:30,
+    
   },
   back: {
     flexDirection: 'row',
@@ -88,14 +91,17 @@ const styles = StyleSheet.create({
     alignItems:'center'
   },
   text1:{
-    fontSize:27,
+    fontSize:22,
     fontFamily:'Roboto',
-    paddingTop:40,
+    paddingTop:20,
     paddingBottom:20,
+    alignSelf:'center'
   },
   text2:{
     color: theme.colors.secondary,
-    paddingBottom:40,
+    fontSize:15,
+    paddingBottom:20,
+    textAlign:'center'
   },
   button: {
     marginTop: 12,
@@ -123,4 +129,4 @@ phone:{
 }
 });
 
-export default memo(ForgotPasswordScreen);
+export default memo(MobileLoginScreen);

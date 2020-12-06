@@ -12,7 +12,7 @@ import * as Animatable from 'react-native-animatable';
 import { LinearGradient } from 'expo-linear-gradient';
 
 
-const HomeScreen = ({navigation}) => {
+const OpenScreen = ({navigation}) => {
 
 
     return (
@@ -22,7 +22,7 @@ const HomeScreen = ({navigation}) => {
             <Animatable.Image 
                 animation="bounceIn"
                 duraton="1500"
-            source={require('../assets/logo.png')}
+            source={require('../../assets/logo.png')}
             style={styles.logo}
             resizeMode="stretch"
             />
@@ -73,7 +73,7 @@ const HomeScreen = ({navigation}) => {
     );
 };
 
-export default memo(HomeScreen);
+export default memo(OpenScreen);
 
 const {height} = Dimensions.get("screen");
 const height_logo = height * 0.25;
