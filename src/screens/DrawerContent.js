@@ -1,5 +1,5 @@
 import React,{memo} from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet,StatusBar } from 'react-native';
 import { Avatar, Title,Caption,Paragraph,Drawer,Text,
 } from 'react-native-paper';
 import {
@@ -8,8 +8,8 @@ import {
 } from '@react-navigation/drawer';
 import { AuthContext } from '../components/context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
-
+import { theme } from '../core/theme';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
  function DrawerContent(props) {
 
@@ -20,32 +20,19 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
     return(
         <View style={{flex:1}}>
             <DrawerContentScrollView {...props}>
+            <StatusBar backgroundColor="#600EE6"/>
                 <View style={styles.drawerContent}>
+                    
                     <View style={styles.userInfoSection}>
                         <View style={{flexDirection:'row',marginTop: 15,alignItems:'center'}}>
-                            <Avatar.Image 
-                                       source={{
-                                        uri:
-                                          'https://github.com/shashank-reddy-pulipelly/react-final-project-with-bootstrap-reactstrap/blob/gh-pages/assets/images/shashank.jpg?raw=true',
-                                      }}
-                                size={50}
-                            />
+                          
                             <View style={{marginLeft:15, flexDirection:'column'}}>
-                                <Title style={styles.title}>shashank reddy</Title>
-                                <Caption style={styles.caption}>@shashank</Caption>
+                                <Title style={styles.title}>Hello, Shashank reddy</Title>
+                              
                             </View>
                         </View>
 
-                        <View style={styles.row}>
-                            <View style={styles.section}>
-                                <Paragraph style={[styles.paragraph, styles.caption]}>143 </Paragraph>
-                                <Caption style={styles.caption}>Following</Caption>
-                            </View>
-                            <View style={styles.section}>
-                                <Paragraph style={[styles.paragraph, styles.caption]}>132 </Paragraph>
-                                <Caption style={styles.caption}>Followers</Caption>
-                            </View>
-                        </View>
+                     
                     </View>
 
                     <Drawer.Section style={styles.drawerSection}>
@@ -58,7 +45,21 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
                                 />
                             )}
                             label="Home"
-                            onPress={() => {props.navigation.navigate('HomeScreen')}}
+                            activeBackgroundColor={theme.colors.black}
+                            labelStyle={{fontWeight:'bold'}}
+                            onPress={() => {props.navigation.navigate('Home')}}
+                        />
+                                   <DrawerItem 
+                            icon={({color, size}) => (
+                                <Icon 
+                                name="brightness-percent" 
+                                color={color}
+                                size={size}
+                                />
+                            )}
+                            label="All Offers"
+                            labelStyle={{fontWeight:'bold'}}
+                            onPress={() => {}}
                         />
                         <DrawerItem 
                             icon={({color, size}) => (
@@ -68,7 +69,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
                                 size={size}
                                 />
                             )}
-                            label="Favorites"
+                            label="My WishList"
+                            labelStyle={{fontWeight:'bold'}}
                             onPress={() => {props.navigation.navigate('FavoriteScreen')}}
                         />
                         <DrawerItem 
@@ -80,9 +82,37 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
                                 />
                             )}
                             label="My Cart"
+                            activeBackgroundColor={theme.colors.black}
+                            labelStyle={{fontWeight:'bold'}}
                             onPress={() => {props.navigation.navigate('CartScreen')}}
                         />
+                       <DrawerItem 
+                            icon={({color, size}) => (
+                                <FontAwesome
+                                name="list" 
+                                color={color}
+                                size={size}
+                                />
+                            )}
+                            label="My Orders"
+                            labelStyle={{fontWeight:'bold'}}
+                            onPress={() => {props.navigation.navigate('OrdersScreen')}}
+                        />
                         <DrawerItem 
+                            icon={({color, size}) => (
+                                <Icon 
+                                name="account" 
+                                color={color}
+                                size={size}
+                                />
+                            )}
+                            label="My Account"
+                            labelStyle={{fontWeight:'bold',padding:0,margin:0}}
+                            style={{margin:0,padding:0}}
+                            onPress={() => {}}
+                        />
+                   
+                          <DrawerItem 
                             icon={({color, size}) => (
                                 <Icon 
                                 name="settings-outline" 
@@ -91,17 +121,20 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
                                 />
                             )}
                             label="Settings"
+                            labelStyle={{fontWeight:'bold'}}
                             onPress={() => {}}
                         />
-                        <DrawerItem 
+                            
+                                <DrawerItem 
                             icon={({color, size}) => (
                                 <Icon 
-                                name="account-check-outline" 
+                                name="bell" 
                                 color={color}
                                 size={size}
                                 />
                             )}
-                            label="Support"
+                            label="My Notifications"
+                            labelStyle={{fontWeight:'bold'}}
                             onPress={() => {}}
                         />
                     </Drawer.Section>
@@ -118,6 +151,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
                         />
                     )}
                     label="Sign Out"
+                    labelStyle={{fontWeight:'bold'}}
                     onPress={() => {signOut()}}
                 />
             </Drawer.Section>
@@ -128,14 +162,19 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const styles = StyleSheet.create({
     drawerContent: {
       flex: 1,
+        paddingTop:0,
+        marginTop:-4,
+        
     },
     userInfoSection: {
       paddingLeft: 20,
+      backgroundColor:'#600EE6'
     },
     title: {
-      fontSize: 16,
-      marginTop: 3,
-      fontWeight: 'bold',
+      fontSize: 18,
+      marginTop: 10,
+     marginBottom:30,
+      color:'white'
     },
     caption: {
       fontSize: 14,
@@ -150,15 +189,16 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
       marginRight: 15,
+    
     },
     paragraph: {
       fontWeight: 'bold',
       marginRight: 3,
     },
     drawerSection: {
-      marginTop: 15,
-      borderTopColor: '#ECEFF1',
-      borderTopWidth: 1
+
+
+      backgroundColor:'white'
     },
     bottomDrawerSection: {
         marginBottom: 15,

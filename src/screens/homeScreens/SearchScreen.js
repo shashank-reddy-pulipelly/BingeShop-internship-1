@@ -22,7 +22,8 @@ class Search extends React.Component{
             seed: 1,
             error: null,
             query: '',
-            fullData: []
+            fullData: [],
+            searchtext:''
            
         };
 
@@ -66,6 +67,7 @@ class Search extends React.Component{
           }
 
           handleSearch = text => {
+            this.setState({searchtext:text});
             const formattedQuery = text.toLowerCase();
             const data = this.state.fullData.filter( item => {
               return this.contains(item, formattedQuery)
@@ -85,32 +87,35 @@ class Search extends React.Component{
           }
           
           renderHeader=()=>{
-            const [search,setSearch]=useState('');
+       
               return(
-                <View>
+              
     
                 <View style={styles.search}>
                 <View style={styles.searchBox}>
-     <Ionicons name="ios-search" color="grey" size={22} />
-        <TextInput 
-          placeholder=" Search here for groceries .."
-          placeholderTextColor="grey"
+   
+        <Searchbar
+           placeholder='Search for Products ...'
+          inputStyle={{fontSize:16}}
+         
           onChangeText={this.handleSearch}
-          autoCapitalize="none"
-          style={{flex:1,paddingLeft:10,fontSize:17}}
+       
+          value={this.state.searchtext}
+          style={{flex:1,paddingLeft:10,fontSize:15}}
         />
         
                 </View>
  
       </View>
-                </View>
+               
               );
           }
     render(){
+      const ss=this.renderHeader();
         return(
             <View style={{backgroundColor:"#fff"}} >
-
-     
+  {ss}
+  <View > 
 <FlatList
   data={this.state.data}
   renderItem={({ item }) => (
@@ -120,9 +125,10 @@ class Search extends React.Component{
 />
   )}
   keyExtractor={item => item.id}
-  ListHeaderComponent={this.renderHeader}
+
   ListFooterComponent={this.renderFooter}
 />     
+</View>
   </View>
         );
     }
@@ -132,22 +138,7 @@ class Search extends React.Component{
 
 const styles=StyleSheet.create({
     searchBox: {
-        
-       
         flexDirection:"row",
-        backgroundColor: '#fff',
-        width: '100%',
-        alignSelf:'center',
-        
-        padding: 10,
-        shadowColor: 'black',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 3,
-     
-        alignItems:'center',
-        borderBottomColor:"#E0E0E0",
-       
         borderRadius:5
       },
       search:{

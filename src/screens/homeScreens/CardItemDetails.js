@@ -12,7 +12,10 @@ import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
-import { postFavorite, deleteFavorite } from '../../redux/ActionCreators';
+import { postFavorite, deleteFavorite,postCart } from '../../redux/ActionCreators';
+import Toast from 'react-native-tiny-toast';
+
+
 const MIN_HEIGHT = Platform.OS === 'ios' ? 90 : 70;
 const MAX_HEIGHT = 350;
 
@@ -21,13 +24,15 @@ const MAX_HEIGHT = 350;
 const mapStateToProps = state => {
   return {
  
-    favorites: state.favorites
+    favorites: state.favorites,
+    carts:state.carts
   }
 }
 
 const mapDispatchToProps = dispatch => ({
   postFavorite: (ItemId) => dispatch(postFavorite(ItemId)),
-  deleteFavorite: (ItemId) => dispatch(deleteFavorite(ItemId))
+  deleteFavorite: (ItemId) => dispatch(deleteFavorite(ItemId)),
+  postCart: (ItemId) => dispatch(postCart(ItemId)),
 })
 class  CardItemDetails extends Component {
 
@@ -38,6 +43,7 @@ class  CardItemDetails extends Component {
     return(
 <SafeAreaView style={styles.container} >
     <ScrollView >
+ 
    <View style={styles.favorite}>
    <Icon  name={this.props.favorites.some(el => el === this.itemData.id)?'heart':'heart-o'} size={25}
                         color='red' onPress={() => this.props.favorites.some(el => el === this.itemData.id)?
@@ -65,7 +71,7 @@ class  CardItemDetails extends Component {
 
 
             <View style={styles.row}>
-                <Text style={{fontSize:30,padding:0,paddingVertical:0,margin:0}}>{'\u20B9'}</Text>
+                <Text style={{fontSize:22,paddingVertical:0,marginTop:10}}>{'\u20B9'}</Text>
                 
                 <Text style={{ marginTop:6,marginLeft:5,fontSize:24,}}>{this.itemData.amount}</Text>
                 <Text style={{textDecorationLine: 'line-through',fontSize: 14, color: '#444' ,marginTop:5,marginLeft:15}}>{this.itemData.amount+100} </Text>
@@ -112,7 +118,16 @@ class  CardItemDetails extends Component {
 
     <View style={{flex:1}}>
     <Button buttonStyle={{backgroundColor:"#600EE6",borderRadius:0,paddingVertical:13}}
-  titleStyle={{fontSize:17}}
+  titleStyle={{fontSize:17}} onPress={()=>{
+    Toast.show('  Item Added to Cart  Successfully  ',{
+      position:-70,
+      containerStyle:{
+        borderRadius:10,
+        paddingHorizontal:10
+      }
+    });
+    this.props.postCart(this.itemData.id);
+  }}
   title="Add to Cart"/>          
     </View>
  

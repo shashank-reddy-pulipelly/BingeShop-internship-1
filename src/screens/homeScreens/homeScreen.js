@@ -9,115 +9,72 @@ import {
   ScrollView,SafeAreaView
 } from 'react-native';
 import {useTheme, Avatar} from 'react-native-paper';
-import { SearchBar } from 'react-native-elements';
-import Swiper from 'react-native-swiper';
+
+
 import Search from './SearchScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import StarRating from '../../components/StarRating';
 
+import HomeSwiper from '../../components/HomeSwiper';
+import Background from '../../components/BackgroundImage';
+
+import { Button } from 'native-base';
 const HomeScreen = ({navigation}) => {
   const [search,setSearch]=useState('');
   const theme = useTheme();
 
   return (
   <View style={styles.container}>
-    <ScrollView >
       <StatusBar translucent={true} backgroundColor={'transparent'} />
+    <View style={{flexDirection:'column',flex:1}}>
     
-      <Search />
+    <View >
+    <Search />
+    </View >
+    
+      <ScrollView style={{flex:10}}>
+
+      
       <View style={styles.sliderContainer}>
     
-        <Swiper
-          autoplay
-          horizontal={true}
-          height={200}
-          loop={true}
-          activeDotColor="#FF6347">
-               <View style={styles.slide}>
-            <Image
-              source={require('../../assets/banners/slider6.jpg')}
-              resizeMode="cover"
-              style={styles.sliderImage}
-            />
-          </View>
-          <View style={styles.slide}>
-            <Image
-              source={require('../../assets/banners/slider1.jpg')}
-              resizeMode="cover"
-              style={styles.sliderImage}
-            />
-          </View>
-          <View style={styles.slide}>
-            <Image
-              source={require('../../assets/banners/slider2.jpg')}
-              resizeMode="cover"
-              style={styles.sliderImage}
-            />
-          </View>
-          <View style={styles.slide}>
-            <Image
-              source={require('../../assets/banners/slider3.jpg')}
-              resizeMode="cover"
-              style={styles.sliderImage}
-            />
-          </View>
-          <View style={styles.slide}>
-            <Image
-              source={require('../../assets/banners/slider4.jpg')}
-              resizeMode="cover"
-              style={styles.sliderImage}
-            />
-          </View>
-          <View style={styles.slide}>
-            <Image
-              source={require('../../assets/banners/slider5.jpg')}
-              resizeMode="cover"
-              style={styles.sliderImage}
-            />
-          </View>
-        </Swiper>
+     <HomeSwiper/>
       </View>
 
       <View style={styles.categoryContainer}>
+     
         <TouchableOpacity
           style={styles.categoryBtn}
           onPress={() =>
-            navigation.navigate('SearchScreen', {title: 'Shops'})
+            navigation.navigate('GroceryShopsScreen', {title: 'Grocery Stores'})
           }>
-          <View style={styles.categoryIcon}>
-          <Avatar.Image
-                        source={require('../../assets/stores.png')}
-                    size={65} style={{backgroundColor:"#fff"}}
+          
+          <Image
+                        source={require('../../assets/grocery4.jpg')}
+                    size={65} style={{
+                      backgroundColor:"#FFCCBC",
+                      resizeMode:'stretch',width:'100%',height:170}}
                   />
-          </View>
-          <Text style={styles.categoryBtnTxt}>Shops</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.categoryBtn}
-          onPress={() =>
-            navigation.navigate('CardListScreen', {title: 'Groceries'})
-          }>
-          <View style={styles.categoryIcon}>
-          <Avatar.Image
-                        source={require('../../assets/grocery.png')}
-                    size={65} style={{backgroundColor:"#ffc77d"}}
-                  />
-          </View>
+      
           <Text style={styles.categoryBtnTxt}>Groceries</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.categoryBtn} onPress={() =>
-            navigation.navigate('CardListScreen', {title: 'Vegetables'})
-          } >
-          <View style={styles.categoryIcon}>
-          <Avatar.Image
-                        source={require('../../assets/vegetable.png')}
-                    size={65} style={{backgroundColor:"#BBDEFB"}}
-                  />
+          <View  style={styles.filterButton1}>
+            <Text style={{fontSize:13,color:'black',fontWeight:'bold'}}>Buy Now</Text>
           </View>
-          <Text style={styles.categoryBtnTxt}>Vegetables</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.categoryBtn2} onPress={() =>
+            navigation.navigate('VegetableShopsScreen', {title: 'Vegetable Stores'})
+          } >
+     
+          <Image
+                        source={require('../../assets/grocery/background2.jpg')}
+                    size={65} style={{backgroundColor:"#BBDEFB",width:'100%',height:170,resizeMode:'cover',}}
+                  />
+       
+          <Text style={styles.categoryBtnTxt2}>Vegetables</Text>
+          <View  style={styles.filterButton1}>
+            <Text style={{fontSize:13,color:'black',fontWeight:'bold'}}>Buy Now</Text>
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -126,8 +83,13 @@ const HomeScreen = ({navigation}) => {
       <TouchableWithoutFeedback style={styles.cardsWrapper}  onPress={() =>
             navigation.navigate('CardListScreen', {title: 'Groceries'})
           }>
-        <Image resizeMode="stretch"  style={{width:"100%",height:600,marginBottom:20,marginTop:20}} source={require('../../assets/banners/banner9.jpg')} ></Image>
+        <Image resizeMode="stretch"  style={{width:"100%",height:200,marginBottom:20,marginTop:20}} source={require('../../assets/banners/slider16.jpg')} ></Image>
       </TouchableWithoutFeedback>
+
+      <View>
+      
+          <Background navigation={navigation} />
+      </View>
       <TouchableWithoutFeedback style={styles.cardsWrapper}  onPress={() =>
             navigation.navigate('CardListScreen', {title: 'Groceries'})
           }>
@@ -138,13 +100,17 @@ const HomeScreen = ({navigation}) => {
           }>
         <Image resizeMode="stretch"  style={{width:"100%",height:600,marginBottom:20}} source={require('../../assets/banners/banner7.jpg')} ></Image>
       </TouchableWithoutFeedback>
+      <View>
+      
+      <Background navigation={navigation} />
+  </View>
       <TouchableWithoutFeedback style={styles.cardsWrapper}  onPress={() =>
             navigation.navigate('CardListScreen', {title: 'Groceries'})
           }>
         <Image resizeMode="stretch"  style={{width:"100%",height:600,marginBottom:20}} source={require('../../assets/banners/banner6.jpg')} ></Image>
       </TouchableWithoutFeedback>
-  
-    </ScrollView>
+      </ScrollView>
+    </View>
     </View>
   );
 };
@@ -188,29 +154,76 @@ const styles = StyleSheet.create({
   },
   categoryBtn: {
     flex: 1,
-    width: '30%',
-    marginHorizontal: 0,
+   
     alignSelf: 'center',
+    backgroundColor:'#FFAB00',
+    marginRight:10,
+    borderRadius:10,
+    overflow:'hidden'
   },
   categoryIcon: {
     borderWidth: 0,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    width: 60,
-    height: 60,
+
+    backgroundColor:'red',
    
-    borderRadius: 50,
+    
   },
   categoryBtnTxt: {
     alignSelf: 'center',
     marginTop: 5,
     color: 'black',
+    height:27,
+    color:'white',
+    fontSize:17,
+    fontWeight:'bold'
   },
   cardsWrapper: {
     marginTop: 20,
     width: '90%',
     alignSelf: 'center',
   },
-
+  categoryBtn2: {
+    flex: 1,
+   
+    alignSelf: 'center',
+    backgroundColor:'#2E7D32',
+    marginLeft:10,
+    borderRadius:10,
+    overflow:'hidden',
+    elevation:5
+  },
+  categoryIcon2: {
+    borderWidth: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+   
+    backgroundColor:'red',
+   
+    borderRadius: 0,
+    
+  },
+  categoryBtnTxt2: {
+    alignSelf: 'center',
+    marginTop: 5,
+    color: 'black',
+    height:27,
+    color:'white',
+    fontSize:17,
+    fontWeight:'bold'
+  },
+  filterButton1:{
+    backgroundColor:"white",
+    borderRadius:5,
+    marginVertical:10,
+    paddingHorizontal:10,
+    borderColor:'#BDBDBD',
+    borderWidth:1,
+    height:30,
+    alignSelf: 'center',
+    justifyContent:'center'
+  },
 });

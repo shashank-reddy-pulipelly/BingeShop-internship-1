@@ -21,6 +21,22 @@ export const data = [
     rating: 4,
     reviews: 99,
     amount:199,
+    quantity:'1 Kg',
+    originalPrice:299
+
+  },
+
+  {
+    id: '3',
+
+    title: 'Aashirvaad Atta with Multigrains  (5 kg)',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque est metus, gravida vel ex volutpat, posuere euismod tortor. Pellentesque tincidunt, mi ac varius blandit, quam orci dignissim risus, vitae rutrum orci urna ut neque Pellentesque condimentum ut libero id blandit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.',
+    image: Images[2].image,
+    rating: 3,
+    reviews: 220,
+    amount:310,
+    quantity:'5 Kg',
+    originalPrice:399
 
   },
   {
@@ -32,17 +48,8 @@ export const data = [
     rating: 5,
     reviews: 102,
     amount:770,
-
-  },
-  {
-    id: '3',
-
-    title: 'Aashirvaad Atta with Multigrains  (5 kg)',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque est metus, gravida vel ex volutpat, posuere euismod tortor. Pellentesque tincidunt, mi ac varius blandit, quam orci dignissim risus, vitae rutrum orci urna ut neque Pellentesque condimentum ut libero id blandit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.',
-    image: Images[2].image,
-    rating: 3,
-    reviews: 220,
-    amount:310,
+    quantity:'1 Kg',
+    originalPrice:899
 
   },
   {
@@ -54,7 +61,8 @@ export const data = [
     rating: 4,
     reviews: 48,
     amount:35,
-
+    quantity:'500 g',
+    originalPrice:99
   },
   {
     id: '5',
@@ -65,7 +73,8 @@ export const data = [
     rating: 4,
     reviews: 178,
     amount:210,
-
+    quantity:'12 x 70 g',
+    originalPrice:299
   },
   {
     id: '6',
@@ -76,7 +85,8 @@ export const data = [
     rating: 4,
     reviews: 99,
     amount:154,
-
+    quantity:'1 Litre',
+    originalPrice:199
   },
   {
     id: '7',
@@ -87,7 +97,8 @@ export const data = [
     rating: 5,
     reviews: 102,
     amount:300,
-
+    quantity:'4 x 125 g',
+    originalPrice:399
   },
   {
     id: '8',
@@ -98,7 +109,8 @@ export const data = [
     rating: 5,
     reviews: 102,
     amount:285,
-
+    quantity:'800 g',
+    originalPrice:399
   },
   {
     id: '9',
@@ -109,7 +121,8 @@ export const data = [
     rating: 3,
     reviews: 102,
     amount:349,
-
+    quantity:'1 Kg',
+    originalPrice:499
   },
   {
     id: '10',
@@ -120,6 +133,7 @@ export const data = [
     rating: 4,
     reviews: 102,
     amount:195,
-
+    quantity:'300 ml',
+    originalPrice:299
   },
 ];

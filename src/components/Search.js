@@ -1,15 +1,17 @@
-import React,{useState,memo} from 'react';
+import React,{memo} from 'react';
 import {
     FlatList,
     View,
     ActivityIndicator,  Dimensions, 
-    TouchableOpacity,Text,TextInput,StyleSheet
+    TouchableOpacity,Text,TextInput,StyleSheet,ScrollView,SafeAreaView
   } from 'react-native'
 import {useTheme, Avatar} from 'react-native-paper';
 import { Searchbar } from 'react-native-paper';
 
-import {data} from '../data/groceries';
+
 import Card from '../components/Card';
+import Shop from '../components/Shop';
+import Modal from '../components/Modal';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 const {width} = Dimensions.get("screen");
 
@@ -24,7 +26,8 @@ class Search extends React.Component{
             seed: 1,
             error: null,
             query: '',
-            fullData: []
+            fullData: [],
+            searchtext:''
            
         };
 
@@ -44,9 +47,9 @@ class Search extends React.Component{
         
         
         this.setState({
-          data: data,
+          data: this.props.data,
         loading: false,
-        fullData: data
+        fullData:this.props.data
         })
         
       
@@ -56,18 +59,15 @@ class Search extends React.Component{
             if (!this.state.loading) return null
           
             return (
-              <View
-                style={{
-                  paddingVertical: 20,
-                  borderTopWidth: 1,
-                  borderColor: '#CED0CE'
-                }}>
-                <ActivityIndicator animating size='large' />
+              <View >
+                
               </View>
             )
           }
 
           handleSearch = text => {
+            this.setState({searchtext:text});
+
             const formattedQuery = text.toLowerCase();
             const data = this.state.fullData.filter( item => {
               return this.contains(item, formattedQuery)
@@ -84,19 +84,21 @@ class Search extends React.Component{
           }
           
           renderHeader=()=>{
-            const [search,setSearch]=useState('');
+         const title=' Search for '+this.props.title+' ..'
               return(
-                <View>
+                <View >
     
                 <View style={styles.search}>
                 <View style={styles.searchBox}>
-     <Ionicons name="ios-search" color="grey" size={22} />
-        <TextInput 
-          placeholder=" Search here for groceries .."
-          placeholderTextColor="grey"
+  
+     <Searchbar
+           placeholder='Search for Products ...'
+          inputStyle={{fontSize:16}}
+         
           onChangeText={this.handleSearch}
-          autoCapitalize="none"
-          style={{flex:1,paddingLeft:10,fontSize:17}}
+       
+          value={this.state.searchtext}
+          style={{flex:1,paddingLeft:10,fontSize:15}}
         />
         
                 </View>
@@ -106,24 +108,66 @@ class Search extends React.Component{
               );
           }
     render(){
+     const ss=this.renderHeader();
+      if(this.props.cardType=='shop'){
         return(
-            <View style={{backgroundColor:"#fff"}} >
+          <View style={{backgroundColor:"#fff",flexDirection:'column',flex:1}} >
+        
+            {ss}
+         
+          
+     <View style={{flex:10}}>
+     <FlatList
+            data={this.state.data}
+            renderItem={({ item }) => (
+              <Shop 
+              itemData={item}
+              onPress={()=> this.props.navigation.navigate('CardListScreen', {title: 'Groceries'})}
+          />
+            )}
+            keyExtractor={item => item.id}
+            ListHeaderComponent={()=><View></View>}
+            ListFooterComponent={this.renderFooter}
+          />
+     </View>
+         
+            </View>
+        )
+      }
+      else if(this.props.cardType=='card'){
+return(
+  <View style={{backgroundColor:"#fff",flexDirection:'column',flex:1}} >
 
+{ss}
+
+
+<View style={{flex:10}}>
+
+
+            <FlatList
+    data={this.state.data}
+    renderItem={({ item }) => (
+      <Card 
+      itemData={item}
+      onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData: item})}
+       />
+    )}
+    keyExtractor={item => item.id}
+    ListHeaderComponent={()=><View style={{flexDirection:'row',borderBottomWidth:0.5,borderBottomColor:'grey'}}>
+    
+    <View style={{marginLeft:'auto'}}><Modal/></View>
+              
+  
+              </View>}
+    ListFooterComponent={this.renderFooter}
+  />   
+
+  
+    </View>
+    </View>
+)
+      }
      
-<FlatList
-  data={this.state.data}
-  renderItem={({ item }) => (
-    <Card 
-    itemData={item}
-    onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData: item})}
-/>
-  )}
-  keyExtractor={item => item.id}
-  ListHeaderComponent={this.renderHeader}
-  ListFooterComponent={this.renderFooter}
-/>     
-  </View>
-        );
     }
 
 
@@ -134,18 +178,8 @@ const styles=StyleSheet.create({
         
        
         flexDirection:"row",
-        backgroundColor: '#fff',
         
-        alignSelf:'center',
-        
-        padding: 10,
-        shadowColor: 'black',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.5,
-        shadowRadius: 3,
-     
-        alignItems:'center',
-        borderBottomColor:"#E0E0E0",
+      
        
         borderRadius:5,
       },
