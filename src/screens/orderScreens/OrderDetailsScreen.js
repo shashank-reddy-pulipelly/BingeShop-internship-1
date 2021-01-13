@@ -1,11 +1,13 @@
 import React,{memo,Component} from 'react';
-import { View, Text, FlatList, StyleSheet,Image,ScrollView,TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet,Image,ScrollView,TouchableWithoutFeedback } from 'react-native';
 import { connect } from 'react-redux';
 import {data} from '../../data/groceries';
-import Card from '../../components/Card';
-import { Button } from 'native-base';
+import {theme} from '../../core/theme';
+import {Rating} from 'react-native-elements';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Octicons from 'react-native-vector-icons/Octicons';
+import Toast from 'react-native-tiny-toast';
+import { Button } from 'native-base';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const mapStateToProps = state => {
     return {
@@ -24,7 +26,8 @@ class OrderDetailsScreen extends Component {
     super(props)
   
     this.state = {
-       
+       rating:'',
+       ratingOn:false
     }
   }
 
@@ -50,9 +53,11 @@ class OrderDetailsScreen extends Component {
        <View >
           <View style={styles.row1}>
           <View style={styles.status}>
-        <Text style={{fontWeight:'bold',fontSize:18}}>{orderStatus().status}</Text>
+           
+        <Text style={{fontWeight:'bold',fontSize:20}}>{orderStatus().status}</Text>
         <Text style={{fontSize:16,fontWeight:'bold',marginTop:10,
         color:'green'}}>{orderStatus().date}</Text>
+         <Text style={{color:'#757575',paddingVertical:5,fontSize:15}}>Order Id : {orderItem.orderDetials.orderId}</Text>
           </View>
        
 
@@ -63,26 +68,26 @@ class OrderDetailsScreen extends Component {
 </View>
 <View style={{flexDirection:'row'}}>
 <View style={{flex:2,alignItems:'center',justifyContent:'center'}}>
-<FontAwesome name="circle" size={13} color="#600EE6"/>
-<View style={{height:75,borderLeftWidth:3,borderLeftColor:orderItem.orderStatus.orderAccepted?'#600EE6':'#9E9E9E'}}>
+<FontAwesome name="circle" size={13} color={theme.colors.primary}/>
+<View style={{height:75,borderLeftWidth:3,borderLeftColor:orderItem.orderStatus.orderAccepted?theme.colors.primary:'#9E9E9E'}}>
   
 </View>
-<FontAwesome name="circle" size={13} color={orderItem.orderStatus.orderAccepted?'#600EE6':'#9E9E9E'}/>
-<View style={{height:75,borderLeftWidth:3,borderLeftColor:orderItem.orderStatus.delivered?'#600EE6':'#9E9E9E'}}>
+<FontAwesome name="circle" size={13} color={orderItem.orderStatus.orderAccepted?theme.colors.primary:'#9E9E9E'}/>
+<View style={{height:75,borderLeftWidth:3,borderLeftColor:orderItem.orderStatus.delivered?theme.colors.primary:'#9E9E9E'}}>
   
 </View>
-<FontAwesome name="circle" size={13} color={orderItem.orderStatus.delivered?'#600EE6':'#9E9E9E'}/>
+<FontAwesome name="circle" size={13} color={orderItem.orderStatus.delivered?theme.colors.primary:'#9E9E9E'}/>
 </View >
 <View style={{flex:8}}>
 <View style={styles.item1}>
-<Octicons  name="checklist" size={40} color="#600EE6"/>
+<Octicons  name="checklist" size={40} color={theme.colors.primary} />
 <View style={{marginLeft:20 ,}}>
 <Text numberOfLines={1} style={{fontSize:17}} >Order Placed </Text>
 <Text style={{color:'#757575'}}>{orderItem.orderStatus.orderedDate}</Text>
 </View>
       </View>
       <View style={styles.item1}>
-<FontAwesome name="check-circle" size={40} color={orderItem.orderStatus.orderAccepted?'#600EE6':'#9E9E9E'}/>
+<FontAwesome name="check-circle" size={40} color={orderItem.orderStatus.orderAccepted?theme.colors.primary:'#9E9E9E'}/>
 <View style={{marginLeft:20 ,}}>
 <Text numberOfLines={1} style={{fontSize:17,color:orderItem.orderStatus.orderAccepted?'black':'#757575'}} >Order Accepted</Text>
 <Text style={{color:'#757575'}}>{orderItem.orderStatus.orderAcceptedDate}</Text>
@@ -90,7 +95,7 @@ class OrderDetailsScreen extends Component {
 </View>
 <View style={styles.item1}>
 
-<MaterialCommunityIcons  name="truck-delivery" size={40} color={orderItem.orderStatus.delivered?'#600EE6':'#9E9E9E'}/>
+<MaterialCommunityIcons  name="truck-delivery" size={40} color={orderItem.orderStatus.delivered?theme.colors.primary:'#9E9E9E'}/>
 <View style={{marginLeft:20 ,}}>
 <Text numberOfLines={1} style={{fontSize:17,color:orderItem.orderStatus.delivered?'black':'#757575'}} >Delivered</Text>
 <Text style={{color:'#757575'}}>{orderItem.orderStatus.deliveredDate}</Text>
@@ -101,7 +106,31 @@ class OrderDetailsScreen extends Component {
 
    
   </View>
-          
+  <View>
+    {this.state.ratingOn==false?<View>
+      <Button onPress={()=>this.setState({ratingOn:true})} style={styles.filterButton2}>
+            <Text style={{fontSize:17,color:'white'}}>Rate the Shop</Text>
+          </Button>
+
+</View>:<Rating style={{marginBottom:30}} type='custom' 
+                                fractions = { 0 }
+                                startingValue = { 3 }
+                                ratingColor={theme.colors.primary}
+                                ratingBackgroundColor='#c8c7c8'
+                                imageSize = { 35 }
+                                onFinishRating = { rating =>
+                                    { this.setState({ rating: rating });
+                                    Toast.show('Thank You for rating ',{
+                                      position:-20,
+                                      containerStyle:{
+                                        borderRadius:5,
+                                        paddingHorizontal:30
+                                      }
+                                    });}}
+                                showRating/>}
+    
+                   
+                      </View>     
   </View>
           <View style={styles.orderItems}>
           <View style={{marginTop:10,marginLeft:10}} >
@@ -132,7 +161,7 @@ class OrderDetailsScreen extends Component {
                       <Text style={{fontSize: 14, color: '#616161'
                          ,marginTop:9,marginLeft:'auto',fontWeight:'bold',marginRight:40}}>Quantity :{itemsItem.count}</Text>
                   </View>
-           
+                  <Text style={{alignSelf:'center',paddingVertical:10}} >Net Weight : {itemData.quantity} / <Text style={{fontSize:12}} >per piece</Text></Text>
                
               
               </View>
@@ -174,7 +203,7 @@ class OrderDetailsScreen extends Component {
        <View style={{backgroundColor:'white',paddingVertical:15,paddingLeft:10,marginBottom:10, borderBottomColor:"#E0E0E0",
  borderBottomWidth:1,flexDirection:'row'}}>
    
-       <MaterialCommunityIcons style={{paddingHorizontal:5}} name="file-document" size={25} color="#600EE6"/>
+       <MaterialCommunityIcons style={{paddingHorizontal:5}} name="file-document" size={25} color={theme.colors.primary} />
          <Text style={{marginLeft:20,fontSize:17}}>Download Invoice</Text>
          <FontAwesome style={{paddingHorizontal:5,marginLeft:'auto',marginRight:20}} name="angle-right" size={25} color="black"/>
        </View>
@@ -185,9 +214,10 @@ class OrderDetailsScreen extends Component {
               
                   <View style={{marginLeft:10}} >
   <Text style={{fontWeight:'bold',fontSize:18,}}>Delivery Address</Text>
-  <Text style={{padding:3}} >Chaitanya Nagar,H-No : 7-153/2</Text>
-  <Text style={{padding:3}} >Road Number:5 , Miryalaguda</Text>
-  <Text style={{padding:3}} >Telangana - 508207</Text>
+  <Text style={{padding:3}} >{orderItem.address.name}</Text>
+  <Text style={{padding:3}} >{orderItem.address.roadNo}</Text>
+  <Text style={{padding:3}} >{orderItem.address.houseNo} , {orderItem.address.city} </Text>
+  <Text style={{padding:3}} >{orderItem.address.state} - {orderItem.address.pinCode}</Text>
   <Text style={{padding:3}} >Phone Number : 6303365901</Text>
 </View>
 <View>
@@ -256,27 +286,17 @@ borderBottomColor:'#EEEEEE'
 
   },
   
-  filterButton1:{
-    backgroundColor:"white",
-    borderRadius:5,
-    marginVertical:10,
-    paddingHorizontal:20,
-    paddingVertical:0,
-    marginRight:'auto',
-    borderColor:'#BDBDBD',
-    borderWidth:1,
-    height:45,
-    marginLeft:20
-  },
+
     filterButton2:{
-    backgroundColor:"#600EE6",
+    backgroundColor:theme.colors.primary,
     borderRadius:5,
     marginHorizontal:10,
     marginVertical:10,
     paddingHorizontal:30,
     paddingVertical:0,
-    marginLeft:'auto',
-    height:45
+
+    height:45,
+    alignSelf:'center'
   },
   track:{
     backgroundColor:'#fff',

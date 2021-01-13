@@ -1,8 +1,10 @@
-import React,{Component} from 'react';
+import React,{PureComponent} from 'react';
 import {View, Text , Image, StyleSheet,TouchableHighlight,TouchableWithoutFeedback, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
 import { Button } from 'native-base';
+import { theme } from '../core/theme';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const mapStateToProps = state => {
   return {
 
@@ -14,29 +16,29 @@ const mapDispatchToProps = dispatch => ({
 
 })
 
-class Card extends Component {
-  countPrev=this.props.carts.filter((item)=> item.id ==this.props.itemData.id);
+class Card extends PureComponent {
+
   constructor(props) {
     super(props)
     
     this.state = {
-       count:this.countPrev[0].count
+    
     }
  
   }
   countInc=()=>{
-    this.setState({count:this.state.count+1});
-    this.props.postCart(this.props.itemData.id)
+    
+    this.props.postCart()
   }
   countDec=()=>{
-    if(this.state.count!=1){
+    if(this.props.itemData.count!=1){
     
-     this.setState({count:this.state.count-1})
-     this.props.decreaseCart(this.props.itemData.id)
+    
+     this.props.decreaseCart()
  
     }
     else{
-      this.props.deleteCart(this.props.itemData.id);
+      this.props.deleteCart();
     }
    
   }
@@ -51,7 +53,7 @@ class Card extends Component {
       <View style={styles.card}>
       <View style={styles.cardImgWrapper}>
         <Image
-          source={itemData.image}
+          source={{uri:itemData.image}}
           resizeMode="cover"
           style={styles.cardImg}
         />
@@ -65,8 +67,8 @@ class Card extends Component {
 
           <View style={styles.row}>
           <Text style={{fontSize:18,padding:0,paddingVertical:0,margin:0,paddingTop:8,alignSelf:'center'}}>{'\u20B9'} </Text>
-              <Text style={{ marginTop:6,marginLeft:2,fontSize:18,  fontWeight: 'bold',}}>{itemData.amount*this.state.count}</Text>
-              <Text style={{textDecorationLine: 'line-through',fontSize: 13, color: '#444' ,marginTop:9,marginLeft:10}}>{itemData.amount+100} </Text>
+              <Text style={{ marginTop:6,marginLeft:2,fontSize:18,  fontWeight: 'bold',}}>{itemData.price*this.props.itemData.count}</Text>
+              <Text style={{textDecorationLine: 'line-through',fontSize: 13, color: '#444' ,marginTop:9,marginLeft:10}}>{itemData.price+100} </Text>
               <Text style={{fontSize: 13, color: '#09af00' ,marginTop:9,marginLeft:10}}>33% off</Text>
           </View>
         
@@ -93,7 +95,7 @@ class Card extends Component {
                 borderBottomWidth:1,
                 borderColor:'#E0E0E0'
             }}>
-                <Text>{this.state.count}</Text>
+                <Text>{this.props.itemData.count}</Text>
             </View>
             <TouchableHighlight style={styles.countButton2} onPress={this.countInc}>
         
@@ -103,7 +105,11 @@ class Card extends Component {
       </View>
     
             <Button onPress={deleteCart} style={styles.filterButton2}>
-            <Text style={{fontSize:17,color:'white'}}>Delete</Text>
+            <MaterialCommunityIcons
+                        name="delete" 
+                        color="black"
+                        size={25}
+                        />
           </Button>
    
     </View>
@@ -133,11 +139,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   filterButton2:{
-    backgroundColor:"#600EE6",
+    backgroundColor:"#E0E0E0",
     borderRadius:5,
-    marginHorizontal:10,
+    marginRight:20,
     marginVertical:10,
-    paddingHorizontal:20,
+    paddingHorizontal:15,
     paddingVertical:0,
     marginLeft:'auto',
     height:42
@@ -196,14 +202,14 @@ const styles = StyleSheet.create({
   countButton:{
     paddingHorizontal:15,
     paddingVertical:13, 
-    backgroundColor:"#600EE6",
+    backgroundColor:theme.colors.primary,
     borderBottomLeftRadius:3,
     borderTopLeftRadius:3,
 },
   countButton2:{
       paddingHorizontal:15,
       paddingVertical:13,
-      backgroundColor:"#600EE6",
+      backgroundColor:theme.colors.primary,
       borderTopRightRadius:3,
       borderBottomRightRadius:3
    

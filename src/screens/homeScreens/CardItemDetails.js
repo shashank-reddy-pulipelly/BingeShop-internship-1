@@ -1,21 +1,23 @@
-import React, {useRef,memo,Component} from 'react';
+import React, {Component} from 'react';
 import {
   View,
   Text,
   Image,
   StyleSheet,
   Dimensions,
-  SafeAreaView,ScrollView,TouchableWithoutFeedback,TouchableOpacity,
+  SafeAreaView,ScrollView,TouchableOpacity,
   Platform,
 } from 'react-native';
-import { Button } from 'react-native-elements';
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
 import { postFavorite, deleteFavorite,postCart } from '../../redux/ActionCreators';
 import Toast from 'react-native-tiny-toast';
+import { Button } from 'native-base';
 
-
+import {theme} from '../../core/theme';
+const { width, height } = Dimensions.get("window");
 const MIN_HEIGHT = Platform.OS === 'ios' ? 90 : 70;
 const MAX_HEIGHT = 350;
 
@@ -25,7 +27,8 @@ const mapStateToProps = state => {
   return {
  
     favorites: state.favorites,
-    carts:state.carts
+    carts:state.carts,
+    shops:state.shops
   }
 }
 
@@ -37,26 +40,47 @@ const mapDispatchToProps = dispatch => ({
 class  CardItemDetails extends Component {
 
    itemData = this.props.route.params.itemData;
+   shopId=this.props.route.params.shopId;
+ constructor(props) {
+   super(props)
  
+   this.state = {
+    isFavorite:this.props.favorites.some(el => el.prod_id == this.itemData.id && el.shop_id==this.shopId)
+ }
+ }
+ toggleFavorite=()=>{
+  
+  if(this.state.isFavorite){
+   this.setState({isFavorite:!this.state.isFavorite},()=>{
+     this.props.deleteFavorite({prod_id:this.itemData.id,shop_id:this.shopId});
+   });
+ 
+  }
+  else{
+   this.setState({isFavorite:!this.state.isFavorite},()=>{
+     this.props.postFavorite({prod_id:this.itemData.id,shop_id:this.shopId});
+   });
+
+  }
+}
   
   render(){
     return(
 <SafeAreaView style={styles.container} >
     <ScrollView >
  
-   <View style={styles.favorite}>
-   <Icon  name={this.props.favorites.some(el => el === this.itemData.id)?'heart':'heart-o'} size={25}
-                        color='red' onPress={() => this.props.favorites.some(el => el === this.itemData.id)?
-                          this.props.deleteFavorite(this.itemData.id): this.props.postFavorite(this.itemData.id)}/>
-   </View>
+    <View  style={styles.favorite}>
+  <Icon  name={this.state.isFavorite?'heart':'heart-o'} size={30}
+                       color='red' onPress={() =>this.toggleFavorite()}/>
+  </View>
   
   <View style={styles.section}>
-  <Image style={styles.image}  source={this.itemData.image} />
+  <Image style={styles.image}  source={{uri:this.itemData.image}} />
    <Text style={styles.title}>{this.itemData.title}</Text>
 
    <View style={styles.ratings}>
               <View style={styles.star}>
-<Text style={{color:'white',paddingLeft:10}}>{this.itemData.rating}</Text>
+<Text style={{color:'white',paddingLeft:10}}>ff</Text>
 <View style={{paddingRight:10,paddingLeft:5}}>
 <Icon name="star"  size={14} color="#fff" />
 </View>
@@ -73,9 +97,17 @@ class  CardItemDetails extends Component {
             <View style={styles.row}>
                 <Text style={{fontSize:22,paddingVertical:0,marginTop:10}}>{'\u20B9'}</Text>
                 
-                <Text style={{ marginTop:6,marginLeft:5,fontSize:24,}}>{this.itemData.amount}</Text>
-                <Text style={{textDecorationLine: 'line-through',fontSize: 14, color: '#444' ,marginTop:5,marginLeft:15}}>{this.itemData.amount+100} </Text>
+                <Text style={{ marginTop:6,marginLeft:5,fontSize:24,}}>{this.itemData.price}</Text>
+                <Text style={{textDecorationLine: 'line-through',fontSize: 14, color: '#444' ,marginTop:5,marginLeft:15}}>{this.itemData.price+100} </Text>
                 <Text style={{fontSize: 13, color: '#09af00' ,marginTop:5,marginLeft:15}}>33% off</Text>
+            </View>
+
+            <View style={{flexDirection:'row',paddingVertical:10,overflow:'hidden'}}>
+              <Text style={{fontSize:18}} >Seller :  </Text>
+              <View style={{padding:4,backgroundColor:'#E8EAF6',paddingHorizontal:8,borderRadius:5,borderColor:'#7986CB',borderWidth:.5}} >
+              <Text numberOfLines={1} >{this.props.shops.shops.find((shop)=>shop.id==this.shopId).title} </Text>
+              </View>
+       
             </View>
     </View>   
               <View style={[styles.section,styles.heading]}>
@@ -109,29 +141,30 @@ class  CardItemDetails extends Component {
  
 
     </ScrollView>
-    <View style={{flexDirection:'row',bottom:0}}>
-  <View style={{flex:1}}>
-    <Button  buttonStyle={{backgroundColor:"#E0E0E0",borderRadius:0,paddingVertical:13,}}
-  titleStyle={{fontSize:17,color:"black"}}
-  title="Buy Now"/>    
-    </View>
-
-    <View style={{flex:1}}>
-    <Button buttonStyle={{backgroundColor:"#600EE6",borderRadius:0,paddingVertical:13}}
-  titleStyle={{fontSize:17}} onPress={()=>{
-    Toast.show('  Item Added to Cart  Successfully  ',{
+  
+  <View style={{backgroundColor:'white',flexDirection:'row',borderTopColor:'#EEEEEE',borderTopWidth:2}}>
+            <Button onPress={()=>{Toast.show('  Item Added to Cart  Successfully  ',{
       position:-70,
       containerStyle:{
         borderRadius:10,
         paddingHorizontal:10
       }
     });
-    this.props.postCart(this.itemData.id);
-  }}
-  title="Add to Cart"/>          
-    </View>
- 
-  </View>
+    this.props.postCart({prod_id:this.itemData.id,shop_id:this.shopId});
+    this.props.navigation.navigate('CartDrawer');}} style={styles.filterButton1}>
+            <Text style={{fontSize:17,color:theme.colors.primary}}>Buy Now</Text>
+          </Button>
+            <Button onPress={()=>{Toast.show('  Item Added to Cart  Successfully  ',{
+      position:-70,
+      containerStyle:{
+        borderRadius:10,
+        paddingHorizontal:10
+      }
+    });
+    this.props.postCart({prod_id:this.itemData.id,shop_id:this.shopId});}} style={styles.filterButton2}>
+            <Text style={{fontSize:17,color:'white'}}>Add to Cart</Text>
+          </Button>
+            </View>
     </SafeAreaView>
     );
   }
@@ -140,8 +173,7 @@ class  CardItemDetails extends Component {
  
 
 
-const {height} = Dimensions.get("screen");
-const {weight} = Dimensions.get("screen");
+
 
 export default connect(mapStateToProps,mapDispatchToProps)(CardItemDetails)
 
@@ -220,6 +252,29 @@ const styles = StyleSheet.create({
     alignItems:'center',
     borderRadius:50,
     justifyContent:'center'
+  },
+  filterButton1:{
+    backgroundColor:"white",
+    borderRadius:5,
+    marginVertical:10,
+    paddingHorizontal:30,
+    paddingVertical:0,
+    marginRight:'auto',
+    borderColor:theme.colors.primary,
+    borderWidth:1,
+    height:50,
+    marginLeft:20
+  },
+    filterButton2:{
+    backgroundColor:theme.colors.primary,
+    borderRadius:5,
+    marginRight:20,
+    marginVertical:10,
+    paddingHorizontal:30,
+    paddingVertical:0,
+    marginLeft:'auto',
+    height:50,
+   
   }
 
 });

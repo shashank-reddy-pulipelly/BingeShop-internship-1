@@ -1,12 +1,15 @@
 import React,{Component} from 'react';
-import {View, Text,Button , Image, StyleSheet,TouchableWithoutFeedback, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+
+
 import { connect } from 'react-redux';
-import {data} from '../data/groceries';
+
 
 const mapStateToProps = state => {
   return {
-    carts: state.carts
+    carts: state.carts,
+    shops:state.shops,
+    shopProductsList:state.shopProductsList,
+    products:state.products
   }
 }
 
@@ -16,30 +19,21 @@ const mapDispatchToProps = dispatch => ({
 
 class Amount extends Component {
  
-  constructor(props) {
-    super(props)
-    
-    this.state = {
-      
-    }
- 
-  }
-
   render(){
  
-   const cartItemData=data.filter(item => this.props.carts.some(el => el.id === item.id))
+   const AmountArray=this.props.carts.map(item => {
+    const amount=this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item.shop_id).products.find((product)=>product.prod_id==item.prod_id).price;
+    return amount*item.count;
+   })
     
    
-   const amountArray=cartItemData.map((item)=>{
-     const cartIdCountData=this.props.carts.filter((cartItem)=>cartItem.id==item.id)
-        return item.amount*cartIdCountData[0].count;
-    });
+ 
 
     const fun =(total, num) =>{
         return total + num;
       }
 
-    const Amount=amountArray.reduce(fun);
+    const Amount=AmountArray.reduce(fun);
 
 
    
@@ -52,7 +46,3 @@ class Amount extends Component {
 
 export default connect(mapStateToProps,mapDispatchToProps)(Amount);
 
-const styles = StyleSheet.create({
-  
-  
-});

@@ -14,13 +14,13 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
  function DrawerContent(props) {
 
     
-    const { signOut} = React.useContext(AuthContext);
+ 
     
 
     return(
         <View style={{flex:1}}>
             <DrawerContentScrollView {...props}>
-            <StatusBar backgroundColor="#600EE6"/>
+            <StatusBar translucent={true} backgroundColor={theme.colors.primary} />
                 <View style={styles.drawerContent}>
                     
                     <View style={styles.userInfoSection}>
@@ -47,7 +47,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
                             label="Home"
                             activeBackgroundColor={theme.colors.black}
                             labelStyle={{fontWeight:'bold'}}
-                            onPress={() => {props.navigation.navigate('Home')}}
+                            onPress={() => {props.navigation.navigate('HomeDrawer')}}
                         />
                                    <DrawerItem 
                             icon={({color, size}) => (
@@ -84,7 +84,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
                             label="My Cart"
                             activeBackgroundColor={theme.colors.black}
                             labelStyle={{fontWeight:'bold'}}
-                            onPress={() => {props.navigation.navigate('CartScreen')}}
+                            onPress={() => {props.navigation.navigate('CartDrawer',{screen:'CartScreen'})}}
                         />
                        <DrawerItem 
                             icon={({color, size}) => (
@@ -96,7 +96,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
                             )}
                             label="My Orders"
                             labelStyle={{fontWeight:'bold'}}
-                            onPress={() => {props.navigation.navigate('OrdersScreen')}}
+                            onPress={() => {props.navigation.navigate('OrderDrawer',{screen:'OrdersScreen'})}}
                         />
                         <DrawerItem 
                             icon={({color, size}) => (
@@ -106,37 +106,26 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
                                 size={size}
                                 />
                             )}
-                            label="My Account"
+                            label="My Products"
                             labelStyle={{fontWeight:'bold',padding:0,margin:0}}
                             style={{margin:0,padding:0}}
-                            onPress={() => {}}
+                            onPress={() => {props.navigation.navigate('ProductsDrawer')}}
+                        />
+                         <DrawerItem 
+                            icon={({color, size}) => (
+                                <Icon 
+                                name="account" 
+                                color={color}
+                                size={size}
+                                />
+                            )}
+                            label="My Products"
+                            labelStyle={{fontWeight:'bold',padding:0,margin:0}}
+                            style={{margin:0,padding:0}}
+                            onPress={() => {props.navigation.navigate('ProductsDrawer')}}
                         />
                    
-                          <DrawerItem 
-                            icon={({color, size}) => (
-                                <Icon 
-                                name="settings-outline" 
-                                color={color}
-                                size={size}
-                                />
-                            )}
-                            label="Settings"
-                            labelStyle={{fontWeight:'bold'}}
-                            onPress={() => {}}
-                        />
-                            
-                                <DrawerItem 
-                            icon={({color, size}) => (
-                                <Icon 
-                                name="bell" 
-                                color={color}
-                                size={size}
-                                />
-                            )}
-                            label="My Notifications"
-                            labelStyle={{fontWeight:'bold'}}
-                            onPress={() => {}}
-                        />
+                      
                     </Drawer.Section>
                  
                 </View>
@@ -168,7 +157,7 @@ const styles = StyleSheet.create({
     },
     userInfoSection: {
       paddingLeft: 20,
-      backgroundColor:'#600EE6'
+      backgroundColor:theme.colors.primary
     },
     title: {
       fontSize: 18,

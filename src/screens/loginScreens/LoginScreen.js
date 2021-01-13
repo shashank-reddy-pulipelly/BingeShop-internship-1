@@ -60,12 +60,12 @@ const LoginScreen = ({ navigation }) => {
         secureTextEntry
       />
 
-      <TouchableOpacity
+      <TouchableOpacity activeOpacity={1}
                     style={styles.signIn}
                     onPress={_onLoginPressed}
                 >
                 <LinearGradient
-                    colors={['#600EE6','#311B92']}
+                    colors={[theme.colors.primary,'#311B92']}
                     style={styles.signIn}
                 >
                     <Text style={[styles.textSign, {
@@ -81,17 +81,17 @@ const LoginScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
      
-      <TouchableOpacity
+      <TouchableOpacity activeOpacity={1}
                     onPress={() => navigation.navigate('MobileLoginScreen')}
                     style={[styles.signIn, {
-                        borderColor: '#311B92',
+                        borderColor:theme.colors.primary,
                         borderWidth: 1,
                         marginTop: 20,
                         backgroundColor:'#fff'
                     }]}
                 >
                     <Text style={[styles.textSign, {
-                        color: '#311B92'
+                        color:theme.colors.primary
                     }]}>Login with Mobile OTP</Text>
                 </TouchableOpacity>
                 <View style={styles.row}>
@@ -109,8 +109,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1, 
     backgroundColor: '#fff',
-
-
     justifyContent: 'center',
   },
   screen:{paddingHorizontal:30,

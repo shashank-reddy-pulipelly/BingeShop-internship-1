@@ -23,7 +23,8 @@ class Modals extends Component {
     category:[],
     brands:[],
     prices:[],
-    discount:[]
+    discount:[],
+ 
   };
  
  sortByHandle=()=>{
@@ -101,7 +102,7 @@ const rightMenu=()=>{
   if(this.state.activeElement==1){
     return(
       
-      <RadioButton.Group onValueChange={value => this.setValue(value)} value={this.state.sortValue}>
+      <RadioButton.Group onValueChange={value => this.setState({sortValue:value})} value={this.state.sortValue}>
       <RadioButton.Item color={theme.colors.primary} labelStyle={{fontSize:16}} label="Cost : Low to High" value="costLowToHigh" />
       <RadioButton.Item color={theme.colors.primary} labelStyle={{fontSize:16}} label="Cost : High to Low" value="costHighToLow" />
 
@@ -141,7 +142,19 @@ const rightMenu=()=>{
           transparent={true}
           visible={modalVisible}
           onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
+            Alert.alert(
+              "Do you want to close filter ?",
+              "Please Press Go Back Button for closing it .",
+              [
+                {
+                  text: "Cancel",
+                  onPress: () => console.log("Cancel Pressed"),
+                  style: "cancel"
+                },
+                { text: "Go Back", onPress: () => this.setModalVisible() }
+              ],
+              { cancelable: false }
+            );
           }}
         >
           <View style={styles.centeredView}>

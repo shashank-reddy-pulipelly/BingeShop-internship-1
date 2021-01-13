@@ -10,7 +10,7 @@ const TextInput = ({ errorText, ...props }) => (
       selectionColor={theme.colors.primary}
       underlineColor="transparent"
       mode="outlined"
-   
+      blurOnSubmit={true}
       {...props}
     />
     {errorText ? <Text style={styles.error}>{errorText}</Text> : null}
@@ -25,10 +25,12 @@ const styles = StyleSheet.create({
   },
 
   input: {
-    backgroundColor: '#FAFAFA',
+    backgroundColor: '#fff',
+    fontSize: 15,
+    paddingVertical:1
   },
   error: {
-    fontSize: 14,
+    fontSize: 13,
     color: theme.colors.error,
     paddingHorizontal: 4,
     paddingTop: 4,

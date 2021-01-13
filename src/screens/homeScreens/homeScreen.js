@@ -8,7 +8,7 @@ import {
   TouchableOpacity,TouchableHighlight,TouchableWithoutFeedback,
   ScrollView,SafeAreaView
 } from 'react-native';
-import {useTheme, Avatar} from 'react-native-paper';
+
 
 
 import Search from './SearchScreen';
@@ -22,29 +22,38 @@ import Background from '../../components/BackgroundImage';
 
 import { Button } from 'native-base';
 const HomeScreen = ({navigation}) => {
-  const [search,setSearch]=useState('');
-  const theme = useTheme();
+
+
 
   return (
   <View style={styles.container}>
       <StatusBar translucent={true} backgroundColor={'transparent'} />
-    <View style={{flexDirection:'column',flex:1}}>
+      <ScrollView>
+    <View >
     
     <View >
-    <Search />
+    <Search navigation={navigation} />
     </View >
     
-      <ScrollView style={{flex:10}}>
+     
 
       
       <View style={styles.sliderContainer}>
     
      <HomeSwiper/>
       </View>
-
+      <View style={{flexDirection:'row',alignItems:'center',marginHorizontal:10,paddingHorizontal:15,
+      backgroundColor:'#D50000',paddingVertical:10,marginTop:20,borderRadius:10}} >
+                        <Image style={{width:30,height:30, resizeMode: 'stretch',marginRight:20}} source={require('../../assets/logo.png')}
+          />
+        <Text style={{fontSize: 18,marginRight:'auto',marginLeft:'auto',fontWeight:'bold',
+      color: '#fff',}}>Shop By Category</Text>
+        <Image style={{width:30,height:30,resizeMode: 'stretch',marginLeft:20}} source={require('../../assets/logo.png')}
+             />
+             </View>
       <View style={styles.categoryContainer}>
      
-        <TouchableOpacity
+        <TouchableOpacity activeOpacity={0.7}
           style={styles.categoryBtn}
           onPress={() =>
             navigation.navigate('GroceryShopsScreen', {title: 'Grocery Stores'})
@@ -57,12 +66,12 @@ const HomeScreen = ({navigation}) => {
                       resizeMode:'stretch',width:'100%',height:170}}
                   />
       
-          <Text style={styles.categoryBtnTxt}>Groceries</Text>
+          <Text style={styles.categoryBtnTxt}>Grocery shops</Text>
           <View  style={styles.filterButton1}>
             <Text style={{fontSize:13,color:'black',fontWeight:'bold'}}>Buy Now</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.categoryBtn2} onPress={() =>
+        <TouchableOpacity activeOpacity={0.7} style={styles.categoryBtn2} onPress={() =>
             navigation.navigate('VegetableShopsScreen', {title: 'Vegetable Stores'})
           } >
      
@@ -71,7 +80,7 @@ const HomeScreen = ({navigation}) => {
                     size={65} style={{backgroundColor:"#BBDEFB",width:'100%',height:170,resizeMode:'cover',}}
                   />
        
-          <Text style={styles.categoryBtnTxt2}>Vegetables</Text>
+          <Text style={styles.categoryBtnTxt2}>Vegetable shops</Text>
           <View  style={styles.filterButton1}>
             <Text style={{fontSize:13,color:'black',fontWeight:'bold'}}>Buy Now</Text>
           </View>
@@ -80,11 +89,7 @@ const HomeScreen = ({navigation}) => {
 
 
     
-      <TouchableWithoutFeedback style={styles.cardsWrapper}  onPress={() =>
-            navigation.navigate('CardListScreen', {title: 'Groceries'})
-          }>
-        <Image resizeMode="stretch"  style={{width:"100%",height:200,marginBottom:20,marginTop:20}} source={require('../../assets/banners/slider16.jpg')} ></Image>
-      </TouchableWithoutFeedback>
+     
 
       <View>
       
@@ -109,8 +114,9 @@ const HomeScreen = ({navigation}) => {
           }>
         <Image resizeMode="stretch"  style={{width:"100%",height:600,marginBottom:20}} source={require('../../assets/banners/banner6.jpg')} ></Image>
       </TouchableWithoutFeedback>
-      </ScrollView>
+   
     </View>
+    </ScrollView>
     </View>
   );
 };
@@ -148,7 +154,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '90%',
     alignSelf: 'center',
-    marginTop: 25,
+    marginTop: 15,
     marginBottom: 10,
     backgroundColor:'#fff'
   },

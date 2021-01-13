@@ -1,56 +1,45 @@
-import { createStackNavigator,TransitionPresets, CardStyleInterpolators  } from '@react-navigation/stack';
-import React, { Component } from 'react';
+import { createStackNavigator,TransitionPresets } from '@react-navigation/stack';
+import React, {Component } from 'react';
 import HomeScreen from './homeScreen';
 import CardListScreen from './CardListScreen';
 import CardItemDetails from './CardItemDetails';
-import Search from './SearchScreen';
-import CartScreen from './CartScreen';
 import FavoriteScreen from './FavoriteScreen';
-import OrdersScreen from './OrdersScreen';
-import OrderDetailsScreen from './OrderDetailsScreen';
 import GroceryShopsScreen from './GroceryShopsScreen';
 import VegetableShopsScreen from './VegetableShopsScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {HeaderButtons,Item} from 'react-navigation-header-buttons';
 import {
   View,
   Text,TouchableOpacity} from 'react-native';
 const HomeStack = createStackNavigator();
 import { connect } from 'react-redux';
 import IconBadge from 'react-native-icon-badge';
-
-const TransitionScreenOptions = {
-  ...TransitionPresets.SlideFromRightIOS, // This is where the transition happens
-};
-
+import {theme} from '../../core/theme';
+import HeaderButton from '../../components/HeaderButton';
 const mapStateToProps = state => {
   return {
   carts:state.carts
   }
 }
  class HomeStackScreen extends Component {
-  constructor(props) {
-    super(props)
-  
-    
-  }
   
   render() {
    const {navigation}=this.props;
    const CartBadge=()=>{
     return(
-      <TouchableOpacity onPress={() => {navigation.navigate('CartScreen')}} style={{flexDirection: 'row',alignItems: 'center',justifyContent: 'center',}}>
+      <TouchableOpacity onPress={() => {navigation.navigate('CartDrawer',{screen:'CartScreen'})}} style={{flexDirection: 'row',alignItems: 'center',justifyContent: 'center',marginLeft:3}}>
       <IconBadge
         MainElement={
           <Icon.Button
           name="ios-cart"
           size={25}
           color='#fff'
-          backgroundColor='#600EE6'
-          onPress={() => {navigation.navigate('CartScreen')}}
+          backgroundColor={theme.colors.primary}
+          onPress={() => {navigation.navigate('CartDrawer',{screen:'CartScreen'})}}
         />
         }
         BadgeElement={
-          <TouchableOpacity onPress={() => {navigation.navigate('CartScreen')}}> 
+          <TouchableOpacity onPress={() => {navigation.navigate('CartDrawer',{screen:'CartScreen'})}}> 
             <Text style={{fontSize:12,color:'#FFFFFF'}}>{this.props.carts.length}</Text></TouchableOpacity>
          
         }
@@ -66,23 +55,30 @@ const mapStateToProps = state => {
     </TouchableOpacity>
     )
    }
+
+   const rightHeader=()=>{
+     return(
+       <View style={{marginRight:10}}>
+  <HeaderButtons HeaderButtonComponent={HeaderButton} >
+    <Item title='favorite' iconName='ios-heart' 
+    onPress={()=>navigation.navigate('FavoriteScreen')} />
+   <CartBadge />
+   
+  </HeaderButtons>
+  </View>
+     )
+   }
     return (
     
         <HomeStack.Navigator  screenOptions={{
         headerStyle:{
-          backgroundColor:'#600EE6',
+          backgroundColor:theme.colors.primary,
           height:70,
-          elevation:0,            
+                  
         },       
         headerTintColor:'#fff',
-        headerTitleStyle:{
-       
-          fontSize:18,
-          marginLeft:60
-        },
-     
-       gestureEnabled:true,
-       gestureDirection:'horizontal',
+        headerTitleStyle:{fontSize:18,marginLeft:60},    
+    
        ...TransitionPresets.SlideFromRightIOS
       }
       } 
@@ -90,34 +86,21 @@ const mapStateToProps = state => {
       animation="fade" >
           <HomeStack.Screen name="Home" component={HomeScreen}
           options={{
-            title:'BitsBaton',
-         
+            title:'BitsBaton',         
             headerLeft:()=>(
               <View style={{
                 marginLeft:20,
-                elevation:0,  
+                 
                 justifyContent:'center'
               }}>
             <Icon.Button name='ios-menu' style={{
                paddingRight:2
-              }} size={25}  backgroundColor="#600EE6"
+              }} size={25}  backgroundColor={theme.colors.primary}
               onPress={()=>navigation.toggleDrawer()} ></Icon.Button>
               </View>
               
             ),
-            headerRight: () => (
-              <View style={{flexDirection: 'row', marginRight: 10}}>
-                <Icon.Button
-                  name="ios-heart"
-                  size={23}
-                  color='#fff'
-                  backgroundColor='#600EE6'
-                  onPress={() => {navigation.navigate('FavoriteScreen')}}
-                />
-               
-                <CartBadge />
-              </View>
-            ),
+            headerRight: () => rightHeader(),
           }
            
           } />
@@ -125,18 +108,7 @@ const mapStateToProps = state => {
         name="CardListScreen"
         component={CardListScreen}
         options={({route}) => ({
-          headerRight: () => (
-            <View style={{flexDirection: 'row', marginRight: 10}}>
-              <Icon.Button
-                name="ios-heart"
-                size={23}
-                color='#fff'
-                backgroundColor='#600EE6'
-                onPress={() => {navigation.navigate('FavoriteScreen')}}
-              />
-          <CartBadge />
-            </View>
-          ),
+          headerRight: () => rightHeader(),
           title: route.params.title,
           headerBackTitleVisible: false
         })}
@@ -145,23 +117,11 @@ const mapStateToProps = state => {
         name="GroceryShopsScreen"
         component={GroceryShopsScreen}
         options={({route}) => ({
-          headerTitleStyle:{
-       
+          headerTitleStyle:{       
             fontSize:18,
             marginLeft:20
           },
-          headerRight: () => (
-            <View style={{flexDirection: 'row', marginRight: 10}}>
-              <Icon.Button
-                name="ios-heart"
-                size={23}
-                color='#fff'
-                backgroundColor='#600EE6'
-                onPress={() => {navigation.navigate('FavoriteScreen')}}
-              />
-          <CartBadge />
-            </View>
-          ),
+          headerRight: () => rightHeader(),
           title: route.params.title,
           headerBackTitleVisible: false
         })}
@@ -171,22 +131,10 @@ const mapStateToProps = state => {
         component={VegetableShopsScreen}
         options={({route}) => ({
           headerTitleStyle:{
-       
             fontSize:17,
             marginLeft:20
           },
-          headerRight: () => (
-            <View style={{flexDirection: 'row', marginRight: 10}}>
-              <Icon.Button
-                name="ios-heart"
-                size={23}
-                color='#fff'
-                backgroundColor='#600EE6'
-                onPress={() => {navigation.navigate('FavoriteScreen')}}
-              />
-          <CartBadge />
-            </View>
-          ),
+          headerRight: () => rightHeader(),
           title: route.params.title,
           headerBackTitleVisible: false
         })}
@@ -195,128 +143,26 @@ const mapStateToProps = state => {
         name="CardItemDetails"
         component={CardItemDetails}
         options={() => ({
-          headerRight: () => (
-            <View style={{flexDirection: 'row', marginRight: 10}}>
-              <Icon.Button
-                name="ios-heart"
-                size={23}
-                color='#fff'
-                backgroundColor='#600EE6'
-                onPress={() => {navigation.navigate('FavoriteScreen')}}
-              />
-            <CartBadge />
-            </View>
-          ),
+          headerRight: () => rightHeader(),
           headerBackTitleVisible: false,
           title: "Details",
        
         })}
       />
-             <HomeStack.Screen 
-        name="SearchScreen"
-        component={Search}
-        options={({route}) => ({
-          headerRight: () => (
-            <View style={{flexDirection: 'row', marginRight: 10}}>
-              <Icon.Button
-                name="ios-heart"
-                size={23}
-                color='#fff'
-                backgroundColor='#600EE6'
-                onPress={() => {navigation.navigate('FavoriteScreen')}}
-              />
-             <CartBadge />
-            </View>
-          ),
-          title: "Search",
-          headerBackTitleVisible: false
-        })}
-      />
-         <HomeStack.Screen 
-        name="CartScreen"
-        component={CartScreen}
-        options={({route}) => ({
-          headerRight: () => (
-            <View style={{flexDirection: 'row', marginRight: 10}}>
-              <Icon.Button
-                name="ios-heart"
-                size={23}
-                color='#fff'
-                backgroundColor='#600EE6'
-                onPress={() => {navigation.navigate('FavoriteScreen')}}
-              />
-             <CartBadge />
-            </View>
-          ),
-          title: "My Cart",
-          headerBackTitleVisible: false
-        })}
-      />
+        
+     
         <HomeStack.Screen 
         name="FavoriteScreen"
         component={FavoriteScreen}
         options={({route}) => ({
-          headerRight: () => (
-            <View style={{flexDirection: 'row', marginRight: 10}}>
-              <Icon.Button
-                name="ios-heart"
-                size={23}
-                color='#fff'
-                backgroundColor='#600EE6'
-                onPress={() => {navigation.navigate('FavoriteScreen')}}
-              />
-            <CartBadge />
-            </View>
-          ),
+          headerRight: () => rightHeader(),
           title: "Favorites",
           headerBackTitleVisible: false
         })}
       />
-          <HomeStack.Screen 
-        name="OrdersScreen"
-        component={OrdersScreen}
-        options={({route}) => ({
-          headerRight: () => (
-            <View style={{flexDirection: 'row', marginRight: 10}}>
-              <Icon.Button
-                name="ios-heart"
-                size={23}
-                color='#fff'
-                backgroundColor='#600EE6'
-                onPress={() => {navigation.navigate('FavoriteScreen')}}
-              />
-            <CartBadge />
-            </View>
-          ),
-          title: "My Orders",
-          headerBackTitleVisible: false
-        })}
-      />
-      <HomeStack.Screen 
-        name="OrderDetailsScreen"
-        component={OrderDetailsScreen}
-        options={({route}) => ({
-          headerTitleStyle:{
-       
-            fontSize:18,
-            marginLeft:40
-          },
-          headerRight: () => (
-            <View style={{flexDirection: 'row', marginRight: 10}}>
-              <Icon.Button
-                name="ios-heart"
-                size={23}
-                color='#fff'
-                backgroundColor='#600EE6'
-                onPress={() => {navigation.navigate('FavoriteScreen')}}
-              />
-            <CartBadge />
-            </View>
-          ),
-          title: "Order Details",
-          headerBackTitleVisible: false
-        })}
-      />
+      
+   
+         
         </HomeStack.Navigator> 
    
     )

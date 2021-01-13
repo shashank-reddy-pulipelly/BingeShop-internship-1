@@ -10,14 +10,14 @@ import {
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import { theme } from '../../core/theme';
 
 const OpenScreen = ({navigation}) => {
 
 
     return (
       <View style={styles.container}>
-          <StatusBar backgroundColor='#600EE6' barStyle="light-content"/>
+          <StatusBar backgroundColor={theme.colors.primary} barStyle="light-content"/>
         <View style={styles.header}>
             <Animatable.Image 
                 animation="bounceIn"
@@ -39,12 +39,12 @@ const OpenScreen = ({navigation}) => {
             <Text style={styles.text}>Sign in with your account</Text>
           
             <View style={styles.button}>
-                <TouchableOpacity
+                <TouchableOpacity activeOpacity={.8}
                     style={styles.signIn}
                     onPress={() =>  navigation.navigate('LoginScreen')}
                 >
                 <LinearGradient
-                    colors={['#600EE6','#311B92']}
+                    colors={[theme.colors.primary,'#311B92']}
                     style={styles.signIn}
                 >
                     <Text style={[styles.textSign, {
@@ -53,17 +53,17 @@ const OpenScreen = ({navigation}) => {
                 </LinearGradient>
                 </TouchableOpacity>
 
-                <TouchableOpacity
+                <TouchableOpacity activeOpacity={.8}
                     onPress={() => navigation.navigate('RegisterScreen')}
                     style={[styles.signIn, {
-                        borderColor: '#600EE6',
+                        borderColor: theme.colors.primary,
                         borderWidth: 1,
                         marginTop: 20,
                         backgroundColor:'#fff'
                     }]}
                 >
                     <Text style={[styles.textSign, {
-                        color: '#600EE6'
+                        color:theme.colors.primary
                     }]}>Sign Up</Text>
                 </TouchableOpacity>
             </View>
@@ -81,7 +81,7 @@ const height_logo = height * 0.25;
 const styles = StyleSheet.create({
   container: {
     flex: 1, 
-    backgroundColor: '#600EE6'
+    backgroundColor:theme.colors.primary
   },
   header: {
       flex: 1.5,

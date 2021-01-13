@@ -5,6 +5,7 @@ import { postCart } from '../redux/ActionCreators';
 import React, { Component } from 'react';
 import { Button } from 'native-base';
 import Toast from 'react-native-tiny-toast';
+import { theme } from '../core/theme';
 const mapStateToProps = state => {
   return { 
     favorites: state.favorites,
@@ -31,7 +32,7 @@ const mapDispatchToProps = dispatch => ({
       <View style={styles.container} onPress={onPress}>
       <View >
       <View style={styles.cardImgWrapper}>
-      <View style={{position:'absolute',backgroundColor:'#600EE6',
+      <View style={{position:'absolute',backgroundColor:theme.colors.primary,
       top:0,zIndex:5,left:0,borderBottomRightRadius:10,
       paddingVertical:2,borderTopLeftRadius:10}}>
         <Text style={{color:'white',fontSize:10}}>   30% OFF   </Text>
@@ -70,8 +71,8 @@ const mapDispatchToProps = dispatch => ({
                
             </View>
             <View style={{backgroundColor:'#F1F8E9',marginHorizontal:25,alignItems:'center',paddingVertical:1,
-            borderRadius:3,borderWidth:0.3,borderColor:'green',marginTop:10}}>
-              <Text style={{color:'green',fontSize:10}}>Super Sale !</Text>
+            borderRadius:3,borderWidth:0.3,borderColor:'green',marginTop:10,overflow:'hidden'}}>
+              <Text numberOfLines={1} style={{color:'green',fontSize:10}}>{itemData.shopName}</Text>
             </View>
             <View style={{flex:1,marginBottom:10,justifyContent:'flex-end'}}>
             <Button onPress={()=> {

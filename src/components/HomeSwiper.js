@@ -10,6 +10,7 @@ import {
   TouchableOpacity,TouchableHighlight,TouchableWithoutFeedback,
   ScrollView,SafeAreaView
 } from 'react-native';
+import { theme } from '../core/theme';
 function HomeSwiper() {
     return (
         <Swiper

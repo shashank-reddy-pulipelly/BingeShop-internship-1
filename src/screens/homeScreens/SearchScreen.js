@@ -7,7 +7,7 @@ import {
   } from 'react-native'
 import {useTheme, Avatar} from 'react-native-paper';
 import { Searchbar } from 'react-native-paper';
-
+import {theme} from '../../core/theme';
 import {data} from '../../data/groceries';
 import Card from '../../components/Card';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -142,7 +142,7 @@ const styles=StyleSheet.create({
         borderRadius:5
       },
       search:{
-          backgroundColor:"#600EE6",
+          backgroundColor:theme.colors.primary,
           paddingHorizontal:15,
           paddingBottom:15,
 

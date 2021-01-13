@@ -52,7 +52,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
                     onPress={_onSendPressed} 
                 >
                 <LinearGradient
-                    colors={['#600EE6','#311B92']}
+                    colors={[theme.colors.primary,'#311B92']}
                     style={styles.signIn}
                 >
                     <Text style={[styles.textSign, {

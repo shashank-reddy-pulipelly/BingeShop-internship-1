@@ -94,12 +94,12 @@ const  RegisterScreen = ({ navigation }) => {
 
 
     
-      <TouchableOpacity
+      <TouchableOpacity activeOpacity={.8}
                     style={styles.signIn}
                     onPress={_onSignUpPressed}
                 >
                 <LinearGradient
-                    colors={['#600EE6','#311B92']}
+                    colors={[theme.colors.primary,'#311B92']}
                     style={styles.signIn}
                 >
                     <Text style={[styles.textSign, {
@@ -112,7 +112,7 @@ const  RegisterScreen = ({ navigation }) => {
    
             <View style={styles.row}>
         <Text style={styles.label2}>Already have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
+        <TouchableOpacity activeOpacity={.8} onPress={() => navigation.navigate('LoginScreen')}>
           <Text style={styles.link}>Login</Text>
         </TouchableOpacity>
       </View>

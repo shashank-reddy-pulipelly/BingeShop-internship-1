@@ -23,3 +23,10 @@ export const numberValidator = number => {
 
   return '';
 };
+
+export const dataValidator = data => {
+  if (!data || data.length <= 0) return 'Please provide the necessary detials';
+
+  return '';
+};
+

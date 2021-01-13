@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import {groceryShops} from '../data/groceryShops';
+
 import {
-    FlatList,
+ 
     View, Dimensions, Image,
-    TouchableOpacity,Text,TextInput,StyleSheet,TouchableWithoutFeedback
+    TouchableOpacity,Text,StyleSheet,TouchableNativeFeedback,Platform,
   } from 'react-native';
   const { width, height } = Dimensions.get("window");
 const CARD_HEIGHT = 250;
@@ -13,33 +13,37 @@ import Swiper from 'react-native-swiper';
 class Shop extends Component {
     
     render() {
-        const marker=this.props.itemData;
+        const shop=this.props.itemData;
+        let TouchableCmp=TouchableOpacity;
+        if(Platform.OS==='android' && Platform.Version>=21){
+          TouchableCmp=TouchableNativeFeedback;
+        }
         return (
-         
-               <TouchableWithoutFeedback onPress={this.props.onPress}>
-                <View style={styles.card} >
+         <View style={styles.card}>
+               <TouchableCmp  activeOpacity={0.8} onPress={()=>this.props.onPress(shop.id)}>
+                <View  style={{flexDirection:'column',flex:1}}>
                     <View style={{position:'absolute',backgroundColor:'#F44336',top:20,zIndex:5,borderBottomRightRadius:5,borderTopRightRadius:20,paddingVertical:2}}>
                     <Text style={{color:'white',fontFamily:'serif',fontWeight:'bold'}}>  OFF upto 50%   </Text>
-                    </View>
+                    </View >
                    
                   <Image 
-                    source={marker.image}
+                    source={{uri: shop.image}}
                     style={styles.cardImage}
                     resizeMode="cover"
                   />
                   <View style={styles.textContent}>
                       <View style={{flexDirection:'row',alignItems:'center'}}>
-                      <Text numberOfLines={1} style={styles.cardtitle}>{marker.title}</Text>
+                      <Text numberOfLines={1} style={styles.cardtitle}>{shop.title}</Text>
                       <View style={{backgroundColor:'red',padding:2}}>
                           <FontAwesome name="star" color='white' size={16}/>
                       </View>
                       <View>
-                          <Text>  {marker.rating}/5</Text>
+                          <Text>  {shop.rating}/5</Text>
                       </View>
                       </View>
                     
                     
-                    <Text numberOfLines={1} style={styles.cardDescription}>{marker.address}</Text>
+                    <Text numberOfLines={1} style={styles.cardDescription}>{shop.address}</Text>
                    
                       
                     
@@ -49,7 +53,7 @@ class Shop extends Component {
                     <View style={{flexDirection:'row',alignItems:'center',}} >
                         <Image style={{width:20,height:20, resizeMode: 'stretch',marginRight:20}} source={require('../assets/safe.jpg')}
           />
-        <Text style={{fontSize: 13,marginRight:'auto',marginLeft:'auto',
+        <Text style={{fontSize: 14,marginRight:'auto',marginLeft:'auto',
       color: "grey",}}>We Follows all Max safety measures </Text>
         <Image style={{width:20,height:20,resizeMode: 'stretch',marginLeft:20}} source={require('../assets/safe2.png')}
              />
@@ -58,17 +62,17 @@ class Shop extends Component {
         <Image style={{width:20,height:20,resizeMode: 'stretch',marginRight:20}} source={require('../assets/safe2.png')}
              />
                        
-        <Text style={{fontSize: 13,marginRight:'auto',marginLeft:'auto',
-      color: "#444",}}>Our Store Follow WHO procotol</Text>
+        <Text style={{fontSize: 14,marginRight:'auto',marginLeft:'auto',
+       color: "grey",}}>Our Store Follow WHO procotol</Text>
         <Image style={{width:20,height:20, resizeMode: 'stretch',marginLeft:20}} source={require('../assets/safe.jpg')}
           />
         </View>
                         </Swiper>
                   </View>
                 </View>
-                </TouchableWithoutFeedback>
+                </TouchableCmp>
          
-          
+                </View>
         )
     }
 }
@@ -81,20 +85,21 @@ const styles = StyleSheet.create({
       
       elevation: 10,
       backgroundColor: "#FFF",
-      borderRadius: 10,
+      borderRadius: 20,
       
       marginHorizontal: 5,
       shadowColor: "#000",
       shadowRadius: 5,
       shadowOpacity: 0.3,
-      shadowOffset: { x: 2, y: -2 },
+      shadowOffset: { x: 0, y: 2 },
       height: CARD_HEIGHT,
       width: CARD_WIDTH,
       overflow: "hidden",
       alignSelf: 'center',
       marginTop:15,
       marginBottom:10,
-      position:'relative'
+      position:'relative',
+      flex:1
     },
     cardImage: {
       flex: 3,
@@ -114,8 +119,8 @@ const styles = StyleSheet.create({
       marginRight:'auto'
     },
     cardDescription: {
-      fontSize: 13,
-      color: "#444",
+      fontSize: 14,
+      color:'grey',
       borderBottomWidth:.5,
       borderBottomColor:'grey',
       marginBottom:5,

@@ -1,26 +1,70 @@
 
 
-import React,{memo} from 'react';
-import { View, Text, Button, FlatList,  Dimensions, StyleSheet } from 'react-native';
+import React,{useEffect} from 'react';
+import { View, Text, StyleSheet,ActivityIndicator } from 'react-native';
 import Search from '../../components/Search';
-import {groceryShops} from '../../data/groceryShops';
 
-const GroceryShopsScreen = ({navigation,route}) => {
+import { fetchShops } from '../../redux/ActionCreators';
+import { connect } from 'react-redux';
 
-   
-const title=route.params.title;
+const mapStateToProps = state => {
+  return {
+    shops: state.shops,
+
+  }
+}
+
+const mapDispatchToProps = dispatch => ({
+  
+  fetchShops:()=>dispatch(fetchShops()),
+
+})
+
+const GroceryShopsScreen = (props) => {
+
+
+   useEffect(()=>{
+
+props.fetchShops();
+
+   },[])
+
+   if(props.shops.isLoading){
+     return(
+      <View style={[styles.container, styles.horizontal]}>
+     
+
+      <ActivityIndicator size="large" color="#600EE6" />
+    </View>
+     )
+   }
+
+   else if(props.shops.errMess){
+     return(
+      <View style={[styles.horizontal]} > 
+      <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
+      <Text style={{fontSize:18,fontWeight:'bold'}} >{props.shops.errMess} !</Text>
+  </View>
+     )
+   }
+
+   else{
+     const data=props.shops.shops.filter(shop=>shop.shop_type.is_groceries==true)
     return (
       <View style={styles.container}>
       
-        <Search cardType='shop'  title={title} data={groceryShops} navigation={navigation}/>
+        <Search cardType='shop' shopType='Groceries'  title={props.route.params.title} data={data} navigation={props.navigation}/>
      
         
       </View>
     );
+   }
+
+   
 };
 
-export default  memo(GroceryShopsScreen);
 
+export default connect(mapStateToProps,mapDispatchToProps)(GroceryShopsScreen);
 const styles = StyleSheet.create({
   container: {
     flex: 1, 
@@ -30,7 +74,12 @@ const styles = StyleSheet.create({
     flexDirection:'row',
    
   },
-  list:{
-    flex:0.5
+  horizontal: {
+    flex:1,
+    justifyContent: "center",
+    alignItems:'center',
+    padding: 10,
+    paddingBottom:50,
+    backgroundColor:'#fff'
   }
 });

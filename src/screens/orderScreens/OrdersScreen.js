@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import {data} from '../../data/groceries';
 const { width, height } = Dimensions.get("window");
 import { Button } from 'native-base';
+import {theme} from '../../core/theme';
 const mapStateToProps = state => {
     return {
 
@@ -146,13 +147,13 @@ marginRight:20
     paddingHorizontal:20,
     paddingVertical:0,
     marginRight:'auto',
-    borderColor:'#BDBDBD',
+    borderColor:theme.colors.primary,
     borderWidth:1,
     height:45,
     marginLeft:20
   },
     filterButton2:{
-    backgroundColor:"#600EE6",
+    backgroundColor:theme.colors.primary,
     borderRadius:5,
     marginHorizontal:10,
     marginVertical:10,

@@ -5,10 +5,10 @@ import {
     ActivityIndicator,  Dimensions, 
     TouchableOpacity,Text,TextInput,StyleSheet,ScrollView,SafeAreaView
   } from 'react-native'
-import {useTheme, Avatar} from 'react-native-paper';
+
 import { Searchbar } from 'react-native-paper';
 
-
+import { theme } from '../core/theme';
 import Card from '../components/Card';
 import Shop from '../components/Shop';
 import Modal from '../components/Modal';
@@ -20,11 +20,8 @@ class Search extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
-            loading: false,
+           
             data: [],
-            page: 1,
-            seed: 1,
-            error: null,
             query: '',
             fullData: [],
             searchtext:''
@@ -33,31 +30,30 @@ class Search extends React.Component{
 
       
     }
-
+    makeRemoteRequest = () => {
+        
+        
+      
+     
+   
+      
+      
+      this.setState({
+        data: this.props.data,
+      loading: false,
+      fullData:this.props.data
+      })
+      
+    
+      }
+      
     componentDidMount() {
         this.makeRemoteRequest()
         }
        
-        makeRemoteRequest = () => {
-        
-        
-        this.setState({ loading: true });
        
-     
-        
-        
-        this.setState({
-          data: this.props.data,
-        loading: false,
-        fullData:this.props.data
-        })
-        
-      
-        }
 
         renderFooter = () => {
-            if (!this.state.loading) return null
-          
             return (
               <View >
                 
@@ -92,7 +88,7 @@ class Search extends React.Component{
                 <View style={styles.searchBox}>
   
      <Searchbar
-           placeholder='Search for Products ...'
+           placeholder={title}
           inputStyle={{fontSize:16}}
          
           onChangeText={this.handleSearch}
@@ -122,10 +118,10 @@ class Search extends React.Component{
             renderItem={({ item }) => (
               <Shop 
               itemData={item}
-              onPress={()=> this.props.navigation.navigate('CardListScreen', {title: 'Groceries'})}
+              onPress={(shopId)=> this.props.navigation.navigate('CardListScreen', {title:this.props.shopType,shopId,shopType:this.props.shopType})}
           />
             )}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item.id.toString()}
             ListHeaderComponent={()=><View></View>}
             ListFooterComponent={this.renderFooter}
           />
@@ -148,14 +144,14 @@ return(
     data={this.state.data}
     renderItem={({ item }) => (
       <Card 
-      itemData={item}
-      onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData: item})}
+      itemData={item} shopId={this.props.shopId}
+      onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData: item,shopId:this.props.shopId})}
        />
     )}
-    keyExtractor={item => item.id}
+    keyExtractor={item => item.id.toString()}
     ListHeaderComponent={()=><View style={{flexDirection:'row',borderBottomWidth:0.5,borderBottomColor:'grey'}}>
     
-    <View style={{marginLeft:'auto'}}><Modal/></View>
+    <View ><Modal/></View>
               
   
               </View>}
@@ -184,7 +180,7 @@ const styles=StyleSheet.create({
         borderRadius:5,
       },
       search:{
-          backgroundColor:"#600EE6",
+          backgroundColor:theme.colors.primary,
           paddingHorizontal:15,
           paddingBottom:15,
           width: width,
