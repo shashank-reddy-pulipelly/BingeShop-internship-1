@@ -8,7 +8,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 const mapStateToProps = state => {
   return {
 
-    carts: state.carts
+
   }
 }
 
@@ -72,7 +72,7 @@ class Card extends PureComponent {
               <Text style={{fontSize: 13, color: '#09af00' ,marginTop:9,marginLeft:10}}>33% off</Text>
           </View>
         
-   
+          <Text style={{paddingVertical:10}} >Net Weight : {itemData.quantity} / <Text style={{fontSize:12}} >per piece</Text></Text>
     
       </View>
       </View>
@@ -149,8 +149,8 @@ const styles = StyleSheet.create({
     height:42
   },
   cardImg: {
-    height: 100,
-    width: '80%',
+    height: 90,
+    width: '70%',
     resizeMode: 'stretch'
   },
   cardInfo: {
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     backgroundColor:"white",
     alignItems:"center",
-    paddingVertical:20,
+    paddingVertical:10,
   
   },
   count:{ 

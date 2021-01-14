@@ -119,10 +119,10 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
                                 size={size}
                                 />
                             )}
-                            label="My Products"
+                            label="Vendor Orders"
                             labelStyle={{fontWeight:'bold',padding:0,margin:0}}
                             style={{margin:0,padding:0}}
-                            onPress={() => {props.navigation.navigate('ProductsDrawer')}}
+                            onPress={() => {props.navigation.navigate('VendorOrdersDrawer')}}
                         />
                    
                       

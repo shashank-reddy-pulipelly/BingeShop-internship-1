@@ -1,7 +1,7 @@
-import React,{memo,Component} from 'react';
-import { View, Text, FlatList, StyleSheet,Image,ScrollView,Dimensions, } from 'react-native';
+import React,{Component} from 'react';
+import { View, Text, StyleSheet,Image,ScrollView,Dimensions,ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
-import {data} from '../../data/groceries';
+import { fetchProducts,fetchShopProductsList,fetchShops } from '../../redux/ActionCreators';
 const { width, height } = Dimensions.get("window");
 import { Button } from 'native-base';
 import {theme} from '../../core/theme';
@@ -10,26 +10,60 @@ const mapStateToProps = state => {
 
       favorites: state.favorites,
       carts:state.carts,
-      orders:state.orders
+      orders:state.orders,
+      products:state.products,
+      shops:state.shops
     }
   }
 
   const mapDispatchToProps = dispatch => ({
-  
+    fetchShops:()=>dispatch(fetchShops()),
+    fetchProducts:()=>dispatch(fetchProducts()),
 })
 
 class OrdersScreen extends Component {
+
+  componentDidMount(){ 
+    this.props.fetchShops();
+    this.props.fetchProducts();
+  
+  }
   render(){
 
-    
+    if(this.props.products.isLoading  ||this.props.shops.isLoading){
+      return(
+       <View style={ styles.horizontal}>
+      
+ 
+       <ActivityIndicator size="large" color="#600EE6" />
+     </View>
+      )
+    }
+ 
+    else if(this.props.products.errMess ||this.props.shops.errMess){
+      return(
+       <View style={[styles.horizontal]} > 
+       <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
+       <Text style={{fontSize:18,fontWeight:'bold'}} >{this.props.shops.errMess?this.props.shops.errMess:this.props.products.errMess } !</Text>
+   </View>
+      )
+    }  
+    else{
     var newOrders = this.props.orders.slice().reverse();
     return(
       <View style={styles.container}>
         <ScrollView>
         {newOrders.map((orderItem,index)=>{
-          const itemsData=data.filter(item => orderItem.items.some(el => el.id === item.id))
+           const shop=this.props.shops.shops.find((shop)=>shop.id==orderItem.orderDetials.shop_id);
+          const itemsData=this.props.products.products.filter(item => orderItem.items.some(el => el.prod_id === item.id))
           return(
             <View key={index} style={styles.card}>
+              <View style={{backgroundColor:'#fff',paddingVertical:10,
+      justifyContent:'center',alignItems:'center',
+      borderTopWidth:1,
+      borderBottomWidth:1,marginBottom:10,
+      borderColor:'#E0E0E0'}}> 
+      <Text style={{fontSize:16,fontWeight:'bold'}}>Shop Name : {shop.title}</Text></View>
           <View style={styles.row1}>
           <View style={styles.status}>
         <Text style={{color:'#757575'}}>Order Status</Text>
@@ -42,13 +76,13 @@ class OrdersScreen extends Component {
 
           </View>
           <View style={styles.item1}>
-<Image source={itemsData[0].image}
+<Image source={{uri:itemsData[0].image}}
             resizeMode="stretch"
             style={styles.cardImg} />
             <Text numberOfLines={1} style={{marginLeft:10}}>{itemsData[0].title}</Text>
           </View>
           {orderItem.items.length>=2?<View style={styles.item2}>
-          <Image source={itemsData[1].image}
+          <Image source={{uri:itemsData[1].image}}
             resizeMode="stretch"
             style={styles.cardImg} />
             <Text numberOfLines={1}  style={{marginLeft:10}}>{itemsData[1].title}</Text>
@@ -80,6 +114,7 @@ class OrdersScreen extends Component {
          </View>
     )
   }
+}
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(OrdersScreen);
@@ -161,6 +196,14 @@ marginRight:20
     paddingVertical:0,
     marginLeft:'auto',
     height:45
+  },
+  horizontal: {
+    flex:1,
+    justifyContent: "center",
+    alignItems:'center',
+    padding: 10,
+    paddingBottom:50,
+    backgroundColor:'#fff'
   }
 
 

@@ -8,7 +8,7 @@ import { postCart, deleteCart,decreaseCart,
   postOrder,deleteOrder,deleteCartArray,addAddress,deleteAddress,fetchProducts,fetchShopProductsList,fetchShops  } from '../../redux/ActionCreators';
 import {  Button } from 'native-base';
 import {theme} from '../../core/theme';
-
+import TotalPrice from '../../components/TotalPrice';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const mapStateToProps = state => {
@@ -58,54 +58,66 @@ class CartSummaryScreen extends Component{
 
 
   }
-  amountTotal=()=>{
-    const cartItemData=data.filter(item => this.props.carts.some(el => el.id === item.id))
-    
+  amountTotal=(shopList)=>{
+    const AmountArray=shopList.products.map(item => {
+      const amount=this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==shopList.shop_id).products.find((product)=>product.prod_id==item.prod_id).price;
+      return amount*item.count;
+     })
+      
+     
    
-    const amountArray=cartItemData.map((item)=>{
-      const cartIdCountData=this.props.carts.filter((cartItem)=>cartItem.id==item.id)
-         return item.amount*cartIdCountData[0].count;
-     });
- 
-     const fun =(total, num) =>{
-         return total + num;
-       }
- 
-     const Amount=amountArray.reduce(fun);
-     return Amount;
+  
+      const fun =(total, num) =>{
+          return total + num;
+        }
+  
+      const Amount=AmountArray.reduce(fun);
+  
+  
+     
+      return Amount;
   }
-orderItem=()=>{
-  var d = new Date();
-var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
- const date=d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
+  postOrders=()=>{
 
-const cartItems=this.props.carts.map((item)=>{
-  const itemAmount=data.filter((dataItem)=>dataItem.id==item.id)[0].amount;
-  return({count:item.count,id:item.id,itemAmount:itemAmount*item.count})
-});
-  return({
-      orderStatus:{
-        ordered:true,
-        orderedDate:date,
-        delivered:false,
-        deliveredDate:'',
-        orderAccepted:false,
-        orderAcceptedDate:''
-      },
-      address:this.props.address,
-      priceDetails:{
-        price:this.amountTotal(),
-        discount:'100',
-        deliveryCharge:'FREE',
-        total:this.amountTotal()
-      },
-      items:cartItems,
-      orderDetials:{
-        orderId:(new Date()).getTime(),
-        invoiceId:'',
-      }
-  })
-}
+    this.props.carts.map(item1=>{
+      var d = new Date();
+      var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+       const date=d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
+       
+      const items=item1.products.map(item => {
+        const amount=this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item1.shop_id).products.find((product)=>product.prod_id==item.prod_id).price;
+        return ({...item,itemAmount:amount*item.count});
+       })
+
+       const obj={
+        orderStatus:{
+          ordered:true,
+          orderedDate:date,
+          delivered:false,
+          deliveredDate:'',
+          orderAccepted:false,
+          orderAcceptedDate:''
+        },
+        address:this.props.address,
+        priceDetails:{
+          price:this.amountTotal(item1),
+          discount:'100',
+          deliveryCharge:'FREE',
+          total:this.amountTotal(item1)
+        },
+        items:items,
+        orderDetials:{
+          orderId:(new Date()).getTime(),
+          invoiceId:'',
+          shop_id:item1.shop_id
+        }
+    }
+
+    this.props.postOrder(obj);
+
+    })
+  }
+
   placeOrder=()=>{
     if(!this.props.address.pinCode){
       Alert.alert(
@@ -123,7 +135,7 @@ const cartItems=this.props.carts.map((item)=>{
       );
     }
     else{
-      this.props.postOrder(this.orderItem());
+      this.postOrders();
       this.setState({orderPlaced:true})
       this.props.deleteCartArray();
       setTimeout(()=>{
@@ -160,10 +172,36 @@ const cartItems=this.props.carts.map((item)=>{
     )
   }
 
-  priceDetail=()=>{
+  priceDetail=(shopList)=>{
     return(
       <View>
-              <View style={{backgroundColor:'white',marginBottom:5,marginTop:10,
+      <View style={{backgroundColor:'white',marginBottom:10,marginTop:2}}>
+      <View style={{borderBottomWidth: 1,
+ borderColor:'#E0E0E0',
+}}>
+      <Text style={{padding:10,fontSize:16,fontWeight:'bold'}}>PRICE DETAILS</Text>
+      </View>
+   
+      
+      <View style={styles.row}>
+        <Text style={{marginRight:'auto'}}> Price ( {this.props.carts.length} items)</Text>
+        <Text> {'\u20B9'} <Amount shopList={shopList} /> </Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={{marginRight:'auto'}}> Discount</Text>
+        <Text style={{color:'#09af00'}}> -  {'\u20B9'} 100 </Text>
+      </View>
+      <View style={[{borderBottomWidth: 1,
+ borderColor:'#E0E0E0',},styles.row]}>
+        <Text style={{marginRight:'auto'}}> Delivery Charges</Text>
+        <Text style={{color:'#09af00'}}> FREE </Text>
+      </View>
+      <View style={[{paddingVertical:10},styles.row]}>
+        <Text style={{marginRight:'auto',fontWeight:'bold',fontSize:16}}> Total Amount</Text>
+        <Text style={{fontWeight:'bold',fontSize:16}}> {'\u20B9'} <Amount shopList={shopList} /> </Text>
+      </View>
+    </View>
+    <View style={{backgroundColor:'white',marginBottom:10,marginTop:5,
     marginHorizontal:15,padding:10,borderWidth:1,borderColor:'grey',borderRadius:4}}>
       <View>
       <View style={{flexDirection:'row'}}>
@@ -179,33 +217,6 @@ const cartItems=this.props.carts.map((item)=>{
       </View>
         
     </View >
-      <View style={{backgroundColor:'white',marginVertical:10}}>
-      <View style={{borderBottomWidth: 1,
- borderColor:'#E0E0E0',
-}}>
-      <Text style={{padding:10,fontSize:16}}>PRICE DETAILS</Text>
-      </View>
-   
-      
-      <View style={styles.row}>
-        <Text style={{marginRight:'auto'}}> Price ( {this.props.carts.length} items)</Text>
-        <Text> {'\u20B9'} <Amount/> </Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={{marginRight:'auto'}}> Discount</Text>
-        <Text style={{color:'#09af00'}}> -  {'\u20B9'} 100 </Text>
-      </View>
-      <View style={[{borderBottomWidth: 1,
- borderColor:'#E0E0E0',},styles.row]}>
-        <Text style={{marginRight:'auto'}}> Delivery Charges</Text>
-        <Text style={{color:'#09af00'}}> FREE </Text>
-      </View>
-      <View style={[{paddingVertical:10},styles.row]}>
-        <Text style={{marginRight:'auto',fontWeight:'bold'}}> Total Amount</Text>
-        <Text style={{fontWeight:'bold',fontSize:16}}> {'\u20B9'} <Amount/> </Text>
-      </View>
-    </View>
-
     </View>
     )
   }
@@ -247,38 +258,7 @@ else{
         </View>
       )
     }
-    const renderItem = ({item}) => {
-      const obj=this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item.shop_id).products.find((product)=>product.prod_id==item.prod_id);
-          const prodObj=this.props.products.products.find((product)=>product.id==obj.prod_id);
-          const shop=this.props.shops.shops.find((shop)=>shop.id==item.shop_id);
-           const finalItem={
-              ...prodObj,available:obj.available,price:obj.price,shop_name:shop.title,
-              shop_id:item.shop_id,
-              count:item.count
-            }
-          return (
-              <Card postCart={()=>this.props.postCart({prod_id:item.prod_id,shop_id:item.shop_id})}
-              deleteCart={()=>{
-                Alert.alert(
-                  "Delete Item ?",
-                  "Are you sure to delete this Item ?",
-                  [
-                    {
-                      text: "Cancel",
-                      onPress: () => console.log("Cancel Pressed"),
-                      style: "cancel"
-                    },
-                    { text: "DELETE", onPress: () => this.props.deleteCart({prod_id:item.prod_id,shop_id:item.shop_id}) }
-                  ],
-                  { cancelable: false }
-                );
-                }}
-                  decreaseCart={()=>this.props.decreaseCart({prod_id:item.prod_id,shop_id:item.shop_id})}
-                  itemData={finalItem}
-                  onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:finalItem,shopId:item.shop_id})}
-              />
-          );
-      };
+   
 
 
   if(this.props.carts.length==0 && !this.state.orderPlaced){
@@ -305,15 +285,70 @@ else{
    
     
   
-      <FlatList 
-                  data={this.props.carts}
-                  renderItem={renderItem}
-                  keyExtractor={item => Math.random().toString()}
-            
-               ListHeaderComponent={this.address}
-               ListFooterComponent={this.priceDetail}
+   <ScrollView>
+    {this.address()}
+    {this.props.carts.map((item2,index)=>{
+ const shop=this.props.shops.shops.find((shop)=>shop.id==item2.shop_id);
+ 
+
+
+ const renderItem=({item})=>{
+ 
+   const obj=this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item2.shop_id).products.find((product)=>product.prod_id==item.prod_id);
+   const prodObj=this.props.products.products.find((product)=>product.id==obj.prod_id);
+ 
+    const finalItem={
+       ...prodObj,available:obj.available,price:obj.price,shop_name:shop.title,
+       shop_id:item2.shop_id,
+       count:item.count
+     }
+ 
+   return(
+     <Card postCart={()=>this.props.postCart({prod_id:item.prod_id,shop_id:item2.shop_id})}
+           deleteCart={()=>{
+             Alert.alert(
+               "Delete Item ?",
+               "Are you sure to delete this Item ?",
+               [
+                 {
+                   text: "Cancel",
+                   onPress: () => console.log("Cancel Pressed"),
+                   style: "cancel"
+                 },
+                 { text: "DELETE", onPress: () => this.props.deleteCart({prod_id:item.prod_id,shop_id:item2.shop_id}) }
+               ],
+               { cancelable: false }
+             );
+             }}
+               decreaseCart={()=>this.props.decreaseCart({prod_id:item.prod_id,shop_id:item2.shop_id})}
+               itemData={finalItem}
+               onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:finalItem,shopId:item2.shop_id})}
            />
+   )
+ }
+ 
+      return(
+        <View key={index}>
+             <FlatList 
+      data={item2.products}
+      renderItem={renderItem}
+      keyExtractor={item => Math.random().toString()}
+      ListHeaderComponent={()=><View style={{backgroundColor:'#fff',paddingVertical:10,
+      justifyContent:'center',alignItems:'center',
+      borderTopWidth:1,
+      borderBottomWidth:1,
+      borderColor:'#E0E0E0'}}> 
+      <Text style={{fontSize:16,fontWeight:'bold'}}>Shop Name : {shop.title}</Text></View>}
+      ListFooterComponent={()=>this.priceDetail(item2)}
+  />
+        </View>
+      )
+    })}
+  
+   
      
+        
+     </ScrollView>
         
         
          <View style={{flexDirection:'row',backgroundColor:"white",bottom:0,  borderTopColor:"#E0E0E0",
@@ -321,7 +356,7 @@ else{
         }}>
   <View style={{flex:1,justifyContent:'center'}}>
   <View >
-               <Text style={{fontSize:20,paddingLeft:20 ,fontWeight: 'bold',}}>Total : {'\u20B9'} <Amount/> </Text>
+               <Text style={{fontSize:20,paddingLeft:20 ,fontWeight: 'bold',}}>Total : {'\u20B9'} <TotalPrice /> </Text>
                <Text style={{color:'#09af00',fontSize:12,paddingLeft:20}}>      {'\u20B9'} 100   Savings  </Text>
              </View>
     </View>

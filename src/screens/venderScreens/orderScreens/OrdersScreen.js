@@ -1,9 +1,9 @@
-import React,{memo,Component} from 'react';
-import { View, Text, FlatList, StyleSheet,Image,ScrollView,Dimensions,Platform,TouchableOpacity,TouchableNativeFeedback } from 'react-native';
+import React,{Component} from 'react';
+import { View, Text, StyleSheet,ScrollView,Dimensions,Platform,TouchableOpacity,TouchableNativeFeedback } from 'react-native';
 import { connect } from 'react-redux';
-import {data} from '../../../data/groceries';
+
 const { width, height } = Dimensions.get("window");
-import { Button } from 'native-base';
+
 import {theme} from '../../../core/theme';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const mapStateToProps = state => {

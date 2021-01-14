@@ -144,7 +144,7 @@ return(
     data={this.state.data}
     renderItem={({ item }) => (
       <Card 
-      itemData={item} shopId={this.props.shopId}
+      itemData={item} shopId={this.props.shopId} 
       onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData: item,shopId:this.props.shopId})}
        />
     )}

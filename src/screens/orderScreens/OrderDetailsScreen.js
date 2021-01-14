@@ -1,7 +1,7 @@
-import React,{memo,Component} from 'react';
+import React,{Component} from 'react';
 import { View, Text, StyleSheet,Image,ScrollView,TouchableWithoutFeedback } from 'react-native';
 import { connect } from 'react-redux';
-import {data} from '../../data/groceries';
+
 import {theme} from '../../core/theme';
 import {Rating} from 'react-native-elements';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -13,7 +13,9 @@ const mapStateToProps = state => {
     return {
 
       favorites: state.favorites,
-      carts:state.carts
+      carts:state.carts,
+      products:state.products,
+      shops:state.shops
     }
   }
 
@@ -53,10 +55,17 @@ class OrderDetailsScreen extends Component {
        <View >
           <View style={styles.row1}>
           <View style={styles.status}>
-           
-        <Text style={{fontWeight:'bold',fontSize:20}}>{orderStatus().status}</Text>
+            <View style={{flexDirection:'row',flex:1}}>
+           <View style={{flex:1}}>
+           <Text style={{fontWeight:'bold',fontSize:20}}>{orderStatus().status}</Text>
         <Text style={{fontSize:16,fontWeight:'bold',marginTop:10,
         color:'green'}}>{orderStatus().date}</Text>
+           </View>
+     <View style={{flex:1,paddingRight:20}}>
+       <Text style={{marginLeft:'auto',fontSize:16,paddingVertical:5,color:'#757575'}}>Shop Name</Text>
+       <Text style={{marginLeft:'auto',fontSize:18,fontWeight:'bold'}}>{this.props.shops.shops.find((shop)=>shop.id==orderItem.orderDetials.shop_id).title}</Text>
+     </View>
+     </View>
          <Text style={{color:'#757575',paddingVertical:5,fontSize:15}}>Order Id : {orderItem.orderDetials.orderId}</Text>
           </View>
        
@@ -138,13 +147,13 @@ class OrderDetailsScreen extends Component {
 </View>
         
           {orderItem.items.map((itemsItem,index)=>{
-           const itemData=data.filter(item =>item.id==itemsItem.id)[0];
+           const itemData=this.props.products.products.find(item =>item.id==itemsItem.prod_id);
             return(
               
               <View key={index} style={styles.card2}>
               <View style={styles.cardImgWrapper}>
                 <Image
-                  source={itemData.image}
+                  source={{uri:itemData.image}}
                   resizeMode="stretch"
                   style={styles.cardImg}
                 />
@@ -218,7 +227,7 @@ class OrderDetailsScreen extends Component {
   <Text style={{padding:3}} >{orderItem.address.roadNo}</Text>
   <Text style={{padding:3}} >{orderItem.address.houseNo} , {orderItem.address.city} </Text>
   <Text style={{padding:3}} >{orderItem.address.state} - {orderItem.address.pinCode}</Text>
-  <Text style={{padding:3}} >Phone Number : 6303365901</Text>
+  <Text style={{padding:3}} >Phone Number : {orderItem.address.number}</Text>
 </View>
 <View>
 
@@ -260,7 +269,7 @@ paddingBottom:10
   },
   status:{
 paddingLeft:10,
-marginRight:'auto',
+
   },
   amount:{
     paddingRight:10,

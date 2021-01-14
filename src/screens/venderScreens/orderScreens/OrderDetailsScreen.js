@@ -14,7 +14,9 @@ const mapStateToProps = state => {
     return {
 
       favorites: state.favorites,
-      carts:state.carts
+      carts:state.carts,
+      products:state.products,
+      shops:state.shops
     }
   }
 
@@ -149,13 +151,14 @@ buttonHandler=()=>{
 </View>
         
           {orderItem.items.map((itemsItem,index)=>{
-           const itemData=data.filter(item =>item.id==itemsItem.id)[0];
+
+           const itemData=this.props.products.products.find(item =>item.id==itemsItem.prod_id);
             return(
               
               <View key={index} style={styles.card2}>
               <View style={styles.cardImgWrapper}>
                 <Image
-                  source={itemData.image}
+                  source={{uri:itemData.image}}
                   resizeMode="stretch"
                   style={styles.cardImg}
                 />

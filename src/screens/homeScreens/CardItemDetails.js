@@ -28,7 +28,7 @@ const mapStateToProps = state => {
  
     favorites: state.favorites,
     carts:state.carts,
-    shops:state.shops
+
   }
 }
 
@@ -105,7 +105,7 @@ class  CardItemDetails extends Component {
             <View style={{flexDirection:'row',paddingVertical:10,overflow:'hidden'}}>
               <Text style={{fontSize:18}} >Seller :  </Text>
               <View style={{padding:4,backgroundColor:'#E8EAF6',paddingHorizontal:8,borderRadius:5,borderColor:'#7986CB',borderWidth:.5}} >
-              <Text numberOfLines={1} >{this.props.shops.shops.find((shop)=>shop.id==this.shopId).title} </Text>
+              <Text numberOfLines={1} >{this.itemData.shop_name} </Text>
               </View>
        
             </View>

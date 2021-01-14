@@ -96,25 +96,13 @@ const HomeScreen = ({navigation}) => {
           <Background navigation={navigation} />
       </View>
       <TouchableWithoutFeedback style={styles.cardsWrapper}  onPress={() =>
-            navigation.navigate('CardListScreen', {title: 'Groceries'})
+            navigation.navigate('GroceryShopsScreen', {title: 'Grocery Stores'})
           }>
         <Image resizeMode="stretch"  style={{width:"100%",height:600,marginBottom:20}} source={require('../../assets/banners/banner8.jpg')} ></Image>
       </TouchableWithoutFeedback>
-      <TouchableWithoutFeedback style={styles.cardsWrapper}  onPress={() =>
-            navigation.navigate('CardListScreen', {title: 'Groceries'})
-          }>
-        <Image resizeMode="stretch"  style={{width:"100%",height:600,marginBottom:20}} source={require('../../assets/banners/banner7.jpg')} ></Image>
-      </TouchableWithoutFeedback>
-      <View>
+    
+     
       
-      <Background navigation={navigation} />
-  </View>
-      <TouchableWithoutFeedback style={styles.cardsWrapper}  onPress={() =>
-            navigation.navigate('CardListScreen', {title: 'Groceries'})
-          }>
-        <Image resizeMode="stretch"  style={{width:"100%",height:600,marginBottom:20}} source={require('../../assets/banners/banner6.jpg')} ></Image>
-      </TouchableWithoutFeedback>
-   
     </View>
     </ScrollView>
     </View>

@@ -3,7 +3,7 @@ import {View, Text, Image, StyleSheet,TouchableWithoutFeedback, TouchableOpacity
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
 import { Button } from 'react-native-elements';
-import { postCart, postFavorite, deleteFavorite, } from '../redux/ActionCreators';
+import { postCart, postFavorite, deleteFavorite,deleteCartArray } from '../redux/ActionCreators';
 import React, { Component } from 'react';
 import Toast from 'react-native-tiny-toast';
 import { theme } from '../core/theme';
@@ -21,6 +21,7 @@ const mapDispatchToProps = dispatch => ({
   postCart: (Item) => dispatch(postCart(Item)),
   postFavorite: (ItemId) => dispatch(postFavorite(ItemId)),
   deleteFavorite: (ItemId) => dispatch(deleteFavorite(ItemId)),
+  deleteCartArray:()=>dispatch(deleteCartArray()),
 })
  class Card extends Component {
 

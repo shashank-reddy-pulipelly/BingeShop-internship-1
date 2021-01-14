@@ -28,7 +28,7 @@ const App = ({navigation}) => (
               </TouchableWithoutFeedback>
             )
           })}
-           <TouchableWithoutFeedback onPress={()=>navigation.navigate('CardListScreen', {title: 'Groceries'})} >
+           <TouchableWithoutFeedback onPress={()=>navigation.navigate('GroceryShopsScreen', {title: 'Grocery Stores'})} >
              <View style={styles.lastCard}>
              <Text style={{fontSize:19,fontWeight: 'bold',color:'#EEEEEE'}}>View More</Text>
              </View>

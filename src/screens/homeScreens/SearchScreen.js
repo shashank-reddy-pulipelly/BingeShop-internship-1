@@ -119,10 +119,7 @@ class Search extends React.Component{
 <FlatList
   data={this.state.data}
   renderItem={({ item }) => (
-    <Card 
-    itemData={item}
-    onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData: item})}
-/>
+ <View></View>
   )}
   keyExtractor={item => item.id}
 
