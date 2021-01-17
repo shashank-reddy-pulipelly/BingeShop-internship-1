@@ -24,7 +24,7 @@ export const ConfigureStore = () => {
  
             favorites,carts,orders,address,shops,products,shopProductsList
         }),
-        applyMiddleware(thunk,logger)
+        applyMiddleware(thunk)
     );
 
     const persistor = persistStore(store)

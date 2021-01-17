@@ -6,16 +6,19 @@ import CardItemDetails from './CardItemDetails';
 import FavoriteScreen from './FavoriteScreen';
 import GroceryShopsScreen from './GroceryShopsScreen';
 import VegetableShopsScreen from './VegetableShopsScreen';
+import SearchScreen from './SearchScreen'
 import Icon from 'react-native-vector-icons/Ionicons';
 import {HeaderButtons,Item} from 'react-navigation-header-buttons';
 import {
   View,
-  Text,TouchableOpacity} from 'react-native';
+  Text,TouchableOpacity, StatusBar} from 'react-native';
 const HomeStack = createStackNavigator();
 import { connect } from 'react-redux';
 import IconBadge from 'react-native-icon-badge';
 import {theme} from '../../core/theme';
 import HeaderButton from '../../components/HeaderButton';
+import SearchContentScreen from './SearchContentScreen';
+const STATUSBAR_HEIGHT = StatusBar.currentHeight;
 const mapStateToProps = state => {
   return {
   carts:state.carts
@@ -71,10 +74,11 @@ const mapStateToProps = state => {
     return (
     
         <HomeStack.Navigator  screenOptions={{
+          headerStatusBarHeight:StatusBar.currentHeight,
         headerStyle:{
           backgroundColor:theme.colors.primary,
           height:70,
-                  
+            
         },       
         headerTintColor:'#fff',
         headerTitleStyle:{fontSize:18,marginLeft:60},    
@@ -117,13 +121,16 @@ const mapStateToProps = state => {
         name="GroceryShopsScreen"
         component={GroceryShopsScreen}
         options={({route}) => ({
+          
           headerTitleStyle:{       
             fontSize:18,
             marginLeft:20
           },
           headerRight: () => rightHeader(),
           title: route.params.title,
-          headerBackTitleVisible: false
+          headerBackTitleVisible: false,
+         
+       
         })}
       />
         <HomeStack.Screen 
@@ -136,7 +143,8 @@ const mapStateToProps = state => {
           },
           headerRight: () => rightHeader(),
           title: route.params.title,
-          headerBackTitleVisible: false
+          headerBackTitleVisible: false,
+          
         })}
       />
       <HomeStack.Screen 
@@ -146,7 +154,7 @@ const mapStateToProps = state => {
           headerRight: () => rightHeader(),
           headerBackTitleVisible: false,
           title: "Details",
-       
+         
         })}
       />
         
@@ -160,7 +168,31 @@ const mapStateToProps = state => {
           headerBackTitleVisible: false
         })}
       />
-      
+
+<HomeStack.Screen 
+        name="SearchScreen"
+        component={SearchScreen}
+        options={({route}) => ({
+          headerRight: () => rightHeader(),
+          title: "Search",
+          headerBackTitleVisible: false,
+          headerShown:false
+        })}
+      />
+          <HomeStack.Screen 
+        name="SearchContentScreen"
+        component={SearchContentScreen}
+        options={({route}) => ({
+          headerTitleStyle:{       
+            fontSize:18,
+            marginLeft:-10,
+            width:200
+          },
+          headerRight: () => rightHeader(),
+          title: route.params.title,
+          headerBackTitleVisible: false
+        })}
+      />
    
          
         </HomeStack.Navigator> 

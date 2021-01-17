@@ -5,13 +5,13 @@ import {
   Image,
   StyleSheet,
   StatusBar,
-  TouchableOpacity,TouchableHighlight,TouchableWithoutFeedback,
+  TouchableOpacity,TouchableWithoutFeedback,Platform,TouchableNativeFeedback,
   ScrollView,SafeAreaView
 } from 'react-native';
 
 
 
-import Search from './SearchScreen';
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
@@ -19,21 +19,32 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import HomeSwiper from '../../components/HomeSwiper';
 import Background from '../../components/BackgroundImage';
-
+import {theme} from '../../core/theme';
 import { Button } from 'native-base';
 const HomeScreen = ({navigation}) => {
 
-
+  let TouchableCmp=TouchableOpacity;
+  if(Platform.OS==='android' && Platform.Version>=21){
+    TouchableCmp=TouchableNativeFeedback;
+  }
 
   return (
   <View style={styles.container}>
-      <StatusBar translucent={true} backgroundColor={'transparent'} />
+    
+      <View style={{padding:12,backgroundColor:theme.colors.primary,height:60,paddingTop:5,paddingHorizontal:15}}>
+        <TouchableCmp activeOpacity={.7}  onPress={() =>
+            navigation.navigate('SearchScreen')
+          }>
+          <View style={{flexDirection:'row',flex:1,backgroundColor:'#fff',padding:5,paddingHorizontal:10,borderRadius:5}}>
+        <Ionicons  name="ios-search" size={23} color="grey" style={{padding:5,paddingHorizontal:10}} />
+        <Text style={{color:'grey',padding:5,fontSize:16}} >Search for products and more </Text></View>
+        </TouchableCmp >
+      </View>
       <ScrollView>
+     
     <View >
     
-    <View >
-    <Search navigation={navigation} />
-    </View >
+   
     
      
 

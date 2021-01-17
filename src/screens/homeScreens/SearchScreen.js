@@ -3,7 +3,7 @@ import {
     FlatList,
     View,
     ActivityIndicator,
-    TouchableOpacity,Text,TextInput,StyleSheet
+    TouchableOpacity,Text,TextInput,StyleSheet,Platform,StatusBar,Keyboard
   } from 'react-native'
 import {useTheme, Avatar} from 'react-native-paper';
 import { Searchbar } from 'react-native-paper';
@@ -11,6 +11,8 @@ import {theme} from '../../core/theme';
 import {data} from '../../data/groceries';
 import Card from '../../components/Card';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {SearchArray} from '../../data/searchArray'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 class Search extends React.Component{
 
     constructor(props) {
@@ -45,7 +47,7 @@ class Search extends React.Component{
         this.setState({
         
         loading: false,
-        fullData: data
+        fullData: SearchArray
         })
         
       
@@ -94,14 +96,14 @@ class Search extends React.Component{
                 <View style={styles.search}>
                 <View style={styles.searchBox}>
    
-        <Searchbar
-           placeholder='Search for Products ...'
-          inputStyle={{fontSize:16}}
+                <Searchbar autoFocus onSubmitEditing={()=>this.props.navigation.navigate('SearchContentScreen',{title:this.state.searchtext})}
+           placeholder='Search for products . . . . '
+          inputStyle={{fontSize:17}}
          
           onChangeText={this.handleSearch}
        
           value={this.state.searchtext}
-          style={{flex:1,paddingLeft:10,fontSize:15}}
+          style={{flex:1,paddingLeft:5,fontSize:17,paddingVertical:2,borderRadius:0}}
         />
         
                 </View>
@@ -119,7 +121,15 @@ class Search extends React.Component{
 <FlatList
   data={this.state.data}
   renderItem={({ item }) => (
- <View></View>
+      <TouchableOpacity activeOpacity={.5} onPress={()=>{this.props.navigation.navigate('SearchContentScreen',{title:item.title})}}>
+ <View style={{flexDirection:'row',padding:20,alignItems:'center' ,borderBottomColor:'#EEEEEE',
+ borderBottomWidth:1.5,}} >
+       <Ionicons name="ios-search" size={20}  />
+     <Text style={{marginRight:'auto',marginLeft:20}}>{item.title}</Text>
+     <MaterialCommunityIcons name="arrow-top-left" size={20} />
+
+ </View>
+ </TouchableOpacity>
   )}
   keyExtractor={item => item.id}
 
@@ -136,12 +146,20 @@ class Search extends React.Component{
 const styles=StyleSheet.create({
     searchBox: {
         flexDirection:"row",
-        borderRadius:5
+        elevation:10,
+     
+       
       },
       search:{
+         
+     
+         
+          marginTop:StatusBar.currentHeight,
+         
+        
+          paddingTop:10,
           backgroundColor:theme.colors.primary,
-          paddingHorizontal:15,
-          paddingBottom:15,
+          borderRadius:0
 
       }
 })

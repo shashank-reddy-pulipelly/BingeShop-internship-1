@@ -1,6 +1,6 @@
 
 import React,{useEffect} from 'react';
-import { View, Text, StyleSheet,ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet,ActivityIndicator,StatusBar } from 'react-native';
 import Search from '../../components/Search';
 
 import { fetchShops } from '../../redux/ActionCreators';
@@ -50,7 +50,7 @@ props.fetchShops();
     const data=props.shops.shops.filter(shop=>shop.shop_type.is_vegetables===true)
    return (
      <View style={styles.container}>
-     
+    
        <Search cardType='shop' shopType='Vegetables' title={props.route.params.title} data={data} navigation={props.navigation}/>
     
        

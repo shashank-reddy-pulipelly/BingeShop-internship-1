@@ -1,7 +1,7 @@
 
 
 import React,{useEffect} from 'react';
-import { View, Text, StyleSheet,ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet,ActivityIndicator,StatusBar } from 'react-native';
 import Search from '../../components/Search';
 
 import { fetchShops } from '../../redux/ActionCreators';

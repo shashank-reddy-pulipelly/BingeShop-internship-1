@@ -11,7 +11,6 @@ const mapStateToProps = state => {
   return {
  
     favorites: state.favorites,
-    carts:state.carts,
     
   }
 }
