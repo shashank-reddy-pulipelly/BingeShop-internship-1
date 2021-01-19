@@ -11,7 +11,7 @@ export const shops = (state = { isLoading: true,
             return {isLoading: true, errMess: null, shops: []}
 
         case ActionTypes.SHOPS_FAILED:
-            return {...state, isLoading: false, errMess: action.payload};
+            return { isLoading: false, errMess: action.payload, shops: []};
 
         default:
           return state;

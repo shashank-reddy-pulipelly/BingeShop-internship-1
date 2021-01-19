@@ -10,7 +10,7 @@ const TextInput = ({ errorText, ...props }) => (
       selectionColor={theme.colors.primary}
       underlineColor="transparent"
       mode="outlined"
-      blurOnSubmit={true}
+      
       {...props}
     />
     {errorText ? <Text style={styles.error}>{errorText}</Text> : null}

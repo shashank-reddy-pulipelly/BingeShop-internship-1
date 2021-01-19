@@ -8,10 +8,10 @@ export const products = (state = { isLoading: true,
             return { isLoading: false, errMess: null, products: action.payload};
 
         case ActionTypes.PRODUCTS_LOADING:
-            return { isLoading: true, errMess: null, products: []}
+            return { isLoading: true, errMess: null}
 
         case ActionTypes.PRODUCTS_FAILED:
-            return {...state, isLoading: false, errMess: action.payload};
+            return { isLoading: false, errMess: action.payload, products: []};
 
         default:
           return state;

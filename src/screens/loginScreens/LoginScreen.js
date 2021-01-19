@@ -28,7 +28,7 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} >
-    <ScrollView >
+    <ScrollView keyboardShouldPersistTaps="handled" >
 <View style={styles.screen}>
       <BackButton goBack={() => navigation.navigate('OpenScreen')} />
     <View style={styles.logo}><Logo /></View>
@@ -38,7 +38,7 @@ const LoginScreen = ({ navigation }) => {
 
       <TextInput
         label="Email / mobile number"
-        returnKeyType="next"
+        returnKeyType="done"
         value={email.value}
         onChangeText={text => setEmail({ value: text, error: '' })}
         error={!!email.error}

@@ -50,12 +50,12 @@ class  ProductDetailsScreen extends Component {
    
   
   <View style={styles.section}>
-  <Image style={styles.image}  source={this.itemData.image} />
+  <Image style={styles.image}  source={{uri:this.itemData.image}} />
    <Text style={styles.title}>{this.itemData.title}</Text>
 
    <View style={styles.ratings}>
               <View style={styles.star}>
-<Text style={{color:'white',paddingLeft:10}}>{this.itemData.rating}</Text>
+<Text style={{color:'white',paddingLeft:10}}>5</Text>
 <View style={{paddingRight:10,paddingLeft:5}}>
 <Icon name="star"  size={14} color="#fff" />
 </View>
@@ -63,7 +63,7 @@ class  ProductDetailsScreen extends Component {
               </View>
               <View style={styles.reviews}>
                 <Text style={{ fontSize: 14,
-    color: '#444',}}>({this.itemData.reviews}) </Text>
+    color: '#444',}}>(100) </Text>
               </View>
              
             </View>
@@ -72,8 +72,8 @@ class  ProductDetailsScreen extends Component {
             <View style={styles.row}>
                 <Text style={{fontSize:22,paddingVertical:0,marginTop:10}}>{'\u20B9'}</Text>
                 
-                <Text style={{ marginTop:6,marginLeft:5,fontSize:24,fontWeight:'bold'}}>{this.itemData.amount}</Text>
-                <Text style={{textDecorationLine: 'line-through',fontSize: 14, color: '#444' ,marginTop:5,marginLeft:15}}>{this.itemData.amount+100} </Text>
+                <Text style={{ marginTop:6,marginLeft:5,fontSize:24,fontWeight:'bold'}}>{this.itemData.price}</Text>
+                <Text style={{textDecorationLine: 'line-through',fontSize: 14, color: '#444' ,marginTop:5,marginLeft:15}}>{this.itemData.price+100} </Text>
                 <Text style={{fontSize: 13, color: '#09af00' ,marginTop:5,marginLeft:15}}>33% off</Text>
             </View>
     </View>   

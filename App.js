@@ -17,7 +17,7 @@ const fetchFonts = () => {
 };
 const Main = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
-  if(!fontLoaded) {
+  if(!fontLoaded){
     return (
       <AppLoading
         startAsync={fetchFonts}

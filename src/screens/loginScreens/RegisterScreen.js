@@ -38,7 +38,7 @@ const  RegisterScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} >
-    <ScrollView >
+    <ScrollView keyboardShouldPersistTaps="handled" >
 <View style={styles.screen}>
       <BackButton goBack={() => navigation.navigate('OpenScreen')} />
     <View style={styles.logo}><Logo /></View>

@@ -53,7 +53,7 @@ const mapDispatchToProps = dispatch => ({
     const {itemData, onPress}=this.props;
     
     return (
-      <TouchableOpacity activeOpacity={.8} style={{backgroundColor:'#EEEEEE'}} onPress={onPress}>
+      <TouchableOpacity activeOpacity={1} style={{backgroundColor:'#EEEEEE'}} onPress={onPress}>
       <View style={styles.card}>
       <View  style={styles.favorite}>
   <Icon  name={this.state.isFavorite?'heart':'heart-o'} size={27}

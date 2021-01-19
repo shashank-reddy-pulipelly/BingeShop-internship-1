@@ -1,4 +1,4 @@
-import React,{useEffect} from 'react';
+import React,{useEffect,useState} from 'react';
 import { View, Text, StyleSheet,ActivityIndicator } from 'react-native';
 import Search from '../../components/Search';
 
@@ -23,12 +23,14 @@ const mapDispatchToProps = dispatch => ({
 
 const CardListScreen = (props) => {
 
-  useEffect(()=>{
-    props.fetchShops();
-    props.fetchProducts();
-    props.fetchShopProductsList();
-    
-       },[])
+  const [isRefreshing,setRefreshing]=useState(false);
+  const load= async ()=>{
+    setRefreshing(true);
+  await props.fetchShops();
+  await props.fetchProducts();
+  await props.fetchShopProductsList();
+    setRefreshing(false);
+  }
        
   React.useEffect(() => {
     const unsubscribe = props.navigation.addListener('focus', () => {
@@ -79,7 +81,7 @@ const CardListScreen = (props) => {
            return (
             <View style={styles.container}>
             
-            <Search cardType='card'  data={finalProductsArray} shopId={props.route.params.shopId} title={props.route.params.title} navigation={props.navigation}/>
+            <Search cardType='card' isRefreshing={isRefreshing} load={load}  data={finalProductsArray} shopId={props.route.params.shopId} title={props.route.params.title} navigation={props.navigation}/>
               
             </View>
           );

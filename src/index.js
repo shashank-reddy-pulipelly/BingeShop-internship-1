@@ -37,7 +37,7 @@ export default function App() {
 
 {loginState.userToken  == null ? (<Drawer.Navigator 
    drawerContent={props=> <DrawerContent {...props} /> }
-   headerMode='none'
+   headerMode='none' 
    screenOptions={{
      header:()=>(null)}}>
     <Drawer.Screen name="HomeDrawer" component={HomeStackScreen} />

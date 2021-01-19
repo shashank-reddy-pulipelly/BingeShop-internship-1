@@ -1,6 +1,6 @@
 
 
-import React,{useEffect} from 'react';
+import React,{useEffect,useState} from 'react';
 import { View, Text, StyleSheet,ActivityIndicator,StatusBar } from 'react-native';
 import Search from '../../components/Search';
 
@@ -22,7 +22,12 @@ const mapDispatchToProps = dispatch => ({
 
 const GroceryShopsScreen = (props) => {
 
-
+const [isRefreshing,setRefreshing]=useState(false);
+const load= async ()=>{
+  setRefreshing(true);
+ await props.fetchShops();
+  setRefreshing(false);
+}
    useEffect(()=>{
 
 props.fetchShops();
@@ -53,7 +58,7 @@ props.fetchShops();
     return (
       <View style={styles.container}>
       
-        <Search cardType='shop' shopType='Groceries'  title={props.route.params.title} data={data} navigation={props.navigation}/>
+        <Search cardType='shop' shopType='Groceries'  title={props.route.params.title} isRefreshing={isRefreshing} load={load} data={data} navigation={props.navigation}/>
      
         
       </View>

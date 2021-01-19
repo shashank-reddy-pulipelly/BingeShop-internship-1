@@ -1,9 +1,8 @@
 import React,{memo} from 'react';
 import {
     FlatList,
-    View,
-    ActivityIndicator,  Dimensions, 
-    TouchableOpacity,Text,TextInput,StyleSheet,ScrollView,SafeAreaView
+    View,Dimensions, 
+    StyleSheet,
   } from 'react-native'
 
 import { Searchbar } from 'react-native-paper';
@@ -113,7 +112,7 @@ class Search extends React.Component{
          
           
      <View style={{flex:10}}>
-     <FlatList
+     <FlatList onRefresh={this.props.load} refreshing={this.props.isRefreshing}
             data={this.state.data}
             renderItem={({ item }) => (
               <Shop 
@@ -140,7 +139,7 @@ return(
 <View style={{flex:10}}>
 
 
-            <FlatList
+            <FlatList onRefresh={this.props.load} refreshing={this.props.isRefreshing}
     data={this.state.data}
     renderItem={({ item }) => (
       <Card 

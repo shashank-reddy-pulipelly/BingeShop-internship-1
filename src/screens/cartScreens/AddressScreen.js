@@ -97,7 +97,7 @@ import {
  
   render() {
     return (
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container} keyboardShouldPersistTaps="handled" >
       <View >
       <TextInput
           label="Full Name (Required)*"

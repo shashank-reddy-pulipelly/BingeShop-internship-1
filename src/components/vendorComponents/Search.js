@@ -127,7 +127,7 @@ return(
       onPress={()=> this.props.navigation.navigate('ProductDetails', {itemData: item})}
        />
     )}
-    keyExtractor={item => item.id}
+    keyExtractor={item => Math.random().toString()}
     ListHeaderComponent={()=><View >
     
  

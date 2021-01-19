@@ -29,7 +29,7 @@ export const postCart = (item)  => (dispatch) => {
 
     setTimeout(() => {
         dispatch(addCart(item));
-    },10);
+    },1);
 };
 
 
@@ -214,7 +214,7 @@ export const fetchShopProductsList = () => (dispatch) => {
                loadedProducts.push(products[product]);
             }
             const obj={
-                id:shopProductsList[key].id,
+                id:key,
                 products:loadedProducts,
                 shop_id:shopProductsList[key].shop_id,                               
             }
@@ -292,3 +292,71 @@ export const fetchShops = () => (dispatch) => {
 
 
 
+export const  vendorShopProductsListLoading = () => ({
+    type: ActionTypes.VENDORSHOPPRODUCTSLIST_LOADING
+});
+
+export const vendorShopProductsListFailed = (errmess) => ({
+    type: ActionTypes.VENDORSHOPPRODUCTSLIST_FAILED,
+    payload: errmess
+});
+
+export const vendorAddShopProductsList = (products) => ({
+    type: ActionTypes.ADD_VENDORSHOPPRODUCTSLIST,
+    payload: products
+});
+
+export const fetchVendorShopProductsList = (shopProductListId) => (dispatch) => {
+
+    dispatch(vendorShopProductsListLoading());
+
+    return fetch(`https://projectalpha-c313c-default-rtdb.firebaseio.com/shopProductsList/${shopProductListId}.json`)
+    .then(response => {
+        if (response.ok) {
+       
+          return response;
+        } else {
+          var error = new Error('Error ' + response.status + ': ' + response.statusText);
+          error.response = response;
+          throw error;
+        }
+      },
+      error => {
+            var errmess = new Error(error.message);
+            throw errmess;
+      })
+    .then(response => response.json())
+    .then(shopProductsList => {
+        
+      
+            const products=shopProductsList.products;
+            const loadedProducts=[];
+            for(const product in products){
+               loadedProducts.push(products[product]);
+            }
+           
+
+       
+        dispatch(vendorAddShopProductsList(loadedProducts));
+    })
+    .catch(error => dispatch(vendorShopProductsListFailed(error.message)));
+};
+
+
+
+export const editProduct=(shopProductListId,productId,price,available)=>(dispatch)=>{
+
+return fetch(`https://projectalpha-c313c-default-rtdb.firebaseio.com/shopProductsList/${shopProductListId}/products/${productId}.json`, {
+    method: "PATCH",
+    
+    body: JSON.stringify({
+        price:Number(price),
+        available:available
+    }),
+    headers: {
+      "Content-Type": "application/json"
+    },
+    credentials: "same-origin"
+})
+
+}

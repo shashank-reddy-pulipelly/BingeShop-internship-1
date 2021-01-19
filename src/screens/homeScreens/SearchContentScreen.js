@@ -30,7 +30,7 @@ class FavoriteScreen extends Component{
     this.state = {
  
         data: [],
-       
+        isRefreshing:false
     
       
        
@@ -38,47 +38,57 @@ class FavoriteScreen extends Component{
 
   
 }
-  componentDidMount(){ 
+load=()=>{
+  this.setState({isRefreshing:true},()=>{
     this.props.fetchShops();
     this.props.fetchProducts();
     this.props.fetchShopProductsList();
-    const Products=[];
-    this.props.shopProductsList.shopProductsList.map(item=>{
-      
-     
+    this.setState({isRefreshing:false}) 
+  })
+
+}
+componentDidMount(){ 
+
+  this._unsubscribe = this.props.navigation.addListener('focus', () => {
+    this.props.fetchShops();
+  this.props.fetchProducts();
+  this.props.fetchShopProductsList();
+  const Products=[];
+  this.props.shopProductsList.shopProductsList.map(item=>{
     
-     item.products.map((shopProduct)=>{
-        const Product=this.props.products.products.find((product)=>product.id==shopProduct.prod_id);
-         Products.push({...Product,available:shopProduct.available,price:shopProduct.price,shop_name:this.props.shops.shops.find((shop)=>shop.id===item.shop_id).title,shop_id:item.shop_id});
-         return ;
-      })
-      return ;
+   
+  
+   item.products.map((shopProduct)=>{
+      const Product=this.props.products.products.find((product)=>product.id==shopProduct.prod_id);
+       Products.push({...Product,available:shopProduct.available,price:shopProduct.price,shop_name:this.props.shops.shops.find((shop)=>shop.id===item.shop_id).title,shop_id:item.shop_id});
+       return ;
     })
+    return ;
+  })
+  
+ const filterProducts=Products.filter(Prod=>{
+    const prodTitle=Prod.title.toLowerCase();
+    if(prodTitle.includes(this.props.route.params.title.toLowerCase())){
+      return true;
+    }
+    else{
+      return false
+    }
+  })
+
+
+
+  this.setState({
     
-   const filterProducts=Products.filter(Prod=>{
-      const prodTitle=Prod.title.toLowerCase();
-      if(prodTitle.includes(this.props.route.params.title.toLowerCase())){
-        return true;
-      }
-      else{
-        return false
-      }
-    })
-     console.log('products : 123',Products)
+  
+  data:filterProducts
+  })
+     });
+}
 
-
-    this.setState({
-      
-    
-    data:filterProducts
-    })
-
-  }
-
- 
-
-
-
+componentWillUnmount() {
+  this._unsubscribe();
+}
   render(){
    
     if(this.props.products.isLoading || this.props.shopProductsList.isLoading || this.props.shops.isLoading){
@@ -114,7 +124,7 @@ class FavoriteScreen extends Component{
  
     return(
       <View style={styles.container}>
-      <FlatList style={styles.list}
+      <FlatList onRefresh={this.load} refreshing={this.state.isRefreshing} style={styles.list}
                data={this.state.data}
                renderItem={renderItem}
                keyExtractor={(item,index) =>index.toString()}

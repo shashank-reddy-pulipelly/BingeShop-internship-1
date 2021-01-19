@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
 import { Button } from 'native-base';
 
-import { postCart } from '../../redux/ActionCreators';
+import { postCart,editProduct } from '../../redux/ActionCreators';
 import React, { Component } from 'react';
 
 import { theme } from '../../core/theme';
@@ -16,43 +16,46 @@ const mapStateToProps = state => {
   return {
  
     favorites: state.favorites,
-    carts:state.carts
+    carts:state.carts,
+
   }
 }
 
 const mapDispatchToProps = dispatch => ({
 
   postCart: (ItemId) => dispatch(postCart(ItemId)),
+  editProduct:(shopProductListId,productId,price,available)=>dispatch(editProduct(shopProductListId,productId,price,available))
+
 })
  class Card extends Component {
-   globalStatus=true;
+   
      constructor(props) {
          super(props)
      
          this.state = {
            
             modalVisible:false,
-            input:String(this.props.itemData.amount),
-         
-      
-            localStatus:this.globalStatus,
+            input:String(this.props.itemData.price),
+            price:String(this.props.itemData.price),
+            globalStatus:this.props.itemData.available,
+            localStatus:this.props.itemData.available,
          }
      }
      
   render() {
     const {itemData, onPress}=this.props;
     return (
-      <TouchableWithoutFeedback  onPress={onPress}>
+      <TouchableWithoutFeedback  onPress={onPress} >
           <View style={styles.product}>
       <View style={styles.cardData}>
-        <View style={styles.cardImgWrapper}>
+        <View style={styles.cardImgWrapper} >
           <Image
-            source={itemData.image}
+            source={{uri:itemData.image}}
             resizeMode="stretch"
             style={styles.cardImg}
           />
         </View>
-        <View style={styles.cardInfo}>
+        <View style={styles.cardInfo} >
 <View style={{flexDirection:'row'}}>
   <View style={{flex:1,overflow:'hidden',marginRight:10}}>
   <Text numberOfLines={1} style={styles.cardTitle}>{itemData.title}</Text>
@@ -74,7 +77,7 @@ const mapDispatchToProps = dispatch => ({
               </View>
               <View style={{alignItems:'center',flex:1.5}} >
 <Text style={{fontWeight:'bold',fontSize:14}} >Status </Text>
-{this.globalStatus==true?<View style={{backgroundColor:'#09af00',paddingHorizontal:10,paddingVertical:2,borderRadius:40}}>
+{this.state.globalStatus==true?<View style={{backgroundColor:'#09af00',paddingHorizontal:10,paddingVertical:2,borderRadius:40}}>
 <Text style={{color:'#fff',fontSize:13}}>Available</Text>
 </View>:<View style={{backgroundColor:'red',paddingHorizontal:10,paddingVertical:2,borderRadius:40}}>
 <Text style={{color:'#fff',fontSize:13,textAlign:'center'}}>Not Available</Text>
@@ -86,7 +89,7 @@ const mapDispatchToProps = dispatch => ({
                 <Text style={{fontWeight:'bold',fontSize:14}}>Price</Text>
                 <View style={{flexDirection:'row',alignItems:'center'}}>
                 <Text style={{fontSize:16,paddingTop:2,alignSelf:'center'}}>{'\u20B9'} </Text>
-                <Text style={{ marginTop:0,marginLeft:0,fontSize:17, fontWeight: 'bold',}}>{itemData.amount}</Text>
+                <Text style={{ marginTop:0,marginLeft:0,fontSize:17, fontWeight: 'bold',}}>{this.state.price}</Text>
                 </View>
                 
               </View>
@@ -132,7 +135,13 @@ const mapDispatchToProps = dispatch => ({
   
           <View style={{flexDirection:'row',paddingTop:15,paddingBottom:10,marginLeft:'auto',marginRight:10}}>
           <PaperButton mode="text" labelStyle={{fontSize:16}} onPress={()=>{this.setState({modalVisible:false})}}>Cancel </PaperButton>
-          <PaperButton mode="text"labelStyle={{fontSize:16}} onPress={()=>{this.setState({modalVisible:false})}}> Confirm </PaperButton>
+          <PaperButton mode="text"labelStyle={{fontSize:16}} onPress={()=>{
+    
+            this.setState({globalStatus:this.state.localStatus,
+            price:this.state.input},()=>{
+              this.props.editProduct('ShopListing_1',itemData.id,this.state.input,this.state.localStatus)
+            });
+            this.setState({modalVisible:false})}}> Confirm </PaperButton>
 
 
               </View>           

@@ -14,6 +14,7 @@ const mapStateToProps = state => {
       shops:state.shops,
       products: state.products,
       shopProductsList:state.shopProductsList,
+     
     }
   }
 
@@ -25,14 +26,36 @@ const mapStateToProps = state => {
 })
 
 class FavoriteScreen extends Component{
+constructor(props) {
+  super(props)
+
+  this.state = {
+    isRefreshing:false
+  }
+}
 
   componentDidMount(){ 
-    this.props.fetchShops();
+
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      this.props.fetchShops();
     this.props.fetchProducts();
     this.props.fetchShopProductsList();
-  
+    
+       });
   }
 
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
+  load=()=>{
+    this.setState({isRefreshing:true},()=>{
+      this.props.fetchShops();
+      this.props.fetchProducts();
+      this.props.fetchShopProductsList();
+      this.setState({isRefreshing:false}) 
+    })
+ 
+  }
 
   render(){
    
@@ -92,7 +115,7 @@ class FavoriteScreen extends Component{
   }
     return(
       <View style={styles.container}>
-      <FlatList style={styles.list}
+      <FlatList onRefresh={this.load} refreshing={this.state.isRefreshing} style={styles.list}
                data={this.props.favorites}
                renderItem={renderItem}
                keyExtractor={item => Math.random().toString()}

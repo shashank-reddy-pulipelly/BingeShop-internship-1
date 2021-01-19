@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import { View, Text, FlatList,Image, StyleSheet,SafeAreaView,
-  Alert,TouchableWithoutFeedback,ActivityIndicator } from 'react-native';
+  Alert,TouchableWithoutFeedback,ActivityIndicator,RefreshControl, } from 'react-native';
 import { connect } from 'react-redux';
 
 import Card from '../../components/CartCard';
@@ -43,18 +43,20 @@ const mapStateToProps = state => {
 
 class CartScreen extends Component{
 
+  
+load=()=>{
+  this.props.fetchShops();
+    this.props.fetchProducts();
+    this.props.fetchShopProductsList();
+}
 
 
   componentDidMount(){    
  
-    this.props.fetchShops();
-    this.props.fetchProducts();
-    this.props.fetchShopProductsList();
+ 
   
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.props.fetchShops();
-    this.props.fetchProducts();
-    this.props.fetchShopProductsList();
+   this.load();
  
     });
 
@@ -200,7 +202,7 @@ class CartScreen extends Component{
    
     return(
       <SafeAreaView style={styles.container} >
-   <ScrollView>
+   <ScrollView  >
     {this.address()}
     {this.props.carts.map((item2,index)=>{
  const shop=this.props.shops.shops.find((shop)=>shop.id==item2.shop_id);
