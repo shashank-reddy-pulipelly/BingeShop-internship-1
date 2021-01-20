@@ -8,7 +8,11 @@ import Amount from '../../components/Amount';
 import TotalPrice from '../../components/TotalPrice';
 import { postCart, deleteCart,decreaseCart,
  deleteOrder,deleteCartArray,addAddress,deleteAddress,fetchProducts,fetchShopProductsList,fetchShops } from '../../redux/ActionCreators';
-import {  Button } from 'native-base';
+
+ import { fetchAddress,editAddress} from '../../redux/actions/addressActions';
+ 
+
+ import {  Button } from 'native-base';
 
 import {theme} from '../../core/theme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -36,7 +40,7 @@ const mapStateToProps = state => {
     fetchShops:()=>dispatch(fetchShops()),
     fetchProducts:()=>dispatch(fetchProducts()),
     fetchShopProductsList:()=>dispatch(fetchShopProductsList()),
-
+    fetchAddress:()=>dispatch(fetchAddress()),
 
 
 })
@@ -48,12 +52,13 @@ load=()=>{
   this.props.fetchShops();
     this.props.fetchProducts();
     this.props.fetchShopProductsList();
+    
 }
 
 
   componentDidMount(){    
  
- 
+    this.props.fetchAddress();
   
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
    this.load();
@@ -67,7 +72,7 @@ load=()=>{
     this._unsubscribe();
   }
   placeOrder=()=>{
-    if(!this.props.address.pinCode){
+    if(!this.props.address.address.pinCode){
       Alert.alert(
         "No delivery Address",
         "Please Add delivery Address",
@@ -94,7 +99,7 @@ load=()=>{
     return(
 <View style={[{alignItems:'center',backgroundColor:"white",marginBottom:10,paddingVertical:14},styles.row]} >
       <View>
-        {this.props.address.city?<Text> Deliver to {this.props.address.city}- {this.props.address.pinCode} </Text>:<Text>Add delivery Details </Text>}
+        {this.props.address.address.city?<Text> Deliver to {this.props.address.address.city}- {this.props.address.address.pinCode} </Text>:<Text>Add delivery Details </Text>}
       
       </View>
       <View style={{flex:1,paddingVertical:0}}>
@@ -161,7 +166,7 @@ load=()=>{
   render(){
 
 
-    if(this.props.products.isLoading || this.props.shopProductsList.isLoading || this.props.shops.isLoading ){
+    if(this.props.products.isLoading || this.props.shopProductsList.isLoading || this.props.shops.isLoading || this.props.address.isLoading ){
       return(
        <View style={[styles.container, styles.horizontal]}>
       

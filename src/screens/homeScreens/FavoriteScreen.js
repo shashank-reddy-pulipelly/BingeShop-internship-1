@@ -6,7 +6,7 @@ import Card from '../../components/Card';
 import {  Button } from 'native-base';
 import {theme} from '../../core/theme';
 import { fetchProducts,fetchShopProductsList,fetchShops } from '../../redux/ActionCreators';
-
+import { fetchFavorites} from '../../redux/actions/favoritesActions';
 const mapStateToProps = state => {
     return {
 
@@ -23,6 +23,7 @@ const mapStateToProps = state => {
     fetchShops:()=>dispatch(fetchShops()),
     fetchProducts:()=>dispatch(fetchProducts()),
     fetchShopProductsList:()=>dispatch(fetchShopProductsList()),
+    fetchFavorites:()=>dispatch(fetchFavorites())
 })
 
 class FavoriteScreen extends Component{
@@ -35,6 +36,9 @@ constructor(props) {
 }
 
   componentDidMount(){ 
+
+     
+    this.props. fetchFavorites();
 
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       this.props.fetchShops();
@@ -59,7 +63,7 @@ constructor(props) {
 
   render(){
    
-    if(this.props.products.isLoading || this.props.shopProductsList.isLoading || this.props.shops.isLoading){
+    if(this.props.products.isLoading || this.props.shopProductsList.isLoading || this.props.shops.isLoading || this.props.favorites.isLoading){
       return(
        <View style={[styles.container, styles.horizontal]}>
       
@@ -94,7 +98,7 @@ constructor(props) {
       );
   };
 
-  if(this.props.favorites.length==0){
+  if(this.props.favorites.favorites.length==0){
     return(
       <View style={styles.container2}>
       <View style={{alignItems:'center'}}>
@@ -116,7 +120,7 @@ constructor(props) {
     return(
       <View style={styles.container}>
       <FlatList onRefresh={this.load} refreshing={this.state.isRefreshing} style={styles.list}
-               data={this.props.favorites}
+               data={this.props.favorites.favorites}
                renderItem={renderItem}
                keyExtractor={item => Math.random().toString()}
            />

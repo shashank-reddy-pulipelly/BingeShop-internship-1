@@ -2,7 +2,9 @@
 export const POST_FAVORITE = 'POST_FAVORITE';
 export const ADD_FAVORITE = 'ADD_FAVORITE';
 export const DELETE_FAVORITE = 'DELETE_FAVORITE'; 
-
+export const FAVORITES_LOADING = 'FAVORITES_LOADING';
+export const FETCH_FAVORITES = 'FETCH_FAVORITES';
+export const FAVORITES_FAILED = 'FAVORITES_FAILED';
 
 export const POST_CART = 'POST_CART';
 export const ADD_CART = 'ADD_CART';
@@ -15,8 +17,8 @@ export const ADD_ORDER = 'ADD_ORDER';
 export const DELETE_ORDER = 'DELETE_ORDER';
 
 export const ADD_ADDRESS = 'ADD_ADDRESS';
-export const DELETE_ADDRESS = 'DELETE_ADDRESS';
-
+export const ADDRESS_LOADING = 'ADDRESS_LOADING';
+export const ADDRESS_FAILED = 'ADDRESS_FAILED';
 
 
 export const PRODUCTS_LOADING = 'PRODUCTS_LOADING';

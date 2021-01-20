@@ -12,10 +12,10 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
-import { postFavorite, deleteFavorite,postCart } from '../../redux/ActionCreators';
+import {postCart } from '../../redux/ActionCreators';
 import Toast from 'react-native-tiny-toast';
 import { Button } from 'native-base';
-
+import { postFavorite, deleteFavorite,} from '../../redux/actions/favoritesActions';
 import {theme} from '../../core/theme';
 const { width, height } = Dimensions.get("window");
 const MIN_HEIGHT = Platform.OS === 'ios' ? 90 : 70;
@@ -26,15 +26,15 @@ const MAX_HEIGHT = 350;
 const mapStateToProps = state => {
   return {
  
-    favorites: state.favorites,
-    carts:state.carts,
+    favorites: state.favorites.favorites,
+   
 
   }
 }
 
 const mapDispatchToProps = dispatch => ({
-  postFavorite: (ItemId) => dispatch(postFavorite(ItemId)),
-  deleteFavorite: (ItemId) => dispatch(deleteFavorite(ItemId)),
+  postFavorite: (prod_id,shop_id) => dispatch(postFavorite(prod_id,shop_id)),
+  deleteFavorite: (id,prod_id,shop_id) => dispatch(deleteFavorite(id,prod_id,shop_id)),
   postCart: (ItemId) => dispatch(postCart(ItemId)),
 })
 class  CardItemDetails extends Component {
@@ -52,13 +52,13 @@ class  CardItemDetails extends Component {
   
   if(this.state.isFavorite){
    this.setState({isFavorite:!this.state.isFavorite},()=>{
-     this.props.deleteFavorite({prod_id:this.itemData.id,shop_id:this.shopId});
+    this.props.deleteFavorite(this.props.favorites.find(el => el.prod_id == this.itemData.id && el.shop_id==this.shopId).id,this.itemData.id,this.shopId);
    });
  
   }
   else{
    this.setState({isFavorite:!this.state.isFavorite},()=>{
-     this.props.postFavorite({prod_id:this.itemData.id,shop_id:this.shopId});
+    this.props.postFavorite(this.itemData.id,this.shopId);
    });
 
   }

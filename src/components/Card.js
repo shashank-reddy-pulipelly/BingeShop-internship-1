@@ -3,14 +3,15 @@ import {View, Text, Image, StyleSheet,TouchableWithoutFeedback, TouchableOpacity
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
 import { Button } from 'react-native-elements';
-import { postCart, postFavorite, deleteFavorite,deleteCartArray } from '../redux/ActionCreators';
+import { postCart, deleteCartArray } from '../redux/ActionCreators';
+import { postFavorite, deleteFavorite,} from '../redux/actions/favoritesActions';
 import React, { Component } from 'react';
 import Toast from 'react-native-tiny-toast';
 import { theme } from '../core/theme';
 const mapStateToProps = state => {
   return {
  
-    favorites: state.favorites,
+    favorites: state.favorites.favorites,
     
   }
 }
@@ -18,8 +19,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
 
   postCart: (Item) => dispatch(postCart(Item)),
-  postFavorite: (ItemId) => dispatch(postFavorite(ItemId)),
-  deleteFavorite: (ItemId) => dispatch(deleteFavorite(ItemId)),
+  postFavorite: (prod_id,shop_id) => dispatch(postFavorite(prod_id,shop_id)),
+  deleteFavorite: (id,prod_id,shop_id) => dispatch(deleteFavorite(id,prod_id,shop_id)),
   deleteCartArray:()=>dispatch(deleteCartArray()),
 })
  class Card extends Component {
@@ -37,13 +38,13 @@ const mapDispatchToProps = dispatch => ({
   
      if(this.state.isFavorite){
       this.setState({isFavorite:!this.state.isFavorite},()=>{
-        this.props.deleteFavorite({prod_id:this.props.itemData.id,shop_id:this.props.shopId});
+        this.props.deleteFavorite(this.props.favorites.find(el => el.prod_id == this.props.itemData.id && el.shop_id==this.props.shopId).id,this.props.itemData.id,this.props.shopId);
       });
     
      }
      else{
       this.setState({isFavorite:!this.state.isFavorite},()=>{
-        this.props.postFavorite({prod_id:this.props.itemData.id,shop_id:this.props.shopId});
+        this.props.postFavorite(this.props.itemData.id,this.props.shopId);
       });
 
      }

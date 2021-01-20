@@ -8,12 +8,13 @@ import {
   } from '../../core/address';
   import {  Button } from 'native-base';
   import {addAddress,deleteAddress } from '../../redux/ActionCreators';
+  import { fetchAddress,editAddress} from '../../redux/actions/addressActions';
   import { connect } from 'react-redux';
   const mapStateToProps = state => {
     return {
 
-      carts: state.carts,
-      address:state.address,
+    
+      address:state.address.address,
 
     }
   }
@@ -22,7 +23,7 @@ import {
     
     addAddress:(object)=>dispatch(addAddress(object)),
     deleteAddress:()=>dispatch(deleteAddress()),
-
+    editAddress:(object)=>dispatch(editAddress(object)),
 
 
 
@@ -88,7 +89,7 @@ import {
        roadNo:this.state.roadNo.value,
        landmark:this.state.landmark.value
      }
-      this.props.addAddress(obj);
+      this.props.editAddress(obj);
      this.props.navigation.goBack();
    }
 

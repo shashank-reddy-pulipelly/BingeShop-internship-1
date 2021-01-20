@@ -4,13 +4,14 @@ import Search from '../../components/Search';
 
 import { fetchProducts,fetchShopProductsList,fetchShops } from '../../redux/ActionCreators';
 import { connect } from 'react-redux';
-
+import { fetchFavorites} from '../../redux/actions/favoritesActions';
 
 const mapStateToProps = state => {
   return {
     products: state.products,
     shopProductsList:state.shopProductsList,
-    shops:state.shops
+    shops:state.shops,
+    favorites:state.favorites
   }
 }
 
@@ -18,7 +19,7 @@ const mapDispatchToProps = dispatch => ({
   fetchShops:()=>dispatch(fetchShops()),
   fetchProducts:()=>dispatch(fetchProducts()),
   fetchShopProductsList:()=>dispatch(fetchShopProductsList()),
-  
+  fetchFavorites:()=>dispatch(fetchFavorites()),
 })
 
 const CardListScreen = (props) => {
@@ -33,6 +34,7 @@ const CardListScreen = (props) => {
   }
        
   React.useEffect(() => {
+    props.fetchFavorites();
     const unsubscribe = props.navigation.addListener('focus', () => {
       props.fetchShops();
       props.fetchProducts();
@@ -43,7 +45,7 @@ const CardListScreen = (props) => {
   }, [props.navigation]);
 
     
-         if(props.products.isLoading || props.shopProductsList.isLoading || props.shops.isLoading){
+         if(props.products.isLoading || props.shopProductsList.isLoading || props.shops.isLoading || props.favorites.isLoading){
           return(
            <View style={[styles.container, styles.horizontal]}>
           

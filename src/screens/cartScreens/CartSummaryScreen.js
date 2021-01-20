@@ -15,7 +15,7 @@ const mapStateToProps = state => {
     return {
 
       carts: state.carts,
-      address:state.address,
+      address:state.address.address,
       shops:state.shops,
       products: state.products,
       shopProductsList:state.shopProductsList,
@@ -63,10 +63,7 @@ class CartSummaryScreen extends Component{
       const amount=this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==shopList.shop_id).products.find((product)=>product.prod_id==item.prod_id).price;
       return amount*item.count;
      })
-      
-     
-   
-  
+
       const fun =(total, num) =>{
           return total + num;
         }
