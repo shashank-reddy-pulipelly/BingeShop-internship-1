@@ -4,9 +4,13 @@ import { connect } from 'react-redux';
 import {data} from '../../data/groceries';
 import Card from '../../components/CartCard';
 import Amount from '../../components/Amount';
-import { postCart, deleteCart,decreaseCart,
-  postOrder,deleteOrder,deleteCartArray,addAddress,deleteAddress,fetchProducts,fetchShopProductsList,fetchShops  } from '../../redux/ActionCreators';
-import {  Button } from 'native-base';
+import { 
+  postOrder,deleteOrder,addAddress,deleteAddress,fetchProducts,fetchShopProductsList,fetchShops  } from '../../redux/ActionCreators';
+
+  import { fetchCarts, addCart, deleteCart,decreaseCart,
+    deleteCartArray} from '../../redux/actions/cartActions';
+
+  import {  Button } from 'native-base';
 import {theme} from '../../core/theme';
 import TotalPrice from '../../components/TotalPrice';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -24,15 +28,15 @@ const mapStateToProps = state => {
 
   const mapDispatchToProps = dispatch => ({
     
-    deleteCart: (itemId) => dispatch(deleteCart(itemId)),
-    decreaseCart:(itemId)=>dispatch(decreaseCart(itemId)),
-    postCart:(itemId)=>dispatch(postCart(itemId)),
+    deleteCart: (prod_id,shop_id) => dispatch(deleteCart(prod_id,shop_id)),
+    decreaseCart:(prod_id,shop_id)=>dispatch(decreaseCart(prod_id,shop_id)),
+    addCart:(prod_id,shop_id)=>dispatch(addCart(prod_id,shop_id)),
     postOrder:(orderObject)=>dispatch(postOrder(orderObject)),
     deleteOrder:()=>dispatch(deleteOrder()),
     deleteCartArray:()=>dispatch(deleteCartArray()),
     addAddress:(object)=>dispatch(addAddress(object)),
     deleteAddress:()=>dispatch(deleteAddress()),
-
+    fetchCarts:()=>dispatch(fetchCarts()),
     fetchShops:()=>dispatch(fetchShops()),
     fetchProducts:()=>dispatch(fetchProducts()),
     fetchShopProductsList:()=>dispatch(fetchShopProductsList()),
@@ -54,7 +58,7 @@ class CartSummaryScreen extends Component{
     this.props.fetchShops();
     this.props.fetchProducts();
     this.props.fetchShopProductsList();
-  
+    this.props.fetchCarts();
 
 
   }
@@ -76,7 +80,7 @@ class CartSummaryScreen extends Component{
   }
   postOrders=()=>{
 
-    this.props.carts.map(item1=>{
+    this.props.carts.carts.map(item1=>{
       var d = new Date();
       var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
        const date=d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
@@ -258,7 +262,7 @@ else{
    
 
 
-  if(this.props.carts.length==0 && !this.state.orderPlaced){
+  if(this.props.carts.carts.length==0 && !this.state.orderPlaced){
     return(
       <View style={styles.container2}>
       <View style={{alignItems:'center'}}>
@@ -284,7 +288,7 @@ else{
   
    <ScrollView>
     {this.address()}
-    {this.props.carts.map((item2,index)=>{
+    {this.props.carts.carts.map((item2,index)=>{
  const shop=this.props.shops.shops.find((shop)=>shop.id==item2.shop_id);
  
 
@@ -301,7 +305,7 @@ else{
      }
  
    return(
-     <Card postCart={()=>this.props.postCart({prod_id:item.prod_id,shop_id:item2.shop_id})}
+     <Card postCart={()=>this.props.addCart(item.prod_id,item2.shop_id)}
            deleteCart={()=>{
              Alert.alert(
                "Delete Item ?",
@@ -312,12 +316,12 @@ else{
                    onPress: () => console.log("Cancel Pressed"),
                    style: "cancel"
                  },
-                 { text: "DELETE", onPress: () => this.props.deleteCart({prod_id:item.prod_id,shop_id:item2.shop_id}) }
+                 { text: "DELETE", onPress: () => this.props.deleteCart(item.prod_id,item2.shop_id) }
                ],
                { cancelable: false }
              );
              }}
-               decreaseCart={()=>this.props.decreaseCart({prod_id:item.prod_id,shop_id:item2.shop_id})}
+               decreaseCart={()=>this.props.decreaseCart(item.prod_id,item2.shop_id)}
                itemData={finalItem}
                onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:finalItem,shopId:item2.shop_id})}
            />

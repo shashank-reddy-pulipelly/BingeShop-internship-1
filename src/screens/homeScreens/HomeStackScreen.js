@@ -21,7 +21,7 @@ import SearchContentScreen from './SearchContentScreen';
 const STATUSBAR_HEIGHT = StatusBar.currentHeight;
 const mapStateToProps = state => {
   return {
-  carts:state.carts
+  carts:state.carts.carts
   }
 }
  class HomeStackScreen extends Component {

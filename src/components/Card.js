@@ -3,7 +3,9 @@ import {View, Text, Image, StyleSheet,TouchableWithoutFeedback, TouchableOpacity
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
 import { Button } from 'react-native-elements';
-import { postCart, deleteCartArray } from '../redux/ActionCreators';
+
+import { addCart,
+  deleteCartArray} from '../redux/actions/cartActions';
 import { postFavorite, deleteFavorite,} from '../redux/actions/favoritesActions';
 import React, { Component } from 'react';
 import Toast from 'react-native-tiny-toast';
@@ -18,7 +20,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
 
-  postCart: (Item) => dispatch(postCart(Item)),
+  addCart: (prod_id,shop_id) => dispatch(addCart(prod_id,shop_id)),
   postFavorite: (prod_id,shop_id) => dispatch(postFavorite(prod_id,shop_id)),
   deleteFavorite: (id,prod_id,shop_id) => dispatch(deleteFavorite(id,prod_id,shop_id)),
   deleteCartArray:()=>dispatch(deleteCartArray()),
@@ -112,7 +114,7 @@ const mapDispatchToProps = dispatch => ({
         paddingHorizontal:10
       }
     });
-    this.props.postCart({prod_id:itemData.id,shop_id:this.props.shopId})}
+    this.props.addCart(itemData.id,this.props.shopId)}
   }
                 title="Add to Cart"/>
             </View>

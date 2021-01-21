@@ -6,14 +6,10 @@ import { connect } from 'react-redux';
 import Card from '../../components/CartCard';
 import Amount from '../../components/Amount';
 import TotalPrice from '../../components/TotalPrice';
-import { postCart, deleteCart,decreaseCart,
- deleteOrder,deleteCartArray,addAddress,deleteAddress,fetchProducts,fetchShopProductsList,fetchShops } from '../../redux/ActionCreators';
-
- import { fetchAddress,editAddress} from '../../redux/actions/addressActions';
- 
-
- import {  Button } from 'native-base';
-
+import {fetchProducts,fetchShopProductsList,fetchShops,deleteOrder } from '../../redux/ActionCreators';
+ import { addCart, deleteCart,decreaseCart,
+ deleteCartArray} from '../../redux/actions/cartActions';
+import {  Button } from 'native-base';
 import {theme} from '../../core/theme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -30,18 +26,15 @@ const mapStateToProps = state => {
 
   const mapDispatchToProps = dispatch => ({
     
-    deleteCart: (itemId) => dispatch(deleteCart(itemId)),
-    decreaseCart:(itemId)=>dispatch(decreaseCart(itemId)),
-    postCart:(itemId)=>dispatch(postCart(itemId)),
+    deleteCart: (prod_id,shop_id) => dispatch(deleteCart(prod_id,shop_id)),
+    decreaseCart:(prod_id,shop_id)=>dispatch(decreaseCart(prod_id,shop_id)),
+    addCart:(prod_id,shop_id)=>dispatch(addCart(prod_id,shop_id)),
     deleteOrder:()=>dispatch(deleteOrder()),
-    deleteCartArray:()=>dispatch(deleteCartArray()),
-    addAddress:(object)=>dispatch(addAddress(object)),
-    deleteAddress:()=>dispatch(deleteAddress()),
+    deleteCartArray:()=>dispatch(deleteCartArray()),    
     fetchShops:()=>dispatch(fetchShops()),
     fetchProducts:()=>dispatch(fetchProducts()),
     fetchShopProductsList:()=>dispatch(fetchShopProductsList()),
-    fetchAddress:()=>dispatch(fetchAddress()),
-
+   
 
 })
 
@@ -52,14 +45,16 @@ load=()=>{
   this.props.fetchShops();
     this.props.fetchProducts();
     this.props.fetchShopProductsList();
-    
+   
 }
 
 
   componentDidMount(){    
- 
-    this.props.fetchAddress();
+    this.props.fetchShops();
+    this.props.fetchProducts();
+    this.props.fetchShopProductsList();
   
+
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
    this.load();
  
@@ -72,7 +67,7 @@ load=()=>{
     this._unsubscribe();
   }
   placeOrder=()=>{
-    if(!this.props.address.address.pinCode){
+    if(!this.props.address.address){
       Alert.alert(
         "No delivery Address",
         "Please Add delivery Address",
@@ -99,7 +94,7 @@ load=()=>{
     return(
 <View style={[{alignItems:'center',backgroundColor:"white",marginBottom:10,paddingVertical:14},styles.row]} >
       <View>
-        {this.props.address.address.city?<Text> Deliver to {this.props.address.address.city}- {this.props.address.address.pinCode} </Text>:<Text>Add delivery Details </Text>}
+        {this.props.address.address?<Text> Deliver to {this.props.address.address.city}- {this.props.address.address.pinCode} </Text>:<Text>Add delivery Details </Text>}
       
       </View>
       <View style={{flex:1,paddingVertical:0}}>
@@ -166,7 +161,7 @@ load=()=>{
   render(){
 
 
-    if(this.props.products.isLoading || this.props.shopProductsList.isLoading || this.props.shops.isLoading || this.props.address.isLoading ){
+    if(this.props.products.isLoading || this.props.shopProductsList.isLoading || this.props.shops.isLoading || this.props.address.isLoading || this.props.carts.isLoading ){
       return(
        <View style={[styles.container, styles.horizontal]}>
       
@@ -185,7 +180,7 @@ load=()=>{
       )
     }
     else{
-    if(this.props.carts.length==0){
+    if(this.props.carts.carts.length==0){
       return(
         <View style={styles.container2}>
           <View style={{alignItems:'center'}}>
@@ -209,7 +204,7 @@ load=()=>{
       <SafeAreaView style={styles.container} >
    <ScrollView  >
     {this.address()}
-    {this.props.carts.map((item2,index)=>{
+    {this.props.carts.carts.map((item2,index)=>{
  const shop=this.props.shops.shops.find((shop)=>shop.id==item2.shop_id);
  
 
@@ -226,7 +221,7 @@ load=()=>{
      }
  
    return(
-     <Card postCart={()=>this.props.postCart({prod_id:item.prod_id,shop_id:item2.shop_id})}
+     <Card postCart={()=>this.props.addCart(item.prod_id,item2.shop_id)}
            deleteCart={()=>{
              Alert.alert(
                "Delete Item ?",
@@ -237,12 +232,12 @@ load=()=>{
                    onPress: () => console.log("Cancel Pressed"),
                    style: "cancel"
                  },
-                 { text: "DELETE", onPress: () => this.props.deleteCart({prod_id:item.prod_id,shop_id:item2.shop_id}) }
+                 { text: "DELETE", onPress: () => this.props.deleteCart(item.prod_id,item2.shop_id) }
                ],
                { cancelable: false }
              );
              }}
-               decreaseCart={()=>this.props.decreaseCart({prod_id:item.prod_id,shop_id:item2.shop_id})}
+               decreaseCart={()=>this.props.decreaseCart(item.prod_id,item2.shop_id)}
                itemData={finalItem}
                onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:finalItem,shopId:item2.shop_id})}
            />

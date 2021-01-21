@@ -17,7 +17,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const mapStateToProps = state => {
   return {
   orders:state.orders,
-  carts:state.carts
+  carts:state.carts.carts
   }
 }
  class OrdersStackScreen extends Component {

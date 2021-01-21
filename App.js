@@ -6,9 +6,9 @@ import { Provider } from 'react-redux';
 import { ConfigureStore } from './src/redux/configureStore';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
-import { PersistGate } from 'redux-persist/es/integration/react'
 
-const { persistor, store } = ConfigureStore();
+
+const {store } = ConfigureStore();
 const fetchFonts = () => {
   return Font.loadAsync({
     'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
@@ -30,11 +30,11 @@ const Main = () => {
 
   return(
     <Provider store={store}>
-    <PersistGate  persistor={persistor}>
+ 
        <PaperProvider theme={theme}>
       <App />
     </PaperProvider>
-    </PersistGate>
+
   </Provider>
   
   )

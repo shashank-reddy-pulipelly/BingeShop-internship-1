@@ -38,7 +38,7 @@ constructor(props) {
   componentDidMount(){ 
 
      
-    this.props. fetchFavorites();
+    this.props.fetchFavorites();
 
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
       this.props.fetchShops();

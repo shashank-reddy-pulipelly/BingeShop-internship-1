@@ -11,6 +11,9 @@ export const ADD_CART = 'ADD_CART';
 export const DELETE_CART = 'DELETE_CART'; 
 export const DECREASE_CART = 'DECREASE_CART';
 export const DELETE_CART_ARRAY= 'DELETE_CART_ARRAY';
+export const CART_LOADING = 'CART_LOADING';
+export const FETCH_CART = 'FETCH_CART';
+export const CART_FAILED = 'CART_FAILED';
 
 export const POST_ORDER = 'POST_ORDER';
 export const ADD_ORDER = 'ADD_ORDER';

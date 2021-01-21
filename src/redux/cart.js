@@ -1,12 +1,24 @@
-import FilterItems from '../components/filterItems';
+
 import * as ActionTypes from './ActionTypes';
 
-export const carts = (state = [], action) => {
+export const carts = (state = { isLoading: true,
+    errMess: null,
+    carts:[]}, action) => {
     switch (action.type) {
+
+        case ActionTypes.FETCH_CART:
+            return { isLoading: false, errMess: null,carts: action.payload};
+
+        case ActionTypes.PRODUCTS_LOADING:
+            return { isLoading: true, errMess: null,...state}
+
+        case ActionTypes.CART_FAILED:
+            return {...state, isLoading: false, errMess: action.payload}; 
+
         case ActionTypes.ADD_CART:
-            if (state.some(el =>  el.shop_id==action.payload.shop_id ))
+            if (state.carts.some(el =>  el.shop_id==action.payload.shop_id ))
             {
-                const newState=state.map(item=>{
+                const newState=state.carts.map(item=>{
                     if(item.shop_id==action.payload.shop_id){
                   
                     if(item.products.some(el=>el.prod_id == action.payload.prod_id)){
@@ -29,21 +41,21 @@ export const carts = (state = [], action) => {
                     return item;
                 }
                 }) 
-                return newState;
+                return ({...state,carts:newState});
                 
             }
              
             else{
-                return state.concat({shop_id:action.payload.shop_id,products:[{ prod_id:action.payload.prod_id,count:1}] });
+                return ({...state,carts:state.carts.concat({shop_id:action.payload.shop_id,products:[{ prod_id:action.payload.prod_id,count:1}] })}) ;
             }
                
                   
                
 
         case ActionTypes.DECREASE_CART:
-            if (state.some(el =>  el.shop_id==action.payload.shop_id ))
+            if (state.carts.some(el =>  el.shop_id==action.payload.shop_id ))
             {
-                const newState=state.map(item=>{
+                const newState=state.carts.map(item=>{
                     if(item.shop_id==action.payload.shop_id){
                   
                     if(item.products.some(el=>el.prod_id == action.payload.prod_id)){
@@ -66,7 +78,7 @@ export const carts = (state = [], action) => {
                     return item;
                 }
                 }) 
-                return newState;
+                return ({...state,carts:newState}) ;
                 
             }
              
@@ -74,9 +86,9 @@ export const carts = (state = [], action) => {
                 return state;
             }      
             case ActionTypes.DELETE_CART:
-                if (state.some(el =>  el.shop_id==action.payload.shop_id ))
+                if (state.carts.some(el =>  el.shop_id==action.payload.shop_id ))
             {
-                const newState=state.map(item=>{
+                const newState=state.carts.map(item=>{
                     if(item.shop_id==action.payload.shop_id){
                   
                     if(item.products.some(el=>el.prod_id == action.payload.prod_id)){
@@ -97,7 +109,7 @@ export const carts = (state = [], action) => {
                     return item;
                 }
                 }) 
-                return newState.filter(item=>item!=null);
+                return ({...state,carts:newState.filter(item=>item!=null)}) ;
                 
             }
              
@@ -106,7 +118,7 @@ export const carts = (state = [], action) => {
             }
                 
             case ActionTypes.DELETE_CART_ARRAY:
-                return [];  
+                return ({...state,carts:[]});  
         default:
           return state;
       }

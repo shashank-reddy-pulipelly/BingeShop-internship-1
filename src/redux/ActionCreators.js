@@ -245,7 +245,7 @@ export const fetchShops = () => (dispatch) => {
 
     dispatch(shopsLoading());
 
-    return fetch('https://bingeshop-2021-default-rtdb.firebaseio.com/Shops.json')
+    return fetch('https://projectalpha-c313c-default-rtdb.firebaseio.com/Shops.json')
     .then(response => {
         if (response.ok) {
        
