@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React,{useContext}  from 'react';
 import {
   Text,
   View,
@@ -9,10 +9,11 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
-import * as FirebaseRecaptcha from 'expo-firebase-recaptcha';
+
+import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
 import * as firebase from 'firebase';
-
-
+import { AuthContext } from '../../components/context';
+import { theme } from '../../core/theme';
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyAcasnVPElbZmhBMej-ElxFllPh6PGkGYQ",
     authDomain: "projectalpha-c313c.firebaseapp.com",
@@ -32,52 +33,65 @@ try {
   // ignore app already initialized error on snack
 }
 
-export default function PhoneAuthScreen() {
+
+export default function PhoneAuthScreen({navigation}) {
+  const { signIn } = React.useContext(AuthContext);
   const recaptchaVerifier = React.useRef(null);
   const verificationCodeTextInput = React.useRef(null);
+  const[fullPhoneNumber, setFullPhoneNumber] = React.useState('+91');
   const [phoneNumber, setPhoneNumber] = React.useState('');
   const [verificationId, setVerificationId] = React.useState('');
   const [verifyError, setVerifyError] = React.useState();
   const [verifyInProgress, setVerifyInProgress] = React.useState(false);
-  const [verificationCode, setVerificationCode] = React.useState('');
+  
   const [confirmError, setConfirmError] = React.useState();
   const [confirmInProgress, setConfirmInProgress] = React.useState(false);
-  const isConfigValid = !!FIREBASE_CONFIG.apiKey;
 
+
+  
+  const [verificationCode, setVerificationCode] = React.useState();
+  const firebaseConfig = firebase.apps.length ? firebase.app().options : undefined;
+  const isConfigValid = !!FIREBASE_CONFIG.apiKey;
+const full=fullPhoneNumber+phoneNumber;
+const attemptInvisibleVerification = true;
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <FirebaseRecaptcha.FirebaseRecaptchaVerifierModal
+        <FirebaseRecaptchaVerifierModal
           ref={recaptchaVerifier}
-          firebaseConfig={FIREBASE_CONFIG}
-          title='Prove you are human!'
-          cancelLabel='Close'
+          firebaseConfig={firebaseConfig}
+          attemptInvisibleVerification={attemptInvisibleVerification}
         />
-        <Text style={styles.title}>Firebase Phone Auth</Text>
-        <Text style={styles.subtitle}>using expo-firebase-recaptcha</Text>
-        <Text style={styles.text}>Enter phone number</Text>
-        <TextInput
+        <Text style={styles.title}>Sign in to BingeShop</Text>
+     
+        <Text style={styles.text}>Enter Mobile Number</Text>
+        <View style={{flexDirection:'row',marginBottom:10,backgroundColor:'#EEEEEE',padding:10,borderRadius:5}} >
+          <View  >
+            <Text style={{fontSize:17,fontWeight:'bold',borderRightWidth:1,alignSelf:'center',paddingRight:2}} > +91 </Text>
+          </View>
+          <TextInput
           style={styles.textInput}
           autoFocus={isConfigValid}
           autoCompleteType="tel"
           keyboardType="phone-pad"
           textContentType="telephoneNumber"
-          placeholder="+1 999 999 9999"
+          placeholder="  Mobile Number "
           editable={!verificationId}
           onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
         />
-        <Button
+        </View>
+   <View style={{backgroundColor:'red'}} >
+        <Button color={theme.colors.primary}
           title={`${verificationId ? 'Resend' : 'Send'} Verification Code`}
           disabled={!phoneNumber}
           onPress={async () => {
             const phoneProvider = new firebase.auth.PhoneAuthProvider();
             try {
+              console.log(full);
               setVerifyError(undefined);
               setVerifyInProgress(true);
               setVerificationId('');
-              const verificationId = await phoneProvider.verifyPhoneNumber(
-                phoneNumber,recaptchaVerifier.current
-              );
+              const verificationId = await phoneProvider.verifyPhoneNumber(full,recaptchaVerifier.current);
               setVerifyInProgress(false);
               setVerificationId(verificationId);
               verificationCodeTextInput.current?.focus();
@@ -87,6 +101,7 @@ export default function PhoneAuthScreen() {
             }
           }}
         />
+        </View>
         {verifyError && <Text style={styles.error}>{`Error: ${verifyError.message}`}</Text>}
         {verifyInProgress && <ActivityIndicator style={styles.loader} />}
         {verificationId ? (
@@ -94,10 +109,16 @@ export default function PhoneAuthScreen() {
         ) : (
           undefined
         )}
+        <View style={{marginVertical:20,marginBottom:50}} >
+        {attemptInvisibleVerification && <FirebaseRecaptchaBanner   textStyle={{ fontSize: 14, opacity: .6 }}
+  linkStyle={{ fontWeight: 'bold' }} />}
+        </View>
+      
         <Text style={styles.text}>Enter verification code</Text>
         <TextInput
           ref={verificationCodeTextInput}
           style={styles.textInput}
+          textContentType="oneTimeCode"
           editable={!!verificationId}
           placeholder="123456"
           onChangeText={(verificationCode) => setVerificationCode(verificationCode)}
@@ -113,12 +134,12 @@ export default function PhoneAuthScreen() {
                 verificationId,
                 verificationCode
               );
-              const authResult = await firebase.auth().signInWithCredential(credential);
+              await firebase.auth().signInWithCredential(credential);
               setConfirmInProgress(false);
               setVerificationId('');
               setVerificationCode('');
               verificationCodeTextInput.current?.clear();
-              Alert.alert('Phone authentication successful!');
+              signIn(phoneNumber);
             } catch (err) {
               setConfirmError(err);
               setConfirmInProgress(false);
@@ -127,6 +148,7 @@ export default function PhoneAuthScreen() {
         />
         {confirmError && <Text style={styles.error}>{`Error: ${confirmError.message}`}</Text>}
         {confirmInProgress && <ActivityIndicator style={styles.loader} />}
+      
       </View>
       {!isConfigValid && (
         <View style={styles.overlay} pointerEvents="none">
@@ -143,6 +165,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor:'#fff'
   },
   content: {
     marginTop: 50,
@@ -159,12 +182,16 @@ const styles = StyleSheet.create({
   },
   text: {
     marginTop: 30,
-    marginBottom: 4,
+    marginBottom: 10,
+    fontWeight: 'bold',
+    fontSize:15
   },
   textInput: {
-    marginBottom: 8,
+   
     fontSize: 17,
     fontWeight: 'bold',
+    backgroundColor:'#EEEEEE',
+    paddingLeft:10
   },
   error: {
     marginTop: 10,

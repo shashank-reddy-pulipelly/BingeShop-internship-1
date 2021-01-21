@@ -1,9 +1,11 @@
 import React,{PureComponent} from 'react';
-import {View, Text , Image, StyleSheet,TouchableHighlight,TouchableWithoutFeedback, TouchableOpacity} from 'react-native';
+import {View, Text , Image, StyleSheet,TouchableHighlight,TouchableWithoutFeedback,Alert, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
 import { Button } from 'native-base';
 import { theme } from '../core/theme';
+import { addCart, deleteCart,decreaseCart,
+  } from '../redux/actions/cartActions';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const mapStateToProps = state => {
   return {
@@ -13,7 +15,9 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => ({
-
+  deleteCart: (prod_id,shop_id) => dispatch(deleteCart(prod_id,shop_id)),
+  decreaseCart:(prod_id,shop_id)=>dispatch(decreaseCart(prod_id,shop_id)),
+  addCart:(prod_id,shop_id)=>dispatch(addCart(prod_id,shop_id)),
 })
 
 class Card extends PureComponent {
@@ -28,17 +32,32 @@ class Card extends PureComponent {
   }
   countInc=()=>{
     
-    this.props.postCart()
+    
+    this.props.addCart(this.props.itemData.id,this.props.itemData.shop_id)
   }
   countDec=()=>{
     if(this.props.itemData.count!=1){
     
     
-     this.props.decreaseCart()
- 
+  
+     this.props.decreaseCart(this.props.itemData.id,this.props.itemData.shop_id)
     }
     else{
-      this.props.deleteCart();
+
+        Alert.alert(
+          "Delete Item ?",
+          "Are you sure to delete this Item ?",
+          [
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel"
+            },
+            { text: "DELETE", onPress: () => this.props.deleteCart(this.props.itemData.id,this.props.itemData.shop_id) }
+          ],
+          { cancelable: false }
+        );
+      
     }
    
   }
@@ -104,7 +123,21 @@ class Card extends PureComponent {
             </TouchableHighlight>
       </View>
     
-            <Button onPress={deleteCart} style={styles.filterButton2}>
+            <Button onPress={()=>{
+                      Alert.alert(
+                        "Delete Item ?",
+                        "Are you sure to delete this Item ?",
+                        [
+                          {
+                            text: "Cancel",
+                            onPress: () => console.log("Cancel Pressed"),
+                            style: "cancel"
+                          },
+                          { text: "DELETE", onPress: () => this.props.deleteCart(this.props.itemData.id,this.props.itemData.shop_id) }
+                        ],
+                        { cancelable: false }
+                      );
+            }} style={styles.filterButton2}>
             <MaterialCommunityIcons
                         name="delete" 
                         color="black"

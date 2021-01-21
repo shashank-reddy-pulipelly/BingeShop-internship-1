@@ -20,7 +20,7 @@ export const ConfigureStore = () => {
  
             favorites,carts,orders,address,shops,products,shopProductsList,vendorProducts
         }),
-        applyMiddleware(thunk,logger)
+        applyMiddleware(thunk)
     );
 
 

@@ -64,7 +64,7 @@ class HomeScreen extends Component{
       <Text style={{color:'grey',padding:5,fontSize:16}} >Search for products and more </Text></View>
       </TouchableCmp >
     </View>
-    <ScrollView>
+    <ScrollView >
    
   <View >
   
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     width: '90%',
     alignSelf: 'center',
     marginTop: 15,
-    marginBottom: 10,
+    marginBottom: 30,
     backgroundColor:'#fff'
   },
   categoryBtn: {

@@ -4,7 +4,7 @@ import Search from '../../components/Search';
 
 import { fetchProducts,fetchShopProductsList,fetchShops } from '../../redux/ActionCreators';
 import { connect } from 'react-redux';
-import { fetchFavorites} from '../../redux/actions/favoritesActions';
+
 
 const mapStateToProps = state => {
   return {
@@ -19,7 +19,7 @@ const mapDispatchToProps = dispatch => ({
   fetchShops:()=>dispatch(fetchShops()),
   fetchProducts:()=>dispatch(fetchProducts()),
   fetchShopProductsList:()=>dispatch(fetchShopProductsList()),
-  fetchFavorites:()=>dispatch(fetchFavorites()),
+
 })
 
 const CardListScreen = (props) => {
@@ -34,7 +34,7 @@ const CardListScreen = (props) => {
   }
        
   React.useEffect(() => {
-    props.fetchFavorites();
+   
     const unsubscribe = props.navigation.addListener('focus', () => {
       props.fetchShops();
       props.fetchProducts();

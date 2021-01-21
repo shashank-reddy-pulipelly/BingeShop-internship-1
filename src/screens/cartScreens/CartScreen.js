@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import { View, Text, FlatList,Image, StyleSheet,SafeAreaView,
-  Alert,TouchableWithoutFeedback,ActivityIndicator,RefreshControl, } from 'react-native';
+  Alert,TouchableWithoutFeedback,ActivityIndicator, } from 'react-native';
 import { connect } from 'react-redux';
 
 import Card from '../../components/CartCard';
@@ -50,9 +50,7 @@ load=()=>{
 
 
   componentDidMount(){    
-    this.props.fetchShops();
-    this.props.fetchProducts();
-    this.props.fetchShopProductsList();
+
   
 
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
@@ -67,7 +65,7 @@ load=()=>{
     this._unsubscribe();
   }
   placeOrder=()=>{
-    if(!this.props.address.address){
+    if(!this.props.address.address.number){
       Alert.alert(
         "No delivery Address",
         "Please Add delivery Address",
@@ -94,7 +92,7 @@ load=()=>{
     return(
 <View style={[{alignItems:'center',backgroundColor:"white",marginBottom:10,paddingVertical:14},styles.row]} >
       <View>
-        {this.props.address.address?<Text> Deliver to {this.props.address.address.city}- {this.props.address.address.pinCode} </Text>:<Text>Add delivery Details </Text>}
+        {this.props.address.address.city?<Text> Deliver to {this.props.address.address.city}- {this.props.address.address.pinCode} </Text>:<Text>Add delivery Details </Text>}
       
       </View>
       <View style={{flex:1,paddingVertical:0}}>
@@ -161,7 +159,7 @@ load=()=>{
   render(){
 
 
-    if(this.props.products.isLoading || this.props.shopProductsList.isLoading || this.props.shops.isLoading || this.props.address.isLoading || this.props.carts.isLoading ){
+    if(this.props.products.isLoading || this.props.shopProductsList.isLoading || this.props.shops.isLoading || this.props.address.isLoading ){
       return(
        <View style={[styles.container, styles.horizontal]}>
       
@@ -221,23 +219,7 @@ load=()=>{
      }
  
    return(
-     <Card postCart={()=>this.props.addCart(item.prod_id,item2.shop_id)}
-           deleteCart={()=>{
-             Alert.alert(
-               "Delete Item ?",
-               "Are you sure to delete this Item ?",
-               [
-                 {
-                   text: "Cancel",
-                   onPress: () => console.log("Cancel Pressed"),
-                   style: "cancel"
-                 },
-                 { text: "DELETE", onPress: () => this.props.deleteCart(item.prod_id,item2.shop_id) }
-               ],
-               { cancelable: false }
-             );
-             }}
-               decreaseCart={()=>this.props.decreaseCart(item.prod_id,item2.shop_id)}
+     <Card 
                itemData={finalItem}
                onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:finalItem,shopId:item2.shop_id})}
            />

@@ -13,7 +13,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
  function DrawerContent(props) {
 
-    
+    const { signOut} = React.useContext(AuthContext);
  
     
 
