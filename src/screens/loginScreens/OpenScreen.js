@@ -36,36 +36,23 @@ const OpenScreen = ({navigation}) => {
             <Text style={[styles.title, {
                 color: "black"
             }]}>The Best Online Grocery store in India</Text>
-            <Text style={styles.text}>Sign in with your account</Text>
+            <Text style={styles.text}>Sign in with mobile Number</Text>
           
             <View style={styles.button}>
                 <TouchableOpacity activeOpacity={.8}
                     style={styles.signIn}
-                    onPress={() =>  navigation.navigate('LoginScreen')}
+                    onPress={() =>   navigation.navigate('LoginScreen')}
                 >
                 <LinearGradient
-                    colors={[theme.colors.primary,'#311B92']}
+                    colors={['#448AFF','#0000d6']}
                     style={styles.signIn}
                 >
                     <Text style={[styles.textSign, {
                         color:'#fff'
-                    }]}>Sign In</Text>
+                    }]}>Get Started</Text>
                 </LinearGradient>
                 </TouchableOpacity>
 
-                <TouchableOpacity activeOpacity={.8}
-                    onPress={() => navigation.navigate('RegisterScreen')}
-                    style={[styles.signIn, {
-                        borderColor: theme.colors.primary,
-                        borderWidth: 1,
-                        marginTop: 20,
-                        backgroundColor:'#fff'
-                    }]}
-                >
-                    <Text style={[styles.textSign, {
-                        color:theme.colors.primary
-                    }]}>Sign Up</Text>
-                </TouchableOpacity>
             </View>
           
         </Animatable.View>
@@ -84,7 +71,7 @@ const styles = StyleSheet.create({
     backgroundColor:theme.colors.primary
   },
   header: {
-      flex: 1.5,
+      flex: 2,
       justifyContent: 'center',
       alignItems: 'center'
   },
@@ -119,7 +106,7 @@ signIn: {
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 30
+    borderRadius: 10
 },
 textSign: {
     fontSize: 18,

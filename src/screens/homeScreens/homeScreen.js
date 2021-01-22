@@ -4,12 +4,12 @@ import {
   Text,
   Image,
   StyleSheet,
-  StatusBar,
+  StatusBar,Button,
   TouchableOpacity,TouchableWithoutFeedback,Platform,TouchableNativeFeedback,
-  ScrollView,SafeAreaView
+  ScrollView,SafeAreaView,
 } from 'react-native';
 
-
+import * as firebase from 'firebase';
 import { connect } from 'react-redux';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -20,7 +20,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import HomeSwiper from '../../components/HomeSwiper';
 import Background from '../../components/BackgroundImage';
 import {theme} from '../../core/theme';
-import { Button } from 'native-base';
+
 import { fetchAddress} from '../../redux/actions/addressActions';
 import { fetchCarts} from '../../redux/actions/cartActions';
 import { fetchFavorites} from '../../redux/actions/favoritesActions';
@@ -76,6 +76,15 @@ class HomeScreen extends Component{
     <View style={styles.sliderContainer}>
   
    <HomeSwiper/>
+   <Button onPress={()=>{
+     firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+      console.log(user.phoneNumber)
+      } else {
+        // No user is signed in.
+      }
+    })
+   }}  title="Learn More" ></Button>
     </View>
     <View style={{flexDirection:'row',alignItems:'center',marginHorizontal:10,paddingHorizontal:15,
     backgroundColor:'#D50000',paddingVertical:10,marginTop:20,borderRadius:10}} >
