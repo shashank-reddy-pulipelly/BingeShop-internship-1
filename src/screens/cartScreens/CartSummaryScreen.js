@@ -1,7 +1,7 @@
 import React,{memo,Component} from 'react';
 import { View, Text, FlatList,Image, StyleSheet,SafeAreaView,ScrollView,Alert,ActivityIndicator,TouchableWithoutFeedback } from 'react-native';
 import { connect } from 'react-redux';
-import {data} from '../../data/groceries';
+
 import Card from '../../components/CartCard';
 import Amount from '../../components/Amount';
 import { 
@@ -9,8 +9,8 @@ import {
 
   import { fetchCarts, addCart, deleteCart,decreaseCart,
     deleteCartArray} from '../../redux/actions/cartActions';
-
-  import {  Button } from 'native-base';
+import * as firebase from 'firebase';
+import {  Button } from 'native-base';
 import {theme} from '../../core/theme';
 import TotalPrice from '../../components/TotalPrice';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -110,8 +110,10 @@ class CartSummaryScreen extends Component{
         orderDetials:{
           orderId:(new Date()).getTime(),
           invoiceId:'',
-          shop_id:item1.shop_id
-        }
+          shop_id:item1.shop_id,
+          shop_name:this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item1.shop_id).shop_name
+        },
+        UserPhoneNumber:firebase.auth().currentUser.phoneNumber
     }
 
     this.props.postOrder(obj);

@@ -1,0 +1,103 @@
+{
+  
+  "Product_11" : {
+    "description" : "Grains of rice",
+    "id" : "Product_11",
+    "image" : "https://firebasestorage.googleapis.com/v0/b/bingeshop-2021.appspot.com/o/Products%2Fbasmati.jpeg?alt=media&token=70c1109c-e953-461e-af64-3c2f96e19e6d",
+    "quantity" : "1 Kg",
+    "title" : "Kohinoor  Basmati Rice",
+    "type" : "Groceries",
+    "shop_id":"Shop_1",
+    "shop_name":"Shop & Shop"
+  },
+  "Product_12" : {
+    "description" : "Organic",
+    "id" :  "Product_12",
+    "image" : "https://firebasestorage.googleapis.com/v0/b/bingeshop-2021.appspot.com/o/Products%2Fginger.jpeg?alt=media&token=a55cbc5e-b6c8-4dca-91b7-60fd5a2999f4",
+    "quantity" : "5 kg",
+    "title" : "Aashirvaad Atta",
+    "type" : "Vegetables",
+    "shop_id":"Shop_1",
+    "shop_name":"Shop & Shop"
+  },
+  "Product_13" : {
+    "description" : "Unpolished",
+    "id" :  "Product_13" ,
+    "image" : "https://firebasestorage.googleapis.com/v0/b/bingeshop-2021.appspot.com/o/Products%2Fshampoo.jpeg?alt=media&token=5660b413-7314-44d2-8586-04d970b3aad2",
+    "quantity" : "500 ml",
+    "title" : "WOW  Keratin Shampoo",
+    "type" : "Groceries",
+    "shop_id":"Shop_1",
+    "shop_name":"Shop & Shop"
+  },
+  "Product_14" : {
+    "description" : "Polished",
+    "id" : "Product_14",
+    "image" : "https://firebasestorage.googleapis.com/v0/b/bingeshop-2021.appspot.com/o/Products%2Fbasmati2.jpeg?alt=media&token=500248cb-f9bb-403f-9614-4bef2d33b8c8",
+    "quantity" : "1 Kg",
+    "title" : "Pansari Biryani Rice",
+    "type" : "Groceries",
+    "shop_id":"Shop_1",
+    "shop_name":"Shop & Shop"
+  },
+  "Product_15" : {
+    "description" : "Polished",
+    "id" :  "Product_15",
+    "image" : "https://firebasestorage.googleapis.com/v0/b/bingeshop-2021.appspot.com/o/Products%2Frawa.jpeg?alt=media&token=65d51da9-ca8b-491f-8b99-48f12990ffc9",
+    "quantity" : "1 Kg",
+    "title" : "Gajraj Kesari Rawa",
+    "type" : "Groceries",
+    "shop_id":"Shop_10",
+    "shop_name":"Star Bazaar"
+  },
+  "Product_16" : {
+    "description" : "Polished",
+    "id" : "Product_16",
+    "image" : "https://firebasestorage.googleapis.com/v0/b/bingeshop-2021.appspot.com/o/Products%2Fmaggie.jpeg?alt=media&token=5f7a2ee6-507d-4256-9bdf-834d3efd2d7e",
+    "quantity" : "120",
+    "title" : "Nestle Maggie ",
+    "type" : "Groceries",
+    "shop_id":"Shop_10",
+    "shop_name":"Star Bazaar"
+  },
+  "Product_17" : {
+    "description" : "Big Size",
+    "id" : "Product_17",
+    "image" : "https://firebasestorage.googleapis.com/v0/b/bingeshop-2021.appspot.com/o/Products%2Frice-bran-oil.jpeg?alt=media&token=7feb001d-7f95-430d-a0cb-11f03336ecc6",
+    "quantity" : "1 Kg",
+    "title" : "Pavizham Rice Bran Oil",
+    "type" : "Groceries",
+    "shop_id":"Shop_10",
+    "shop_name":"Star Bazaar"
+  },
+  "Product_18" : {
+    "description" : "Big Size",
+    "id" :"Product_18",
+    "image" : "https://firebasestorage.googleapis.com/v0/b/bingeshop-2021.appspot.com/o/Products%2Fbody-soap.jpeg?alt=media&token=aa07d1c5-de62-414c-9d12-d54bf8ff44db",
+    "quantity" : "1 Kg",
+    "title" : "Santoor Aloe Soap ",
+    "type" : "Groceries",
+    "shop_id":"Shop_10",
+    "shop_name":"Star Bazaar"
+  },
+  "Product_19" : {
+    "description" : "Big Size",
+    "id" : "Product_19",
+    "image" : "https://firebasestorage.googleapis.com/v0/b/bingeshop-2021.appspot.com/o/Products%2Fcolgate.jpeg?alt=media&token=a416fd60-9db7-4568-8420-8a350050af63",
+    "quantity" : "1 Kg",
+    "title" : "Colgate Swarna Vedshakti",
+    "type" : "Groceries",
+    "shop_id":"Shop_2",
+    "shop_name":"Vitamin Chen"
+  },
+  "Product_20" : {
+    "description" : "Big Size",
+    "id" :"Product_20",
+    "image" : "https://firebasestorage.googleapis.com/v0/b/bingeshop-2021.appspot.com/o/Products%2Fdetergent-powder.jpeg?alt=media&token=c828b2f6-5e9d-488e-bee4-33e081ca3fba",
+    "quantity" : "1 Kg",
+    "title" : "Henko Detergent Powder",
+    "type" : "Groceries",
+    "shop_id":"Shop_2",
+    "shop_name":"Vitamin Chen"
+  }
+}

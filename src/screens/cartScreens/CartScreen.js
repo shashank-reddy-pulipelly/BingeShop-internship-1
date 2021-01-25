@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import { View, Text, FlatList,Image, StyleSheet,SafeAreaView,
-  Alert,TouchableWithoutFeedback,ActivityIndicator, } from 'react-native';
+  Alert,TouchableWithoutFeedback,ActivityIndicator,LogBox } from 'react-native';
 import { connect } from 'react-redux';
 
 import Card from '../../components/CartCard';
@@ -51,7 +51,7 @@ load=()=>{
 
   componentDidMount(){    
 
-  
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
 
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
    this.load();

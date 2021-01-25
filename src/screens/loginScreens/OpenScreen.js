@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     backgroundColor:theme.colors.primary
   },
   header: {
-      flex: 2,
+      flex: 2.5,
       justifyContent: 'center',
       alignItems: 'center'
   },

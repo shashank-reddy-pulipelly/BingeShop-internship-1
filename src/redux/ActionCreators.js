@@ -1,5 +1,5 @@
 import * as ActionTypes from './ActionTypes';
-
+import * as firebase from 'firebase';
 export const postFavorite = (item)  => (dispatch) => {
 
     setTimeout(() => {
@@ -69,9 +69,7 @@ export const deleteCartArray = () => (dispatch) => {
 
 export const postOrder = (item)  => (dispatch) => {
 
-    setTimeout(() => {
-        dispatch(addOrder(item));
-    },1);
+    firebase.database().ref('Orders').push(item)
 };
 
 export const addOrder = (item) => ({
@@ -135,7 +133,7 @@ export const fetchProducts = () => (dispatch) => {
 
     dispatch(productsLoading());
 
-    return fetch('https://bingeshop-2021-default-rtdb.firebaseio.com/Products.json')
+    return fetch('https://projectalpha-c313c-default-rtdb.firebaseio.com/Products.json')
     .then(response => {
         if (response.ok) {
                    
@@ -158,7 +156,7 @@ export const fetchProducts = () => (dispatch) => {
                 id:key,
                 image:products[key].image,
                 description:products[key].description,
-                quantity:products[key].qty,
+                quantity:products[key].quantity,
                 title:products[key].title,
                 type:products[key].type,                
             }
@@ -216,7 +214,8 @@ export const fetchShopProductsList = () => (dispatch) => {
             const obj={
                 id:key,
                 products:loadedProducts,
-                shop_id:shopProductsList[key].shop_id,                               
+                shop_id:shopProductsList[key].shop_id, 
+                shop_name:shopProductsList[key].shop_name                              
             }
 
             loadedShopProductsList.push(obj);

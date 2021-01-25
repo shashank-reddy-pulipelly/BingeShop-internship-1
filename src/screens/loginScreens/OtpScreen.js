@@ -17,11 +17,11 @@ import { theme } from '../../core/theme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
 import * as firebase from 'firebase';
-import { AuthContext } from '../../components/context';
+
 import { useTheme } from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const SignInScreen = ({route,navigation}) => {
-  const { signIn } = React.useContext(AuthContext);
+ 
   const recaptchaVerifier = React.useRef(null);
   const verificationCodeTextInput = React.useRef(null);
 
@@ -112,7 +112,7 @@ const [disabled, setDisabled] = useState(true)
      inputPosition='center'
      size={45}
      onFulfill={(code) => {setVerificationCode(code)}}
-     
+     autoFocus={true}
      containerStyle={{ marginTop: 0 }}
      codeInputStyle={{ borderWidth: 1.5,borderRadius:5,fontSize:17 }}
           />
@@ -137,7 +137,7 @@ const [disabled, setDisabled] = useState(true)
                        
                         setVerificationCode('');
                  
-                        signIn(full);
+                        console.log('user sign in');
                         setConfirmInProgress(false);
                       } catch (err) {
                         setConfirmError(err);

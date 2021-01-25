@@ -78,7 +78,7 @@ const mapStateToProps = state => {
         headerStyle:{
           backgroundColor:theme.colors.primary,
           height:70,
-            
+               
         },       
         headerTintColor:'#fff',
         headerTitleStyle:{fontSize:18,marginLeft:60},    
@@ -90,7 +90,8 @@ const mapStateToProps = state => {
       animation="fade" >
           <HomeStack.Screen name="Home" component={HomeScreen}
           options={{
-            title:'BitsBaton',         
+            title:'BingeShop', 
+                 
             headerLeft:()=>(
               <View style={{
                 marginLeft:20,

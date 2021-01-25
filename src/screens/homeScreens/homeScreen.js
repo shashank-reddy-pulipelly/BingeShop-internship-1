@@ -1,4 +1,4 @@
-import React,{Component} from 'react';
+import React,{PureComponent} from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,7 @@ import {
   StyleSheet,
   StatusBar,Button,
   TouchableOpacity,TouchableWithoutFeedback,Platform,TouchableNativeFeedback,
-  ScrollView,SafeAreaView,
+  ScrollView,SafeAreaView,LogBox ,ActivityIndicator
 } from 'react-native';
 
 import * as firebase from 'firebase';
@@ -16,7 +16,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
 import HomeSwiper from '../../components/HomeSwiper';
 import Background from '../../components/BackgroundImage';
 import {theme} from '../../core/theme';
@@ -40,9 +41,30 @@ const mapDispatchToProps = (dispatch) => ({
   fetchCarts:()=>dispatch(fetchCarts()),
 
 })
-class HomeScreen extends Component{
+class HomeScreen extends PureComponent{
+constructor(props) {
+  super(props)
+
+  this.state = {
+    Famous_Products_1:{isLoading:true,errMess:null,Famous_Products_1:[]}
+  }
+}
 
   componentDidMount(){
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+    
+    firebase.database()
+    .ref('Famous_products_1')
+    .on('value', (snapshot) => {
+      
+     const products = snapshot.val();
+     
+     const loadedProducts=[];
+     for(const key in products){
+        loadedProducts.push(products[key]);
+     }
+     this.setState({Famous_Products_1:{isLoading:false,errMess:null,Famous_Products_1:loadedProducts}})
+   })
     this.props.fetchAddress();
     this.props.fetchCarts();
     this.props.fetchFavorites();
@@ -52,6 +74,24 @@ class HomeScreen extends Component{
   if(Platform.OS==='android' && Platform.Version>=21){
     TouchableCmp=TouchableNativeFeedback;
   }
+  if(this.state.Famous_Products_1.isLoading){
+    return(
+      <View style={[styles.container2, styles.horizontal]}>
+          
+     
+      <ActivityIndicator size="large" color="#600EE6" />
+    </View>
+    )
+  }
+  else if(this.state.Famous_Products_1.errMess){
+return(
+  <View style={[styles.horizontal]} > 
+  <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
+  <Text style={{fontSize:18,fontWeight:'bold'}} >{this.state.Famous_Products_1.errMess} !</Text>
+</View>
+)
+  }
+  else{
     return(
 <View style={styles.container}>
     
@@ -75,16 +115,16 @@ class HomeScreen extends Component{
     
     <View style={styles.sliderContainer}>
   
-   <HomeSwiper/>
-   <Button onPress={()=>{
-     firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-      console.log(user.phoneNumber)
-      } else {
-        // No user is signed in.
-      }
-    })
-   }}  title="Learn More" ></Button>
+   <HomeSwiper  />
+ <Button title="click"  onPress={()=>{
+      const query= firebase.database().ref('Products').orderByChild('type').equalTo("Vegetables");
+       query.once('value', (snapshot) => {
+         
+        const products = snapshot.val();
+  console.log(products)
+       
+      })
+ }} />
     </View>
     <View style={{flexDirection:'row',alignItems:'center',marginHorizontal:10,paddingHorizontal:15,
     backgroundColor:'#D50000',paddingVertical:10,marginTop:20,borderRadius:10}} >
@@ -120,7 +160,7 @@ class HomeScreen extends Component{
         } >
    
         <Image
-                      source={require('../../assets/grocery/background2.jpg')}
+                      source={require('../../assets/background2.jpg')}
                   size={65} style={{backgroundColor:"#BBDEFB",width:'100%',height:170,resizeMode:'cover',}}
                 />
      
@@ -137,14 +177,21 @@ class HomeScreen extends Component{
 
     <View>
     
-        <Background navigation={this.props.navigation} />
+        <Background data={this.state.Famous_Products_1.Famous_Products_1} navigation={this.props.navigation} />
     </View>
     <TouchableWithoutFeedback style={styles.cardsWrapper}  onPress={() =>
           this.props.navigation.navigate('GroceryShopsScreen', {title: 'Grocery Stores'})
         }>
       <Image resizeMode="stretch"  style={{width:"100%",height:600,marginBottom:20}} source={require('../../assets/banners/banner8.jpg')} ></Image>
     </TouchableWithoutFeedback>
+    <View style={styles.sliderContainer}>
   
+  <HomeSwiper  />
+
+   </View>
+   <View style={{marginTop:20}} >
+   <Background data={this.state.Famous_Products_1.Famous_Products_1} navigation={this.props.navigation} />
+   </View>
    
     
   </View>
@@ -152,6 +199,7 @@ class HomeScreen extends Component{
   </View>
     )
   }
+}
 }
 
 
@@ -164,7 +212,7 @@ const styles = StyleSheet.create({
     backgroundColor:'#fff'
   },
   sliderContainer: {
-    height: 200,
+    height: 170,
     width: '100%',
   
     justifyContent: 'center',
@@ -267,4 +315,19 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent:'center'
   },
+  container2: {
+    flex: 1, 
+    width: '100%',
+    alignSelf: 'center',
+    backgroundColor:"#fff",
+    flexDirection:'row'
+  },
+  horizontal: {
+    flex:1,
+    justifyContent: "center",
+    alignItems:'center',
+    padding: 10,
+    paddingBottom:50,
+    backgroundColor:'#fff'
+  }
 });

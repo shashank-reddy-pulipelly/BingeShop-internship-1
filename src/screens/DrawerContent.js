@@ -6,14 +6,15 @@ import {
     DrawerContentScrollView,
     DrawerItem
 } from '@react-navigation/drawer';
-import { AuthContext } from '../components/context';
+import * as firebase from 'firebase';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme } from '../core/theme';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
  function DrawerContent(props) {
 
-    const { signOut} = React.useContext(AuthContext);
+
  
     
 
@@ -59,7 +60,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
                             )}
                             label="All Offers"
                             labelStyle={{fontWeight:'bold'}}
-                            onPress={() => {}}
+                            onPress={() => {props.navigation.navigate('OfferDrawer')}}
                         />
                         <DrawerItem 
                             icon={({color, size}) => (
@@ -100,8 +101,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
                         />
                         <DrawerItem 
                             icon={({color, size}) => (
-                                <Icon 
-                                name="account" 
+                                <FontAwesome 
+                                name="list" 
                                 color={color}
                                 size={size}
                                 />
@@ -113,8 +114,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
                         />
                          <DrawerItem 
                             icon={({color, size}) => (
-                                <Icon 
-                                name="account" 
+                                <FontAwesome5 
+                                name="list-alt" 
                                 color={color}
                                 size={size}
                                 />
@@ -141,7 +142,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
                     )}
                     label="Sign Out"
                     labelStyle={{fontWeight:'bold'}}
-                    onPress={() => {signOut()}}
+                    onPress={async() => {await firebase.auth().signOut()}}
                 />
             </Drawer.Section>
         </View>

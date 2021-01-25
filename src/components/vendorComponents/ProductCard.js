@@ -7,7 +7,7 @@ import { Button } from 'native-base';
 
 import { postCart,editProduct } from '../../redux/ActionCreators';
 import React, { Component } from 'react';
-
+import ModalCustom from './Modal';
 import { theme } from '../../core/theme';
 import {  TouchableRipple,Button as PaperButton,RadioButton } from 'react-native-paper';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -42,6 +42,16 @@ const mapDispatchToProps = dispatch => ({
          }
      }
      
+     modalToggle=()=>{
+       this.setState({modalVisible:!this.state.modalVisible})
+     }
+     EditProduct=(input,status)=>{
+      this.setState({globalStatus:status,
+        price:input},()=>{
+          this.props.editProduct('ShopListing_1',this.props.itemData.id,input,status)
+        });
+        this.setState({modalVisible:false})
+     }
   render() {
     const {itemData, onPress}=this.props;
     return (
@@ -112,42 +122,7 @@ const mapDispatchToProps = dispatch => ({
                     this.setState({modalVisible:false});
                   }} 
                > 
-                <View style={styles.viewWrapper}> 
-                    <View style={styles.modalView}> 
-                    <View style={{paddingTop:10,marginLeft:20,paddingBottom:5}}>
-                    <Text style={{fontSize:18,fontWeight:'bold'}} >Edit Product Price </Text>
-                    </View>
-                   
-                        <TextInput placeholder="Enter Price" keyboardType='numeric'
-                                   value={this.state.input} style={styles.textInput}  
-                                   onChangeText={(value) =>   this.setState({input:value})} /> 
-   <View style={{paddingTop:20,marginLeft:20,paddingBottom:10}}>
-                    <Text style={{fontSize:18,fontWeight:'bold'}} >Edit Product Status </Text>
-                    </View>
-                   
-                    <RadioButton.Group onValueChange={value => this.setState({localStatus:value})} value={this.state.localStatus}>
-      <RadioButton.Item color={theme.colors.primary} labelStyle={{fontSize:16}} label="Available" value={true} />
-      <RadioButton.Item color={theme.colors.primary} labelStyle={{fontSize:16}} label="Not Available" value={false} />
-
-      
-    </RadioButton.Group>
-  
-  
-          <View style={{flexDirection:'row',paddingTop:15,paddingBottom:10,marginLeft:'auto',marginRight:10}}>
-          <PaperButton mode="text" labelStyle={{fontSize:16}} onPress={()=>{this.setState({modalVisible:false})}}>Cancel </PaperButton>
-          <PaperButton mode="text"labelStyle={{fontSize:16}} onPress={()=>{
-    
-            this.setState({globalStatus:this.state.localStatus,
-            price:this.state.input},()=>{
-              this.props.editProduct('ShopListing_1',itemData.id,this.state.input,this.state.localStatus)
-            });
-            this.setState({modalVisible:false})}}> Confirm </PaperButton>
-
-
-              </View>           
-  
-                    </View> 
-                </View> 
+               <ModalCustom price={this.state.price} globalStatus={this.state.globalStatus} modalToggle={this.modalToggle} EditProduct={this.EditProduct} />
             </Modal> 
         
             

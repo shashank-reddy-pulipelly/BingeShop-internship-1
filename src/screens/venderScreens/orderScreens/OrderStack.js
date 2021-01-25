@@ -37,7 +37,7 @@ const mapStateToProps = state => {
         }
         BadgeElement={
           <TouchableOpacity onPress={() => {navigation.navigate('ProductsDrawer',{screen:'ProductsScreen'})}}> 
-            <Text style={{fontSize:12,color:'#FFFFFF'}}>{this.props.carts.length}</Text></TouchableOpacity>
+            <Text style={{fontSize:12,color:'#FFFFFF'}}></Text></TouchableOpacity>
          
         }
         IconBadgeStyle={
@@ -57,8 +57,9 @@ const mapStateToProps = state => {
      return(
        <View style={{marginRight:20}}>
   <HeaderButtons HeaderButtonComponent={HeaderButton} >
-  
-   <CartBadge />
+  <Item title='favorite' iconSize={27} iconName='ios-list' 
+    onPress={()=>navigation.navigate('ProductsDrawer',{screen:'ProductsScreen'})} /> 
+ 
    
   </HeaderButtons>
   </View>

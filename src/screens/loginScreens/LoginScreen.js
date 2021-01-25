@@ -16,7 +16,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
 import * as firebase from 'firebase';
-import { AuthContext } from '../../components/context';
+
 import { useTheme } from 'react-native-paper';
 
 const SignInScreen = ({navigation}) => {

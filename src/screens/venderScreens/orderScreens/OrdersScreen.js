@@ -1,9 +1,9 @@
 import React,{Component} from 'react';
-import { View, Text, StyleSheet,ScrollView,Dimensions,Platform,TouchableOpacity,TouchableNativeFeedback } from 'react-native';
+import { View, Text, StyleSheet,ScrollView,ActivityIndicator,Dimensions,Platform,TouchableOpacity,TouchableNativeFeedback } from 'react-native';
 import { connect } from 'react-redux';
-
+import { fetchProducts,fetchShopProductsList} from '../../../redux/ActionCreators';
 const { width, height } = Dimensions.get("window");
-
+import * as firebase from 'firebase';
 import {theme} from '../../../core/theme';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const mapStateToProps = state => {
@@ -11,18 +11,62 @@ const mapStateToProps = state => {
 
 
 
-      orders:state.orders
+      
     }
   }
 
   const mapDispatchToProps = dispatch => ({
-  
+    fetchProducts:()=>dispatch(fetchProducts()),
 })
 
 class VendorOrdersScreen extends Component {
+constructor(props) {
+  super(props)
 
+  this.state = {
+     orders:{isLoading:true,errMess:null,orders:[]}
+  }
+}
+
+componentDidMount(){
+  this.props.fetchProducts();
+  const query = firebase.database().ref('Orders').orderByChild('orderDetials/shop_id').equalTo('Shop_1')
+  query.on('value', (snapshot) => {
+    
+   const orders = snapshot.val();
+   
+   const loadedOrders=[];
+   for(const key in orders){
+     const loadedItems=[];
+     const items=orders[key].items;
+     for(const item in items){
+      loadedItems.push(items[item])
+     }
+      loadedOrders.push({...orders[key],items:loadedItems,id:key});
+   }
+   this.setState({orders:{isLoading:false,errMess:null,orders:loadedOrders}})
+ })
+}
   render(){
-    let TouchableCmp=TouchableOpacity;
+    
+    if(this.state.orders.isLoading){
+      return(    <View style={[styles.container2, styles.horizontal]}>
+          
+     
+        <ActivityIndicator size="large" color="#600EE6" />
+      </View>)
+  
+    }
+else if(this.state.orders.errMess){
+  return(
+    <View style={[styles.horizontal]} > 
+    <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
+    <Text style={{fontSize:18,fontWeight:'bold'}} > something went wrong !</Text>
+</View>
+  )
+}
+else{
+  let TouchableCmp=TouchableOpacity;
     if(Platform.OS==='android' && Platform.Version>=21){
       TouchableCmp=TouchableNativeFeedback;
     }
@@ -38,18 +82,18 @@ class VendorOrdersScreen extends Component {
       }
     }
 
-    var newOrders = this.props.orders.slice().reverse();
+    
     return(
       <View style={styles.container}>
         <ScrollView>
-        {newOrders.map((orderItem,index)=>{
+        {this.state.orders.orders.slice().reverse().map((orderItem,index)=>{
 
           return(
             <TouchableCmp onPress={()=>this.props.navigation.navigate('VendorOrderDetailsScreen',{orderItem:orderItem})} activeOpacity={.5} key={index} >
               <View style={styles.card}>
           <View style={styles.row1}>
           <View style={styles.status}>
-          <Text style={orderItem.delivered?{fontSize:17,fontWeight:'bold'}:{fontSize:17,color:'#FF8F00',fontWeight:'bold'}} >{orderStatus(orderItem).status} , {orderStatus(orderItem).date}</Text>
+          <Text style={orderItem.orderStatus.delivered?{fontSize:17,fontWeight:'bold',color:'black'}:{fontSize:17,color:'#FF8F00',fontWeight:'bold'}} >{orderStatus(orderItem).status} , {orderStatus(orderItem).date}</Text>
     <View>
       <Text numberOfLines={1} style={{color:'#757575',marginRight:30,paddingVertical:10}} >Name: {orderItem.address.name}  , No. : {orderItem.address.number}</Text>
     </View>
@@ -71,6 +115,8 @@ class VendorOrdersScreen extends Component {
       </ScrollView>
          </View>
     )
+}
+    
   }
 }
 
@@ -155,6 +201,21 @@ marginRight:20
     paddingVertical:0,
     marginLeft:'auto',
     height:45
+  },
+  container2: {
+    flex: 1, 
+    width: '100%',
+    alignSelf: 'center',
+    backgroundColor:"#fff",
+    flexDirection:'row'
+  },
+  horizontal: {
+    flex:1,
+    justifyContent: "center",
+    alignItems:'center',
+    padding: 10,
+    paddingBottom:50,
+    backgroundColor:'#fff'
   }
 
 

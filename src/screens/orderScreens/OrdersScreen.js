@@ -1,36 +1,60 @@
 import React,{Component} from 'react';
 import { View, Text, StyleSheet,Image,ScrollView,Dimensions,ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
-import { fetchProducts,fetchShopProductsList,fetchShops } from '../../redux/ActionCreators';
+import { fetchProducts} from '../../redux/ActionCreators';
 const { width, height } = Dimensions.get("window");
 import { Button } from 'native-base';
 import {theme} from '../../core/theme';
+import * as firebase from 'firebase';
 const mapStateToProps = state => {
     return {
 
-      favorites: state.favorites,
-      carts:state.carts,
-      orders:state.orders,
+     
+      
+     
       products:state.products,
-      shops:state.shops
+      
     }
   }
 
   const mapDispatchToProps = dispatch => ({
-    fetchShops:()=>dispatch(fetchShops()),
+   
     fetchProducts:()=>dispatch(fetchProducts()),
 })
 
 class OrdersScreen extends Component {
+constructor(props) {
+  super(props)
+
+  this.state = {
+     orders:{isLoading:true,errMess:null,orders:[]}
+  }
+}
 
   componentDidMount(){ 
-    this.props.fetchShops();
     this.props.fetchProducts();
+   const query = firebase.database().ref('Orders').orderByChild('UserPhoneNumber').equalTo(firebase.auth().currentUser.phoneNumber)
+    query.on('value', (snapshot) => {
+      
+     const orders = snapshot.val();
+     
+     const loadedOrders=[];
+     for(const key in orders){
+       const loadedItems=[];
+       const items=orders[key].items;
+       for(const item in items){
+        loadedItems.push(items[item])
+       }
+        loadedOrders.push({...orders[key],items:loadedItems,id:key});
+     }
+     this.setState({orders:{isLoading:false,errMess:null,orders:loadedOrders}})
+   })
+   
   
   }
   render(){
 
-    if(this.props.products.isLoading  ||this.props.shops.isLoading){
+    if(this.props.products.isLoading ||this.state.orders.isLoading ){
       return(
        <View style={ styles.horizontal}>
       
@@ -40,38 +64,38 @@ class OrdersScreen extends Component {
       )
     }
  
-    else if(this.props.products.errMess ||this.props.shops.errMess){
+    else if(this.props.products.errMess ){
       return(
        <View style={[styles.horizontal]} > 
        <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
-       <Text style={{fontSize:18,fontWeight:'bold'}} >{this.props.shops.errMess?this.props.shops.errMess:this.props.products.errMess } !</Text>
+       <Text style={{fontSize:18,fontWeight:'bold'}} > something went wrong !</Text>
    </View>
       )
     }  
     else{
-    var newOrders = this.props.orders.slice().reverse();
+    var newOrders = this.state.orders.orders.slice().reverse();
     return(
       <View style={styles.container}>
         <ScrollView>
         {newOrders.map((orderItem,index)=>{
-           const shop=this.props.shops.shops.find((shop)=>shop.id==orderItem.orderDetials.shop_id);
+        
           const itemsData=this.props.products.products.filter(item => orderItem.items.some(el => el.prod_id === item.id))
           return(
             <View key={index} style={styles.card}>
-              <View style={{backgroundColor:'#fff',paddingVertical:10,
+              <View style={{backgroundColor:'#EEEEEE',paddingVertical:10,
       justifyContent:'center',alignItems:'center',
       borderTopWidth:1,
       borderBottomWidth:1,marginBottom:10,
-      borderColor:'#E0E0E0'}}> 
-      <Text style={{fontSize:16,fontWeight:'bold'}}>Shop Name : {shop.title}</Text></View>
+      borderColor:'#BDBDBD'}}> 
+      <Text style={{fontSize:16,fontWeight:'bold'}}>Shop Name : {orderItem.orderDetials.shop_name}</Text></View>
           <View style={styles.row1}>
           <View style={styles.status}>
         <Text style={{color:'#757575'}}>Order Status</Text>
-        <Text style={{fontSize:16,fontWeight:'bold',marginTop:10}}>{orderItem.orderStatus.delivered?'Delivered , '+orderItem.orderStatus.deliveredDate:'Ordered , '+orderItem.orderStatus.orderedDate}</Text>
+        <Text style={orderItem.orderStatus.delivered?{fontSize:16,fontWeight:'bold',marginTop:5,color:'black'}:{fontSize:16,fontWeight:'bold',marginTop:5,color:'#FF8F00'}}>{orderItem.orderStatus.delivered?'Delivered , '+orderItem.orderStatus.deliveredDate:'Ordered , '+orderItem.orderStatus.orderedDate}</Text>
           </View>
           <View style={styles.amount}>
           <Text style={{color:'#757575'}}>Total ({orderItem.items.length} items)</Text>
-          <Text style={{marginLeft:'auto',marginRight:10,fontSize:16,fontWeight:'bold',marginTop:10}}>Rs. {orderItem.priceDetails.total}</Text>
+          <Text style={{marginLeft:'auto',marginRight:10,fontSize:16,fontWeight:'bold',marginTop:5}}>Rs. {orderItem.priceDetails.total}</Text>
           </View >
 
           </View>
@@ -95,7 +119,7 @@ class OrdersScreen extends Component {
 </View>
 <View style={{backgroundColor:'white',flexDirection:'row'}}>
             <Button  style={styles.filterButton1}>
-            <Text style={{fontSize:17,color:'black'}}>Need Help</Text>
+            <Text style={{fontSize:17,color:theme.colors.primary}}>Need Help</Text>
           </Button>
             <Button onPress={()=>this.props.navigation.navigate('OrderDetailsScreen',{orderItem:orderItem})} style={styles.filterButton2}>
             <Text style={{fontSize:17,color:'white'}}>View Details</Text>
@@ -125,7 +149,7 @@ const styles = StyleSheet.create({
  
     alignSelf: 'center',
     backgroundColor:"#fff",
-    marginTop:10   
+       
   },
   card:{
     
@@ -178,7 +202,7 @@ marginRight:20
   filterButton1:{
     backgroundColor:"white",
     borderRadius:5,
-    marginVertical:10,
+    marginVertical:0,
     paddingHorizontal:20,
     paddingVertical:0,
     marginRight:'auto',
@@ -191,7 +215,7 @@ marginRight:20
     backgroundColor:theme.colors.primary,
     borderRadius:5,
     marginHorizontal:10,
-    marginVertical:10,
+    marginBottom:7,
     paddingHorizontal:30,
     paddingVertical:0,
     marginLeft:'auto',

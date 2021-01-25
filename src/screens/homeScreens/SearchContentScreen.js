@@ -48,7 +48,9 @@ load=()=>{
 
 }
 componentDidMount(){ 
-
+  this.props.fetchShops();
+  this.props.fetchProducts();
+  this.props.fetchShopProductsList();
   this._unsubscribe = this.props.navigation.addListener('focus', () => {
     this.props.fetchShops();
   this.props.fetchProducts();

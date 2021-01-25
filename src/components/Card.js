@@ -108,10 +108,11 @@ const mapDispatchToProps = dispatch => ({
             <Button buttonStyle={{marginVertical:10,marginLeft:'auto',paddingVertical:10,paddingHorizontal:15,backgroundColor:theme.colors.primary,flex:1}}  
   titleStyle={{fontSize:15}} onPress={()=>{
     Toast.show('  Item Added to Cart  Successfully  ',{
-      position:-20,
+      position:-.00001,
       containerStyle:{
-        borderRadius:5,
-        paddingHorizontal:10
+        borderRadius:0,
+        paddingHorizontal:0,
+        width:'100%'
       }
     });
     this.props.addCart(itemData.id,this.props.shopId)}

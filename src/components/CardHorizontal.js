@@ -1,21 +1,22 @@
 import {View, Text, Image, StyleSheet,} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
-import { postCart } from '../redux/ActionCreators';
+
 import React, { Component } from 'react';
 import { Button } from 'native-base';
 import Toast from 'react-native-tiny-toast';
 import { theme } from '../core/theme';
+import { addCart} from '../redux/actions/cartActions';
 const mapStateToProps = state => {
   return { 
-    favorites: state.favorites,
-    carts:state.carts
+ 
+ 
   }
 }
 
 const mapDispatchToProps = dispatch => ({
 
-  postCart: (ItemId) => dispatch(postCart(ItemId)),
+  addCart: (prod_id,shop_id) => dispatch(addCart(prod_id,shop_id)),
 })
  class Card extends Component {
      constructor(props) {
@@ -39,7 +40,7 @@ const mapDispatchToProps = dispatch => ({
         </View>
                    
           <Image
-            source={itemData.image}
+            source={{uri:itemData.image}}
             resizeMode="stretch"
             style={styles.cardImg}
           />
@@ -49,7 +50,7 @@ const mapDispatchToProps = dispatch => ({
         </View>
         <View style={styles.ratings}>
               <View style={styles.star}>
-<Text style={{color:'white',paddingLeft:4,fontSize:12}}>{itemData.rating}</Text>
+<Text style={{color:'white',paddingLeft:4,fontSize:12}}>5</Text>
 <View style={{paddingRight:5,paddingLeft:5}}>
 <Icon name="star"  size={10} color="#fff" />
 </View>
@@ -57,7 +58,7 @@ const mapDispatchToProps = dispatch => ({
               </View>
               <View style={styles.reviews}>
                 <Text style={{ fontSize: 10,
-    color: 'grey',}}>{itemData.reviews} Ratings  </Text>
+    color: 'grey',}}>134 Ratings  </Text>
               </View>
              
             </View>
@@ -66,24 +67,26 @@ const mapDispatchToProps = dispatch => ({
             </View>
             <View style={styles.row}>
                 <Text style={{fontSize:15,padding:0,paddingVertical:0,margin:0,paddingTop:8,alignSelf:'center',paddingLeft:20}}>{'\u20B9'} </Text>
-                <Text style={{ marginTop:6,marginLeft:0,fontSize:15, fontWeight: 'bold',}}>{itemData.amount}</Text>
-                <Text style={{textDecorationLine: 'line-through',fontSize: 11, color: '#444' ,marginTop:6,marginLeft:10}}>{itemData.amount+100} </Text>
+                <Text style={{ marginTop:6,marginLeft:0,fontSize:15, fontWeight: 'bold',}}>100</Text>
+                <Text style={{textDecorationLine: 'line-through',fontSize: 11, color: '#444' ,marginTop:6,marginLeft:10}}>{100+100} </Text>
                
             </View>
-            <View style={{backgroundColor:'#F1F8E9',marginHorizontal:25,alignItems:'center',paddingVertical:1,
-            borderRadius:3,borderWidth:0.3,borderColor:'green',marginTop:10,overflow:'hidden'}}>
-              <Text numberOfLines={1} style={{color:'green',fontSize:10}}>{itemData.shopName}</Text>
-            </View>
+           
             <View style={{flex:1,marginBottom:10,justifyContent:'flex-end'}}>
+            <View style={{backgroundColor:'#F1F8E9',marginHorizontal:25,alignItems:'center',paddingVertical:1,justifyContent:'flex-end',
+            borderRadius:3,borderWidth:0.3,borderColor:'green',overflow:'hidden',marginBottom:15}}>
+              <Text numberOfLines={1} style={{color:'green',fontSize:10}}>{itemData.shop_name}</Text>
+            </View>
             <Button onPress={()=> {
                     Toast.show('  Item Added to Cart  Successfully ',{
-                      position:-30,
+                      position:-.00001,
                       containerStyle:{
-                        borderRadius:10,
-                        paddingHorizontal:10
+                        borderRadius:0,
+                        paddingHorizontal:0,
+                        width:'100%'
                       }
                     });
-            this.props.postCart(itemData.id)
+            this.props.addCart(this.props.itemData.id,this.props.itemData.shop_id)
             }  
             } style={styles.filterButton2}>
             <Text style={{fontSize:14,color:'white',fontWeight:'bold'}}>Add</Text>

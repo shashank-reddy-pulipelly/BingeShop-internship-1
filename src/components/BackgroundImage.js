@@ -1,10 +1,10 @@
 
 import { ImageBackground, StyleSheet, Text, View,ScrollView,Image,TouchableWithoutFeedback } from "react-native";
-import {data} from '../data/groceries';
-import Card from './CardHorizontal'
-import React, { Component } from 'react';
 
-const App = ({navigation}) => (
+import Card from './CardHorizontal'
+import React, { Component,memo } from 'react';
+
+const App = (props) => (
   <View style={styles.container}>
     <ImageBackground source={require('../assets/back1.jpg')} style={styles.image}>
       <ScrollView     horizontal 
@@ -15,20 +15,20 @@ const App = ({navigation}) => (
           <Text style={{fontFamily:'serif',fontSize:16,fontWeight:'bold'}}>  Deals of   </Text>
           <Text style={{fontFamily:'serif',fontSize:16,fontWeight:'bold'}} >  the Week</Text>
           </View>
-          {data.map((item)=>{
+          {props.data.map((item)=>{
             return(
-<TouchableWithoutFeedback onPress={()=>navigation.navigate('CardItemDetails', {itemData: item})} key={item.id}>
+<TouchableWithoutFeedback onPress={()=>props.navigation.navigate('CardItemDetails', {itemData: item,shopId:item.shop_id})} key={item.id}>
 
               <View>
               <View >
-                   <Card itemData={item}></Card>
+                   <Card itemData={item} ></Card>
               </View>
              
               </View>
               </TouchableWithoutFeedback>
             )
           })}
-           <TouchableWithoutFeedback onPress={()=>navigation.navigate('GroceryShopsScreen', {title: 'Grocery Stores'})} >
+           <TouchableWithoutFeedback onPress={()=>props.navigation.navigate('GroceryShopsScreen', {title: 'Grocery Stores'})} >
              <View style={styles.lastCard}>
              <Text style={{fontSize:19,fontWeight: 'bold',color:'#EEEEEE'}}>View More</Text>
              </View>
@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     height:420,
     marginBottom:30,
+   
  
   },
 
@@ -66,4 +67,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default App;
+export default memo(App);

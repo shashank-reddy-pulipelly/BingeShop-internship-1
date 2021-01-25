@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import { View, Text, StyleSheet,Image,ScrollView,TouchableWithoutFeedback } from 'react-native';
 import { connect } from 'react-redux';
-
+import * as firebase from 'firebase';
 import {theme} from '../../core/theme';
 import {Rating} from 'react-native-elements';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -29,10 +29,16 @@ class OrderDetailsScreen extends Component {
   
     this.state = {
        rating:'',
-       ratingOn:false
+       ratingOn:false,
+       shop:{rating:null,reviews:null}
     }
   }
-
+componentDidMount(){
+firebase.database().ref('Shops/'+this.props.route.params.orderItem.orderDetials.shop_id).on('value',(snapshot)=>{
+const shop=snapshot.val();
+this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
+})
+}
   
   
   render(){
@@ -42,7 +48,7 @@ class OrderDetailsScreen extends Component {
        return({status:'Delivered',date:orderItem.orderStatus.deliveredDate})
       }
       else if(orderItem.orderStatus.orderAccepted){
-        return({status:'Expected Delivery Date',date:orderItem.orderStatus.orderAcceptedDate})
+        return({status:'Order Accepted',date:orderItem.orderStatus.orderAcceptedDate})
       }
       if(orderItem.orderStatus.ordered){
         return({status:'Ordered',date:orderItem.orderStatus.orderedDate})
@@ -57,13 +63,13 @@ class OrderDetailsScreen extends Component {
           <View style={styles.status}>
             <View style={{flexDirection:'row',flex:1}}>
            <View style={{flex:1}}>
-           <Text style={{fontWeight:'bold',fontSize:20}}>{orderStatus().status}</Text>
+           <Text style={orderItem.orderStatus.delivered?{fontWeight:'bold',fontSize:20,color:'black'}:{fontWeight:'bold',fontSize:20,color:'#FF8F00'}}>{orderStatus().status}</Text>
         <Text style={{fontSize:16,fontWeight:'bold',marginTop:10,
-        color:'green'}}>{orderStatus().date}</Text>
+        color:'black'}}>{orderStatus().date}</Text>
            </View>
      <View style={{flex:1,paddingRight:20}}>
        <Text style={{marginLeft:'auto',fontSize:16,paddingVertical:5,color:'#757575'}}>Shop Name</Text>
-       <Text style={{marginLeft:'auto',fontSize:18,fontWeight:'bold'}}>{this.props.shops.shops.find((shop)=>shop.id==orderItem.orderDetials.shop_id).title}</Text>
+       <Text style={{marginLeft:'auto',fontSize:18,fontWeight:'bold'}}>{orderItem.orderDetials.shop_name}</Text>
      </View>
      </View>
          <Text style={{color:'#757575',paddingVertical:5,fontSize:15}}>Order Id : {orderItem.orderDetials.orderId}</Text>
@@ -128,12 +134,15 @@ class OrderDetailsScreen extends Component {
                                 ratingBackgroundColor='#c8c7c8'
                                 imageSize = { 35 }
                                 onFinishRating = { rating =>
-                                    { this.setState({ rating: rating });
+                                    { 
+                                      const newRating=(this.state.shop.rating*this.state.shop.reviews+rating)/(this.state.shop.reviews+1);
+                                      firebase.database().ref('Shops/'+this.props.route.params.orderItem.orderDetials.shop_id).update({rating:newRating,reviews:this.state.shop.reviews+1})
                                     Toast.show('Thank You for rating ',{
-                                      position:-20,
+                                     position:-.00001,
                                       containerStyle:{
-                                        borderRadius:5,
-                                        paddingHorizontal:30
+                                        borderRadius:0,
+                                        paddingHorizontal:0,
+                                        width:'100%'
                                       }
                                     });}}
                                 showRating/>}

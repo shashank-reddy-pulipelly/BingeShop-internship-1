@@ -1,6 +1,6 @@
 
 
-import React,{useEffect,useState} from 'react';
+import React,{useEffect,useState,memo} from 'react';
 import { View, Text, StyleSheet,ActivityIndicator,StatusBar } from 'react-native';
 import Search from '../../components/Search';
 

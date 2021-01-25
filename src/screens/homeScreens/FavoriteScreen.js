@@ -1,7 +1,7 @@
-import React,{Component} from 'react';
+import React,{PureComponent} from 'react';
 import { View, Text, FlatList, StyleSheet,Image,ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
-
+import * as firebase from 'firebase';
 import Card from '../../components/Card';
 import {  Button } from 'native-base';
 import {theme} from '../../core/theme';
@@ -11,59 +11,71 @@ const mapStateToProps = state => {
     return {
 
       favorites: state.favorites,
-      shops:state.shops,
-      products: state.products,
-      shopProductsList:state.shopProductsList,
      
     }
   }
 
   const mapDispatchToProps = dispatch => ({
   
-    fetchShops:()=>dispatch(fetchShops()),
-    fetchProducts:()=>dispatch(fetchProducts()),
-    fetchShopProductsList:()=>dispatch(fetchShopProductsList()),
+
+
     fetchFavorites:()=>dispatch(fetchFavorites())
 })
 
-class FavoriteScreen extends Component{
+class FavoriteScreen extends PureComponent{
 constructor(props) {
   super(props)
 
   this.state = {
-    isRefreshing:false
+ 
+
+    shopProductsList:{isLoading:true,errMess:null,shopProductsList:[]},
+    products: {isLoading:true,errMess:null,products:[]},
   }
 }
 
   componentDidMount(){ 
 
-     
-    this.props.fetchFavorites();
+    firebase.database().ref('shopProductsList').on('value', (snapshot) => {
+     const shopProductsList = snapshot.val();
+     const loadedShopProductsList=[];
+     for(const key in shopProductsList){
+         const products=shopProductsList[key].products;
+         const loadedProducts=[];
+         for(const product in products){
+            loadedProducts.push(products[product]);
+         }
+         const obj={
+             id:key,
+             products:loadedProducts,
+             shop_id:shopProductsList[key].shop_id, 
+             shop_name:shopProductsList[key].shop_name                              
+         }
 
-    this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.props.fetchShops();
-    this.props.fetchProducts();
-    this.props.fetchShopProductsList();
-    
-       });
+         loadedShopProductsList.push(obj);
+     }
+     this.setState({shopProductsList:{isLoading:false,errMess:null,shopProductsList:loadedShopProductsList}})
+   })
+
+ firebase.database()
+   .ref('Products')
+   .on('value', (snapshot) => {
+    const products = snapshot.val();
+    const loadedProducts=[];
+    for(const key in products){
+       loadedProducts.push(products[key]);
+    }
+    this.setState({products:{isLoading:false,errMess:null,products:loadedProducts}})
+  })
+   
   }
 
-  componentWillUnmount() {
-    this._unsubscribe();
-  }
-  load=()=>{
-    this.setState({isRefreshing:true},()=>{
-      this.props.fetchShops();
-      this.props.fetchProducts();
-      this.props.fetchShopProductsList();
-      this.setState({isRefreshing:false}) 
-    })
- 
-  }
+
+
 
   render(){
    
-    if(this.props.products.isLoading || this.props.shopProductsList.isLoading || this.props.shops.isLoading || this.props.favorites.isLoading){
+    if(this.state.products.isLoading || this.state.shopProductsList.isLoading  ){
       return(
        <View style={[styles.container, styles.horizontal]}>
       
@@ -73,22 +85,22 @@ constructor(props) {
       )
     }
  
-    else if(this.props.products.errMess || this.props.shopProductsList.errMess || this.props.shops.errMess){
+    else if(this.state.products.errMess || this.state.shopProductsList.errMess ){
       return(
        <View style={[styles.horizontal]} > 
        <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
-       <Text style={{fontSize:18,fontWeight:'bold'}} >{this.props.products.errMess?this.props.products.errMess:this.props.shopProductsList.errMess?this.props.shopProductsList.errMess:this.props.shops.errMess} !</Text>
+       <Text style={{fontSize:18,fontWeight:'bold'}} >{this.state.errMess?this.state.errMess:this.state.shopProductsList.errMess} !</Text>
    </View>
       )
     }
     else{
 
     const renderItem = ({item}) => {
-      const obj=this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item.shop_id).products.find((product)=>product.prod_id==item.prod_id);
-      const prodObj=this.props.products.products.find((product)=>product.id==obj.prod_id);
-      const shop=this.props.shops.shops.find((shop)=>shop.id==item.shop_id);
+      const obj=this.state.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item.shop_id).products.find((product)=>product.prod_id==item.prod_id);
+      const prodObj=this.state.products.products.find((product)=>product.id==obj.prod_id);
+     console.log(this.state.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item.shop_id))
        const finalItem={
-          ...prodObj,available:obj.available,price:obj.price,shop_name:shop.title
+          ...prodObj,available:obj.available,price:obj.price,shop_name:this.state.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item.shop_id).shop_name
         }
       return (
           <Card 
@@ -119,7 +131,7 @@ constructor(props) {
   }
     return(
       <View style={styles.container}>
-      <FlatList onRefresh={this.load} refreshing={this.state.isRefreshing} style={styles.list}
+      <FlatList  style={styles.list}
                data={this.props.favorites.favorites}
                renderItem={renderItem}
                keyExtractor={item => Math.random().toString()}

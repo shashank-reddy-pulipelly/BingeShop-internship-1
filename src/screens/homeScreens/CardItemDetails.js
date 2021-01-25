@@ -146,8 +146,9 @@ class  CardItemDetails extends Component {
             <Button onPress={()=>{Toast.show('  Item Added to Cart  Successfully  ',{
       position:-70,
       containerStyle:{
-        borderRadius:10,
-        paddingHorizontal:10
+        borderRadius:0,
+        paddingHorizontal:0,
+        width:'100%'
       }
     });
     this.props.postCart({prod_id:this.itemData.id,shop_id:this.shopId});
@@ -157,8 +158,9 @@ class  CardItemDetails extends Component {
             <Button onPress={()=>{Toast.show('  Item Added to Cart  Successfully  ',{
       position:-70,
       containerStyle:{
-        borderRadius:10,
-        paddingHorizontal:10
+        borderRadius:0,
+        paddingHorizontal:0,
+        width:'100%'
       }
     });
     this.props.postCart({prod_id:this.itemData.id,shop_id:this.shopId});}} style={styles.filterButton2}>

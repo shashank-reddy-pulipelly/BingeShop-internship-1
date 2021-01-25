@@ -1,5 +1,5 @@
 import { createStackNavigator,TransitionPresets } from '@react-navigation/stack';
-import React, {Component } from 'react';
+import React, {PureComponent } from 'react';
 import ProductsScreen from './ProductsScreen';
 import ProductDetailsScreen from './ProductDetailsScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -13,14 +13,36 @@ import IconBadge from 'react-native-icon-badge';
 import {theme} from '../../../core/theme';
 import HeaderButton from '../../../components/HeaderButton';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import * as firebase from 'firebase';
 const mapStateToProps = state => {
   return {
-  orders:state.orders,
-  carts:state.carts
+
   }
 }
- class ProductsStackScreen extends Component {
+ class ProductsStackScreen extends PureComponent {
+  constructor(props) {
+    super(props)
   
+    this.state = {
+       orders:0
+    }
+  }
+  componentDidMount(){
+const query=firebase.database().ref('Orders').orderByChild('orderDetials/shop_id').equalTo('Shop_1');
+query.on("value",(snapshot) =>{
+  var count=0;
+  snapshot.forEach((childSnapshot)=> {
+   
+    
+  
+    var childData = childSnapshot.val();
+    if(!childData.orderStatus.delivered){
+      count =count+1;
+    }
+})
+this.setState({orders:count});
+})
+  }
   render() {
    const {navigation}=this.props;
    const CartBadge=()=>{
@@ -36,7 +58,7 @@ const mapStateToProps = state => {
         }
         BadgeElement={
           <TouchableOpacity onPress={() => {navigation.navigate('VendorOrdersDrawer',{screen:'VendorOrdersScreen'})}}> 
-            <Text style={{fontSize:12,color:'#FFFFFF'}}>8</Text></TouchableOpacity>
+            <Text style={{fontSize:12,color:'#FFFFFF'}}>{this.state.orders}</Text></TouchableOpacity>
          
         }
         IconBadgeStyle={
@@ -46,7 +68,7 @@ const mapStateToProps = state => {
           right:5,
           backgroundColor: '#FF6D00'}
         }
-        Hidden={this.props.carts.length==0}
+        Hidden={this.state.orders==0}
         />
     </TouchableOpacity>
     )

@@ -1,15 +1,14 @@
 import React,{memo,Component} from 'react';
-import { View, Text, StyleSheet,Image,ScrollView,TouchableWithoutFeedback,Alert } from 'react-native';
+import { View, Text, StyleSheet,Image,ScrollView,Alert } from 'react-native';
 import { connect } from 'react-redux';
-import {data} from '../../../data/groceries';
-import {theme} from '../../../core/theme';
-import {Rating} from 'react-native-elements';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Octicons from 'react-native-vector-icons/Octicons';
-import Toast from 'react-native-tiny-toast';
-import { Button } from 'native-base';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import {theme} from '../../../core/theme';
+
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
+import { Button } from 'native-base';
+
+import * as firebase from 'firebase';
 const mapStateToProps = state => {
     return {
 
@@ -50,9 +49,9 @@ buttonHandler=()=>{
     return(
      
          <View style={{alignItems:'center',paddingVertical:20}}>
-          <FontAwesome  name="check-circle" size={60} color="#09af00"/>
+          <FontAwesome  name="check-circle" size={80} color="#09af00"/>
       
-        <Text style={{fontSize:15,fontWeight:'bold'}}>Order delivered Successfully</Text>        
+        <Text style={{fontSize:17,fontWeight:'bold',marginBottom:10}}>Order delivered Successfully</Text>        
       
            </View> 
      
@@ -71,7 +70,21 @@ buttonHandler=()=>{
             onPress: () => {},
             style: "cancel"
           },
-          { text: "OK", onPress: () => {} }
+          { text: "OK", onPress: () => {
+            var d = new Date();
+            var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+             const date=d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
+             console.log(this.props.route.params.orderItem.id);
+            firebase.database().ref('Orders/'+this.props.route.params.orderItem.id+'/orderStatus').update({delivered:true,deliveredDate:date},(error)=>{
+if(error){
+  console.log(error);
+
+}
+else{
+  this.setState({orderItem:{...this.state.orderItem,orderStatus:{...this.state.orderItem.orderStatus,delivered:true,deliveredDate:date}}})
+}
+            })
+          } }
         ],
         { cancelable: false }
       );
@@ -94,7 +107,21 @@ buttonHandler=()=>{
                             onPress: () => {},
                             style: "cancel"
                           },
-                          { text: "OK", onPress: () => {} }
+                          { text: "OK", onPress: () => {
+                            var d = new Date();
+                            var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                             const date=d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
+                             console.log(this.props.route.params.orderItem.id);
+                            firebase.database().ref('Orders/'+this.props.route.params.orderItem.id+'/orderStatus').update({orderAccepted:true,orderAcceptedDate:date},(error)=>{
+                              if(error){
+                                console.log(error);
+                              
+                              }
+                              else{
+                                this.setState({orderItem:{...this.state.orderItem,orderStatus:{...this.state.orderItem.orderStatus,orderAccepted:true,orderAcceptedDate:date}}})
+                              }
+                                          })
+                          } }
                         ],
                         { cancelable: false }
                       );
@@ -117,7 +144,7 @@ buttonHandler=()=>{
           <View style={styles.row1}>
           <View style={styles.status}>
            
-        <Text style={orderItem.orderStatus.delivered?{fontWeight:'bold',fontSize:20}:{fontWeight:'bold',fontSize:20,color:'#FF8F00'}}>{this.orderStatus().status}</Text>
+        <Text style={this.state.orderItem.orderStatus.delivered?{fontWeight:'bold',fontSize:20,color:'black'}:{fontWeight:'bold',fontSize:20,color:'#FF8F00'}}>{this.orderStatus().status}</Text>
          <Text style={{color:'#757575',paddingVertical:5,fontSize:15,marginTop:10}}>Order Id : {orderItem.orderDetials.orderId}</Text>
           </View>
           <View style={styles.amount}>

@@ -3,13 +3,13 @@ import {
     FlatList,
     View,
     ActivityIndicator,
-    TouchableOpacity,Text,TextInput,StyleSheet,Platform,StatusBar,Keyboard
+    TouchableOpacity,Text,TextInput,StyleSheet,Platform,StatusBar,Keyboard,ScrollView
   } from 'react-native'
 import {useTheme, Avatar} from 'react-native-paper';
 import { Searchbar } from 'react-native-paper';
 import {theme} from '../../core/theme';
-import {data} from '../../data/groceries';
-import Card from '../../components/Card';
+
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {SearchArray} from '../../data/searchArray'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -117,7 +117,7 @@ class Search extends React.Component{
         return(
             <View style={{backgroundColor:"#fff"}} >
   {ss}
-  <View > 
+  <View  > 
 <FlatList
   data={this.state.data}
   renderItem={({ item }) => (
