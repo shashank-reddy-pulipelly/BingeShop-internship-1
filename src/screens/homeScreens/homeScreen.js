@@ -26,6 +26,9 @@ import { fetchAddress} from '../../redux/actions/addressActions';
 import { fetchCarts} from '../../redux/actions/cartActions';
 import { fetchFavorites} from '../../redux/actions/favoritesActions';
 
+
+
+
 const mapStateToProps = state => {
   return {
 
@@ -46,13 +49,66 @@ constructor(props) {
   super(props)
 
   this.state = {
-    Famous_Products_1:{isLoading:true,errMess:null,Famous_Products_1:[]}
+    Famous_Products_1:{isLoading:true,errMess:null,Famous_Products_1:[]},
+    token:''
   }
 }
+triggerNotificationHandler = () => {
+  fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-Encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      to: this.state.token,
+      data: { extraData: 'Some data' },
+      title: 'Sent via the app',
+      body: 'This push notification was sent via the app!',
+    }),
+  });
+};
 
   componentDidMount(){
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-    
+
+    Permissions.getAsync(Permissions.NOTIFICATIONS)
+    .then((statusObj) => {
+      if (statusObj.status !== 'granted') {
+        return Permissions.askAsync(Permissions.NOTIFICATIONS);
+      }
+      return statusObj;
+    })
+    .then((statusObj) => {
+      if (statusObj.status !== 'granted') {
+        throw new Error('Permission not granted!');
+      }
+    })
+    .then(() => {
+      return Notifications.getExpoPushTokenAsync();
+    })
+    .then((response) => {
+      const token = response.data;
+      this.setState({token})
+      console.log(response)
+    })
+    .catch((err) => {
+      console.log(err);
+      return null;
+    });
+
+     this.backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        console.log('back',response);
+      }
+    );
+
+    this.foregroundSubscription = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log('front',notification);
+      }
+    );
     firebase.database()
     .ref('Famous_products_1')
     .on('value', (snapshot) => {
@@ -68,6 +124,11 @@ constructor(props) {
     this.props.fetchAddress();
     this.props.fetchCarts();
     this.props.fetchFavorites();
+  }
+
+  componentWillUnmount(){
+    this.backgroundSubscription.remove();
+      this.foregroundSubscription.remove();
   }
   render(){
     let TouchableCmp=TouchableOpacity;
@@ -117,13 +178,7 @@ return(
   
    <HomeSwiper  />
  <Button title="click"  onPress={()=>{
-      const query= firebase.database().ref('Products').orderByChild('type').equalTo("Vegetables");
-       query.once('value', (snapshot) => {
-         
-        const products = snapshot.val();
-  console.log(products)
-       
-      })
+  this.triggerNotificationHandler()
  }} />
     </View>
     <View style={{flexDirection:'row',alignItems:'center',marginHorizontal:10,paddingHorizontal:15,
