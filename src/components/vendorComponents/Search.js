@@ -123,8 +123,8 @@ return(
     data={this.state.data}
     renderItem={({ item }) => (
       <ProductCard
-      itemData={item}
-      onPress={()=> this.props.navigation.navigate('ProductDetails', {itemData: item})}
+      itemData={item} navigation={this.props.navigation}
+      
        />
     )}
     keyExtractor={item => Math.random().toString()}

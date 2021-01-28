@@ -1,38 +1,37 @@
-
 import React,{useEffect,useState} from 'react';
 import { View, Text, StyleSheet,ActivityIndicator,StatusBar } from 'react-native';
 import Search from '../../components/Search';
-
-import { fetchShops } from '../../redux/ActionCreators';
-import { connect } from 'react-redux';
-const mapStateToProps = state => {
-  return {
-    shops: state.shops,
-
-  }
-}
-
-const mapDispatchToProps = dispatch => ({
-  
-  fetchShops:()=>dispatch(fetchShops()),
-
-})
-
+import * as firebase from 'firebase';
 const VegetableShopsScreen = (props) => {
-
+  const [shops,setShops]=useState({isLoading:true,errMess:null,shops:[]})
   const [isRefreshing,setRefreshing]=useState(false);
+
   const load= async ()=>{
     setRefreshing(true);
-   await props.fetchShops();
+   const query =await firebase.database().ref('Shops').once('value',snapShot=>{
+  var val=snapShot.val();
+  const loadedShops=[];
+  for(const key in val){
+    loadedShops.push(val[key]);
+  }
+
+  setShops({isLoading:false,errMess:null,shops:loadedShops})
+   })
     setRefreshing(false);
   }
-  useEffect(()=>{
-
-props.fetchShops();
-
-  },[])
-
-  if(props.shops.isLoading){
+     useEffect(()=>{
+  
+      firebase.database().ref('Shops').once('value',snapShot=>{
+        var val=snapShot.val();
+        const loadedShops=[];
+        for(const key in val){
+          loadedShops.push(val[key]);
+        }
+        setShops({isLoading:false,errMess:null,shops:loadedShops})
+         })
+  
+     },[])
+  if(shops.isLoading){
     return(
      <View style={[styles.container, styles.horizontal]}>
     
@@ -42,17 +41,17 @@ props.fetchShops();
     )
   }
 
-  else if(props.shops.errMess){
+  else if(shops.errMess){
     return(
      <View style={[styles.horizontal]} > 
      <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
-     <Text style={{fontSize:18,fontWeight:'bold'}} >{props.shops.errMess} !</Text>
+     <Text style={{fontSize:18,fontWeight:'bold'}} >{shops.errMess} !</Text>
  </View>
     )
   }
 
   else{
-    const data=props.shops.shops.filter(shop=>shop.shop_type.is_vegetables===true)
+    const data=shops.shops.filter(shop=>shop.shop_type.is_vegetables===true)
    return (
      <View style={styles.container}>
     
@@ -67,7 +66,7 @@ props.fetchShops();
 };
 
 
-export default connect(mapStateToProps,mapDispatchToProps)(VegetableShopsScreen);
+export default VegetableShopsScreen;
 const styles = StyleSheet.create({
  container: {
    flex: 1, 

@@ -24,7 +24,7 @@ import {theme} from '../../core/theme';
 
 import { fetchAddress} from '../../redux/actions/addressActions';
 import { fetchCarts} from '../../redux/actions/cartActions';
-import { fetchFavorites} from '../../redux/actions/favoritesActions';
+
 
 
 
@@ -39,7 +39,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch) => ({
     
 
-  fetchFavorites:()=>dispatch(fetchFavorites()),
+
   fetchAddress:()=>dispatch(fetchAddress()),
   fetchCarts:()=>dispatch(fetchCarts()),
 
@@ -72,7 +72,6 @@ triggerNotificationHandler = () => {
 
   componentDidMount(){
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-
     Permissions.getAsync(Permissions.NOTIFICATIONS)
     .then((statusObj) => {
       if (statusObj.status !== 'granted') {
@@ -98,6 +97,7 @@ triggerNotificationHandler = () => {
       return null;
     });
 
+
      this.backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
       (response) => {
         console.log('back',response);
@@ -109,7 +109,8 @@ triggerNotificationHandler = () => {
         console.log('front',notification);
       }
     );
-    firebase.database()
+    
+   this.sub1= firebase.database()
     .ref('Famous_products_1')
     .on('value', (snapshot) => {
       
@@ -123,12 +124,13 @@ triggerNotificationHandler = () => {
    })
     this.props.fetchAddress();
     this.props.fetchCarts();
-    this.props.fetchFavorites();
+
   }
 
   componentWillUnmount(){
     this.backgroundSubscription.remove();
-      this.foregroundSubscription.remove();
+    this.foregroundSubscription.remove();
+    firebase.database().ref('Famous_products_1').off('value',this.sub1)
   }
   render(){
     let TouchableCmp=TouchableOpacity;

@@ -1,16 +1,11 @@
-import {View, Text, Image, StyleSheet,TouchableWithoutFeedback,Modal, TextInput,TouchableHighlight, TouchableOpacity,Dimensions,
+import {View, Text, StyleSheet, TextInput,Dimensions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { connect } from 'react-redux';
-import { Button } from 'native-base';
 
-import { postCart,editProduct } from '../../redux/ActionCreators';
 import React, { Component } from 'react';
 
 import { theme } from '../../core/theme';
-import {  TouchableRipple,Button as PaperButton,RadioButton } from 'react-native-paper';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { render } from 'react-dom';
+import {Button as PaperButton,RadioButton } from 'react-native-paper';
+
 const { width, height } = Dimensions.get("window");
 
 
@@ -35,7 +30,7 @@ class ModalCustom extends Component {
              <Text style={{fontSize:18,fontWeight:'bold'}} >Edit Product Price </Text>
              </View>
             
-                 <TextInput placeholder="Enter Price" keyboardType='numeric'
+                 <TextInput placeholder="Enter Price"  keyboardType="phone-pad"
                             value={this.state.input} style={styles.textInput}  
                             onChangeText={(value) =>   this.setState({input:value})} /> 
 <View style={{paddingTop:20,marginLeft:20,paddingBottom:10}}>
@@ -53,7 +48,7 @@ class ModalCustom extends Component {
    <View style={{flexDirection:'row',paddingTop:15,paddingBottom:10,marginLeft:'auto',marginRight:10}}>
    <PaperButton mode="text" labelStyle={{fontSize:16}} onPress={()=>{this.props.modalToggle()}}>Cancel </PaperButton>
    <PaperButton mode="text"labelStyle={{fontSize:16}} onPress={()=>{
-
+console.log(this.state.localStatus)
 this.props.EditProduct(this.state.input,this.state.localStatus)
 }}> Confirm </PaperButton>
 

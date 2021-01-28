@@ -2,50 +2,43 @@ import React,{useEffect,useState} from 'react';
 import { View, Text, StyleSheet,ActivityIndicator } from 'react-native';
 import Search from '../../components/Search';
 
-import { fetchProducts,fetchShopProductsList,fetchShops } from '../../redux/ActionCreators';
-import { connect } from 'react-redux';
+import * as firebase from 'firebase';
 
 
-const mapStateToProps = state => {
-  return {
-    products: state.products,
-    shopProductsList:state.shopProductsList,
-    shops:state.shops,
-    favorites:state.favorites
-  }
-}
 
-const mapDispatchToProps = dispatch => ({
-  fetchShops:()=>dispatch(fetchShops()),
-  fetchProducts:()=>dispatch(fetchProducts()),
-  fetchShopProductsList:()=>dispatch(fetchShopProductsList()),
 
-})
+
 
 const CardListScreen = (props) => {
-
+  const [shopProducts,setShopProducts]=useState({isLoading:true,errMess:null,shopProducts:[]})
   const [isRefreshing,setRefreshing]=useState(false);
+
   const load= async ()=>{
     setRefreshing(true);
-  await props.fetchShops();
-  await props.fetchProducts();
-  await props.fetchShopProductsList();
+
     setRefreshing(false);
   }
        
   React.useEffect(() => {
    
-    const unsubscribe = props.navigation.addListener('focus', () => {
-      props.fetchShops();
-      props.fetchProducts();
-      props.fetchShopProductsList();
-    });
+ firebase.database().ref(`ShopProducts/${props.route.params.shopId}`).once('value',snap=>{
+  var val=snap.val();
+  const loadedProducts=[];
+ 
+  for(const key in val){
 
-    return unsubscribe;
-  }, [props.navigation]);
+    loadedProducts.push({...val[key],id:val[key].prod_id})
+
+  }
+  setShopProducts({isLoading:false,errMess:null,shopProducts:loadedProducts})
+})
+
 
     
-         if(props.products.isLoading || props.shopProductsList.isLoading || props.shops.isLoading || props.favorites.isLoading){
+  }, []);
+
+    
+         if(shopProducts.isLoading){
           return(
            <View style={[styles.container, styles.horizontal]}>
           
@@ -55,42 +48,30 @@ const CardListScreen = (props) => {
           )
         }
      
-        else if(props.products.errMess || props.shopProductsList.errMess || props.shops.errMess){
+        else if(shopProducts.errMess ){
           return(
            <View style={[styles.horizontal]} > 
            <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
-           <Text style={{fontSize:18,fontWeight:'bold'}} >{props.products.errMess?props.products.errMess:props.shopProductsList.errMess?props.shopProductsList.errMess:props.shops.errMess} !</Text>
+           <Text style={{fontSize:18,fontWeight:'bold'}} >{shopProducts.errMess} !</Text>
        </View>
           )
         }
       
          else{
-           const productsArray=props.shopProductsList.shopProductsList.find(shop=>shop.shop_id==props.route.params.shopId).products;
-     
-           const filterProductsArray=productsArray.filter((shopProduct)=>{
-             const exist=props.products.products.some((product)=>{
-               return product.id==shopProduct.prod_id && product.type==props.route.params.shopType;
-             })
-             return exist;
-           })
          
-           const finalProductsArray=filterProductsArray.map((shopProduct)=>{
-             const Product=props.products.products.find((product)=>product.id==shopProduct.prod_id);
-             return ({...Product,available:shopProduct.available,price:shopProduct.price,shop_name:
-              props.shops.shops.find((shop)=>shop.id===props.route.params.shopId).title})
-           })
-
+         
+ 
            return (
             <View style={styles.container}>
             
-            <Search cardType='card' isRefreshing={isRefreshing} load={load}  data={finalProductsArray} shopId={props.route.params.shopId} title={props.route.params.title} navigation={props.navigation}/>
+            <Search cardType='card' isRefreshing={isRefreshing} load={load}  data={shopProducts.shopProducts.filter(product=>product.type==props.route.params.shopType)} shopId={props.route.params.shopId} title={props.route.params.title} navigation={props.navigation}/>
               
             </View>
           );
          }
 };
 
-export default connect(mapStateToProps,mapDispatchToProps)(CardListScreen);
+export default CardListScreen;
 
 const styles = StyleSheet.create({
   container: {

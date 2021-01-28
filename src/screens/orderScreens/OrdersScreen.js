@@ -1,26 +1,14 @@
 import React,{Component} from 'react';
 import { View, Text, StyleSheet,Image,ScrollView,Dimensions,ActivityIndicator } from 'react-native';
-import { connect } from 'react-redux';
-import { fetchProducts} from '../../redux/ActionCreators';
+
 const { width, height } = Dimensions.get("window");
 import { Button } from 'native-base';
 import {theme} from '../../core/theme';
 import * as firebase from 'firebase';
-const mapStateToProps = state => {
-    return {
+import OrderCard from '../../components/orderCard';
 
-     
-      
-     
-      products:state.products,
-      
-    }
-  }
 
-  const mapDispatchToProps = dispatch => ({
-   
-    fetchProducts:()=>dispatch(fetchProducts()),
-})
+
 
 class OrdersScreen extends Component {
 constructor(props) {
@@ -32,7 +20,7 @@ constructor(props) {
 }
 
   componentDidMount(){ 
-    this.props.fetchProducts();
+
    const query = firebase.database().ref('Orders').orderByChild('UserPhoneNumber').equalTo(firebase.auth().currentUser.phoneNumber)
     query.on('value', (snapshot) => {
       
@@ -40,12 +28,9 @@ constructor(props) {
      
      const loadedOrders=[];
      for(const key in orders){
-       const loadedItems=[];
-       const items=orders[key].items;
-       for(const item in items){
-        loadedItems.push(items[item])
-       }
-        loadedOrders.push({...orders[key],items:loadedItems,id:key});
+    
+   
+        loadedOrders.push(orders[key]);
      }
      this.setState({orders:{isLoading:false,errMess:null,orders:loadedOrders}})
    })
@@ -54,7 +39,7 @@ constructor(props) {
   }
   render(){
 
-    if(this.props.products.isLoading ||this.state.orders.isLoading ){
+    if(this.state.orders.isLoading ){
       return(
        <View style={ styles.horizontal}>
       
@@ -64,22 +49,22 @@ constructor(props) {
       )
     }
  
-    else if(this.props.products.errMess ){
+    else if(this.state.orders.errMess ){
       return(
        <View style={[styles.horizontal]} > 
-       <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
-       <Text style={{fontSize:18,fontWeight:'bold'}} > something went wrong !</Text>
+       <Text style={{fontSize:30,fontWeight:'bold',color:'grey'}} >OOPS ...!!</Text>
+       <Text style={{fontSize:18,fontWeight:'bold',color:'grey'}} > something went wrong !</Text>
    </View>
       )
     }  
     else{
-    var newOrders = this.state.orders.orders.slice().reverse();
+ 
     return(
       <View style={styles.container}>
         <ScrollView>
-        {newOrders.map((orderItem,index)=>{
+        {this.state.orders.orders.slice().reverse().map((orderItem,index)=>{
         
-          const itemsData=this.props.products.products.filter(item => orderItem.items.some(el => el.prod_id === item.id))
+         
           return(
             <View key={index} style={styles.card}>
               <View style={{backgroundColor:'#EEEEEE',paddingVertical:10,
@@ -99,24 +84,10 @@ constructor(props) {
           </View >
 
           </View>
-          <View style={styles.item1}>
-<Image source={{uri:itemsData[0].image}}
-            resizeMode="stretch"
-            style={styles.cardImg} />
-            <Text numberOfLines={1} style={{marginLeft:10}}>{itemsData[0].title}</Text>
-          </View>
-          {orderItem.items.length>=2?<View style={styles.item2}>
-          <Image source={{uri:itemsData[1].image}}
-            resizeMode="stretch"
-            style={styles.cardImg} />
-            <Text numberOfLines={1}  style={{marginLeft:10}}>{itemsData[1].title}</Text>
-          </View>:null}
-          
+      
+          <OrderCard shop_id={orderItem.orderDetials.shop_id}  items={orderItem.items} />
          
-          <View style={styles.items}>
-            {orderItem.items.length>2?<Text>+{orderItem.items.length-2} more items</Text>:null}
-
-</View>
+      
 <View style={{backgroundColor:'white',flexDirection:'row'}}>
             <Button  style={styles.filterButton1}>
             <Text style={{fontSize:17,color:theme.colors.primary}}>Need Help</Text>
@@ -141,7 +112,7 @@ constructor(props) {
 }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(OrdersScreen);
+export default OrdersScreen;
 
 const styles = StyleSheet.create({
   container: {

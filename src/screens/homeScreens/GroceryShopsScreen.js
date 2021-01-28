@@ -4,37 +4,43 @@ import React,{useEffect,useState,memo} from 'react';
 import { View, Text, StyleSheet,ActivityIndicator,StatusBar } from 'react-native';
 import Search from '../../components/Search';
 
-import { fetchShops } from '../../redux/ActionCreators';
-import { connect } from 'react-redux';
 
-const mapStateToProps = state => {
-  return {
-    shops: state.shops,
+import * as firebase from 'firebase';
 
-  }
-}
 
-const mapDispatchToProps = dispatch => ({
-  
-  fetchShops:()=>dispatch(fetchShops()),
 
-})
 
 const GroceryShopsScreen = (props) => {
-
+const [shops,setShops]=useState({isLoading:true,errMess:null,shops:[]})
 const [isRefreshing,setRefreshing]=useState(false);
+
 const load= async ()=>{
   setRefreshing(true);
- await props.fetchShops();
+ const query =await firebase.database().ref('Shops').once('value',snapShot=>{
+var val=snapShot.val();
+const loadedShops=[];
+for(const key in val){
+  loadedShops.push(val[key]);
+}
+
+setShops({isLoading:false,errMess:null,shops:loadedShops})
+ })
   setRefreshing(false);
 }
    useEffect(()=>{
 
-props.fetchShops();
+    firebase.database().ref('Shops').once('value',snapShot=>{
+      var val=snapShot.val();
+      const loadedShops=[];
+      for(const key in val){
+        loadedShops.push({...val[key],title:val[key].shop_name});
+      }
+      setShops({isLoading:false,errMess:null,shops:loadedShops})
+       })
 
    },[])
 
-   if(props.shops.isLoading){
+   if(shops.isLoading){
      return(
       <View style={[styles.container, styles.horizontal]}>
      
@@ -44,17 +50,17 @@ props.fetchShops();
      )
    }
 
-   else if(props.shops.errMess){
+   else if(shops.errMess){
      return(
       <View style={[styles.horizontal]} > 
       <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
-      <Text style={{fontSize:18,fontWeight:'bold'}} >{props.shops.errMess} !</Text>
+      <Text style={{fontSize:18,fontWeight:'bold'}} >{shops.errMess} !</Text>
   </View>
      )
    }
 
    else{
-     const data=props.shops.shops.filter(shop=>shop.shop_type.is_groceries==true)
+     const data=shops.shops.filter(shop=>shop.shop_type.is_groceries==true)
     return (
       <View style={styles.container}>
       
@@ -69,7 +75,7 @@ props.fetchShops();
 };
 
 
-export default connect(mapStateToProps,mapDispatchToProps)(GroceryShopsScreen);
+export default GroceryShopsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1, 

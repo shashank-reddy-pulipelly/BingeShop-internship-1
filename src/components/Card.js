@@ -1,30 +1,16 @@
 
 import {View, Text, Image, StyleSheet,TouchableWithoutFeedback, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { connect } from 'react-redux';
-import { Button } from 'react-native-elements';
 
-import { addCart,
-  deleteCartArray} from '../redux/actions/cartActions';
-import { postFavorite, deleteFavorite,} from '../redux/actions/favoritesActions';
+import { Button } from 'react-native-elements';
+import * as firebase from 'firebase';
+
 import React, { Component } from 'react';
 import Toast from 'react-native-tiny-toast';
 import { theme } from '../core/theme';
-const mapStateToProps = state => {
-  return {
- 
-    favorites: state.favorites.favorites,
-    
-  }
-}
 
-const mapDispatchToProps = dispatch => ({
 
-  addCart: (prod_id,shop_id) => dispatch(addCart(prod_id,shop_id)),
-  postFavorite: (prod_id,shop_id) => dispatch(postFavorite(prod_id,shop_id)),
-  deleteFavorite: (id,prod_id,shop_id) => dispatch(deleteFavorite(id,prod_id,shop_id)),
-  deleteCartArray:()=>dispatch(deleteCartArray()),
-})
+
  class Card extends Component {
 
 
@@ -32,7 +18,9 @@ const mapDispatchToProps = dispatch => ({
      super(props)
    
      this.state = {
-        isFavorite:this.props.favorites.some(el => el.prod_id == this.props.itemData.id && el.shop_id==this.props.shopId)
+        isFavorite:false,
+        price:this.props.itemData.price,
+        available:this.props.itemData.available
      }
    }
 
@@ -40,18 +28,48 @@ const mapDispatchToProps = dispatch => ({
   
      if(this.state.isFavorite){
       this.setState({isFavorite:!this.state.isFavorite},()=>{
-        this.props.deleteFavorite(this.props.favorites.find(el => el.prod_id == this.props.itemData.id && el.shop_id==this.props.shopId).id,this.props.itemData.id,this.props.shopId);
+
+        firebase.database().ref('Users/User_1/Favorites').orderByChild('prod_id').equalTo(this.props.itemData.id).once('value',snapShot=>{
+         var key=null;
+         var val=snapShot.val();
+         for(const pro in val){
+           key=pro;
+         }
+
+         
+         console.log(key)
+          var a=snapShot.exists();
+      
+          if(a){
+           
+            firebase.database().ref(`Users/User_1/Favorites/${key}`).remove();
+          }
+        })
       });
     
      }
      else{
       this.setState({isFavorite:!this.state.isFavorite},()=>{
-        this.props.postFavorite(this.props.itemData.id,this.props.shopId);
+        firebase.database().ref(`Users/User_1/Favorites`).push({prod_id:this.props.itemData.id,shop_id:this.props.shopId})
+ 
       });
 
      }
    }
-   
+   componentDidMount(){
+     firebase.database().ref('Users/User_1/Favorites').orderByChild('prod_id').equalTo(this.props.itemData.id).once('value',snapShot=>{
+       var a=snapShot.exists();
+       this.setState({isFavorite:a})
+     })
+   this.sub1=  firebase.database().ref(`ShopProducts/${this.props.shopId}/${this.props.itemData.id}`).on('value',snap=>{
+      const val=snap.val();
+      console.log('shah');
+      this.setState({price:val.price,available:val.available})
+        })
+   }
+   componentWillUnmount(){
+    firebase.database().ref(`ShopProducts/${this.props.shopId}/${this.props.itemData.id}`).off('value',this.sub1)
+   }
   render() {
     const {itemData, onPress}=this.props;
     
@@ -77,8 +95,8 @@ const mapDispatchToProps = dispatch => ({
 
             <View style={styles.row}>
                 <Text style={{fontSize:18,padding:0,paddingVertical:0,margin:0,paddingTop:8,alignSelf:'center'}}>{'\u20B9'} </Text>
-                <Text style={{ marginTop:6,marginLeft:2,fontSize:19, fontWeight: 'bold',}}>{itemData.price}</Text>
-                <Text style={{textDecorationLine: 'line-through',fontSize: 13, color: '#444' ,marginTop:9,marginLeft:10}}>{itemData.price+100} </Text>
+                <Text style={{ marginTop:6,marginLeft:2,fontSize:19, fontWeight: 'bold',}}>{this.state.price}</Text>
+                <Text style={{textDecorationLine: 'line-through',fontSize: 13, color: '#444' ,marginTop:9,marginLeft:10}}>{this.state.price+100} </Text>
                 <Text style={{fontSize: 13, color: '#09af00' ,marginTop:9,marginLeft:10}}>33% off</Text>
             </View>
             <View style={{flexDirection:'row',paddingVertical:5,overflow:'hidden'}}>
@@ -127,7 +145,7 @@ const mapDispatchToProps = dispatch => ({
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(Card);
+export default Card;
 
 
 const styles = StyleSheet.create({

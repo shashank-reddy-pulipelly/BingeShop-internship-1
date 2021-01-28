@@ -45,12 +45,19 @@ class Search extends React.Component{
       
     
       }
-      
+     load=()=>{
+      this.setState({
+        data: this.props.data,
+        searchtext:'',
+      fullData:this.props.data
+      })
+     } 
     componentDidMount() {
+      
         this.makeRemoteRequest()
         }
        
-       
+  
 
         renderFooter = () => {
             return (
@@ -64,7 +71,7 @@ class Search extends React.Component{
             this.setState({searchtext:text});
 
             const formattedQuery = text.toLowerCase();
-            const data = this.state.fullData.filter( item => {
+            const data = this.props.data.filter( item => {
               return this.contains(item, formattedQuery)
             })
             this.setState({ data, query: text })
@@ -112,7 +119,9 @@ class Search extends React.Component{
          
           
      <View style={{flex:10}}>
-     <FlatList onRefresh={this.props.load} refreshing={this.props.isRefreshing}
+     <FlatList onRefresh={()=>{
+       this.load();
+       this.props.load();}} refreshing={this.props.isRefreshing}
             data={this.state.data}
             renderItem={({ item }) => (
               <Shop 
@@ -139,7 +148,9 @@ return(
 <View style={{flex:10}}>
 
 
-            <FlatList onRefresh={this.props.load} refreshing={this.props.isRefreshing}
+            <FlatList onRefresh={()=>{
+       this.load();
+       this.props.load();}} refreshing={this.props.isRefreshing}
     data={this.state.data}
     renderItem={({ item }) => (
       <Card 

@@ -4,29 +4,17 @@ import {View, Text, Image, StyleSheet,TouchableWithoutFeedback,Modal, TextInput,
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
 import { Button } from 'native-base';
+import * as firebase from 'firebase';
 
-import { postCart,editProduct } from '../../redux/ActionCreators';
 import React, { Component } from 'react';
 import ModalCustom from './Modal';
 import { theme } from '../../core/theme';
-import {  TouchableRipple,Button as PaperButton,RadioButton } from 'react-native-paper';
+
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 const { width, height } = Dimensions.get("window");
-const mapStateToProps = state => {
-  return {
- 
-    favorites: state.favorites,
-    carts:state.carts,
 
-  }
-}
 
-const mapDispatchToProps = dispatch => ({
 
-  postCart: (ItemId) => dispatch(postCart(ItemId)),
-  editProduct:(shopProductListId,productId,price,available)=>dispatch(editProduct(shopProductListId,productId,price,available))
-
-})
  class Card extends Component {
    
      constructor(props) {
@@ -35,10 +23,10 @@ const mapDispatchToProps = dispatch => ({
          this.state = {
            
             modalVisible:false,
-            input:String(this.props.itemData.price),
+           
             price:String(this.props.itemData.price),
             globalStatus:this.props.itemData.available,
-            localStatus:this.props.itemData.available,
+         
          }
      }
      
@@ -46,16 +34,30 @@ const mapDispatchToProps = dispatch => ({
        this.setState({modalVisible:!this.state.modalVisible})
      }
      EditProduct=(input,status)=>{
-      this.setState({globalStatus:status,
-        price:input},()=>{
-          this.props.editProduct('ShopListing_1',this.props.itemData.id,input,status)
-        });
-        this.setState({modalVisible:false})
+
+       firebase.database().ref(`ShopProducts/Shop_1/${this.props.itemData.id}`).update({available:status,price:Number(input)},(error)=>{
+      
+      if(error){
+        console.log(error)
+        
+      }
+      else{
+        this.setState({globalStatus:status,
+          price:input,modalVisible:!this.state.modalVisible},()=>{
+   
+          })
+      }
+        
+         
+       
+       })
+      
+     
      }
   render() {
-    const {itemData, onPress}=this.props;
+    const {itemData}=this.props;
     return (
-      <TouchableWithoutFeedback  onPress={onPress} >
+      <TouchableWithoutFeedback  onPress={()=> this.props.navigation.navigate('ProductDetails', {itemData:{...this.props.itemData,price:this.state.price,available:this.state.available}})} >
           <View style={styles.product}>
       <View style={styles.cardData}>
         <View style={styles.cardImgWrapper} >
@@ -134,7 +136,7 @@ const mapDispatchToProps = dispatch => ({
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(Card);
+export default Card;
 
 
 const styles = StyleSheet.create({

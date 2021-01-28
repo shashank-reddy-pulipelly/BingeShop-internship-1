@@ -5,37 +5,23 @@ import {
   Image,
   StyleSheet,
   Dimensions,
-  SafeAreaView,ScrollView,TouchableWithoutFeedback,TouchableOpacity,
-  Platform,
+  SafeAreaView,ScrollView,TouchableOpacity,
+ 
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { connect } from 'react-redux';
-import { postFavorite, deleteFavorite,postCart } from '../../../redux/ActionCreators';
-import Toast from 'react-native-tiny-toast';
-import {
-  TouchableRipple,
-} from 'react-native-paper';
+
+
 import {theme} from '../../../core/theme';
 
 
 
 
 
-const mapStateToProps = state => {
-  return {
- 
-    favorites: state.favorites,
-    carts:state.carts
-  }
-}
 
-const mapDispatchToProps = dispatch => ({
-  postFavorite: (ItemId) => dispatch(postFavorite(ItemId)),
-  deleteFavorite: (ItemId) => dispatch(deleteFavorite(ItemId)),
-  postCart: (ItemId) => dispatch(postCart(ItemId)),
-})
+
+
 class  ProductDetailsScreen extends Component {
 
    itemData = this.props.route.params.itemData;
@@ -120,7 +106,7 @@ class  ProductDetailsScreen extends Component {
 const {height} = Dimensions.get("screen");
 
 
-export default connect(mapStateToProps,mapDispatchToProps)(ProductDetailsScreen);
+export default ProductDetailsScreen;
 
 const styles = StyleSheet.create({
   container: {

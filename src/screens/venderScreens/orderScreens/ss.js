@@ -1,5 +1,5 @@
 import React,{memo,Component} from 'react';
-import { View, Text, StyleSheet,Image,ScrollView,Alert ,ActivityIndicator} from 'react-native';
+import { View, Text, StyleSheet,Image,ScrollView,Alert } from 'react-native';
 
 
 import {theme} from '../../../core/theme';
@@ -30,9 +30,9 @@ class VendorOrderDetailsScreen extends Component {
       var array=[];
       for(const keys in this.props.route.params.orderItem.items){
       
-      const query2 = firebase.database().ref(`ShopProducts/${this.props.route.params.orderItem.orderDetials.shop_id}/${this.props.route.params.orderItem.items[keys].prod_id}`)
+      const query2 = firebase.database().ref(`ShopProducts/${this.props.route.params.orderItem.orderDetials.shop_id}/${val2[keys].prod_id}`)
       await query2.once('value',  snap=>{
-      array.push({title:snap.val().title,image:snap.val().image,quantity:snap.val().quantity,itemAmount:this.props.route.params.orderItem.items[keys].itemAmount,count:this.props.route.params.orderItem.items[keys].count})
+      array.push({title:snap.va().title,image:snap.val().image,quantity:snap.val().quantity,itemAmount:val2[keys].itemAmount,count:val2[keys].count})
       
       })
       }
@@ -423,20 +423,6 @@ paddingBottom:10
     paddingHorizontal:5
    },
   
-   container2:{
 
-    alignItems:'center',
-    flex:1,
-    backgroundColor:'white',
-    paddingTop:40
-  },
-  horizontal: {
-    flex:1,
-    justifyContent: "center",
-    alignItems:'center',
-    padding: 10,
-    paddingBottom:50,
-    backgroundColor:'#fff'
-  }
 
 });

@@ -1,41 +1,35 @@
-import React,{memo,useEffect} from 'react';
-import { View, Text, Button, FlatList,  Dimensions, StyleSheet,ActivityIndicator } from 'react-native';
+import React,{memo,useEffect,useState} from 'react';
+import { View, Text, StyleSheet,ActivityIndicator } from 'react-native';
 import Search from '../../../components/vendorComponents/Search';
-
-import { fetchProducts,fetchVendorShopProductsList } from '../../../redux/ActionCreators';
-import { connect } from 'react-redux';
-
-const mapStateToProps = state => {
-  return {
-    products: state.products,
-    vendorProducts:state.vendorProducts
-  }
-}
-
-const mapDispatchToProps = dispatch => ({
- 
-  fetchProducts:()=>dispatch(fetchProducts()),
-  fetchVendorShopProductsList:(listName)=>dispatch(fetchVendorShopProductsList(listName)),
-  
-})
+import * as firebase from 'firebase';
 
 
-const CardListScreen = (props) => {
 
 
+
+const ProductsScreen= (props) => {
+
+  const [shopProducts,setShopProducts]=useState({isLoading:true,errMess:null,shopProducts:[]})
   
 
-       
   React.useEffect(() => {
-    const unsubscribe = props.navigation.addListener('focus', () => {
-      const listName='ShopListing_1';
-      props.fetchProducts();
-      props.fetchVendorShopProductsList(listName);
-    });
+   
+     firebase.database().ref(`ShopProducts/Shop_1`).once('value',snap=>{
+      var val=snap.val();
+      const loadedProducts=[];
+      for(const key in val){
+    
+        loadedProducts.push({...val[key],id:val[key].prod_id})
+    
+      }
+      setShopProducts({isLoading:false,errMess:null,shopProducts:loadedProducts})
+    })
+    
 
-    return unsubscribe;
-  }, [props.navigation]);
-  if(props.products.isLoading || props.vendorProducts.isLoading){
+        
+      }, []);
+
+  if(shopProducts.isLoading){
     return(
      <View style={[styles.container, styles.horizontal]}>
     
@@ -45,24 +39,21 @@ const CardListScreen = (props) => {
     )
   }
 
-  else if(props.products.errMess || props.vendorProducts.errMess ){
+  else if(shopProducts.errMess ){
     return(
      <View style={[styles.horizontal]} > 
      <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
-     <Text style={{fontSize:18,fontWeight:'bold'}} >{props.products.errMess?props.products.errMess:props.vendorProducts.errMess} !</Text>
+     <Text style={{fontSize:18,fontWeight:'bold'}} >{shopProducts.errMess} !</Text>
  </View>
     )
   }
   else{
 
-    const finalProductsArray=props.vendorProducts.vendorProducts.map((shopProduct)=>{
-      const Product=props.products.products.find((product)=>product.id==shopProduct.prod_id);
-      return ({...Product,available:shopProduct.available,price:shopProduct.price})
-    })
+  
     return (
       <View style={styles.container}>
       
-        <Search  data={finalProductsArray}  navigation={props.navigation}/>
+        <Search  data={shopProducts.shopProducts}  navigation={props.navigation}/>
      
         
       </View>
@@ -71,7 +62,7 @@ const CardListScreen = (props) => {
 };
 
 
-export default connect(mapStateToProps,mapDispatchToProps)(CardListScreen);
+export default ProductsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1, 

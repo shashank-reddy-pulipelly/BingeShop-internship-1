@@ -1,8 +1,11 @@
 {
   
   "Product_11" : {
+    "available" : true,
+    "price" : 200,
+    "prod_id" : "Product_11",
     "description" : "Grains of rice",
-    "id" : "Product_11",
+    "id" : 1,
     "image" : "https://firebasestorage.googleapis.com/v0/b/bingeshop-2021.appspot.com/o/Products%2Fbasmati.jpeg?alt=media&token=70c1109c-e953-461e-af64-3c2f96e19e6d",
     "quantity" : "1 Kg",
     "title" : "Kohinoor  Basmati Rice",

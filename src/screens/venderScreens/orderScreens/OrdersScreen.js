@@ -1,23 +1,15 @@
 import React,{Component} from 'react';
 import { View, Text, StyleSheet,ScrollView,ActivityIndicator,Dimensions,Platform,TouchableOpacity,TouchableNativeFeedback } from 'react-native';
 import { connect } from 'react-redux';
-import { fetchProducts,fetchShopProductsList} from '../../../redux/ActionCreators';
+
 const { width, height } = Dimensions.get("window");
 import * as firebase from 'firebase';
 import {theme} from '../../../core/theme';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-const mapStateToProps = state => {
-    return {
 
 
 
-      
-    }
-  }
-
-  const mapDispatchToProps = dispatch => ({
-    fetchProducts:()=>dispatch(fetchProducts()),
-})
+  
 
 class VendorOrdersScreen extends Component {
 constructor(props) {
@@ -29,7 +21,7 @@ constructor(props) {
 }
 
 componentDidMount(){
-  this.props.fetchProducts();
+  
   const query = firebase.database().ref('Orders').orderByChild('orderDetials/shop_id').equalTo('Shop_1')
   query.on('value', (snapshot) => {
     
@@ -37,12 +29,7 @@ componentDidMount(){
    
    const loadedOrders=[];
    for(const key in orders){
-     const loadedItems=[];
-     const items=orders[key].items;
-     for(const item in items){
-      loadedItems.push(items[item])
-     }
-      loadedOrders.push({...orders[key],items:loadedItems,id:key});
+      loadedOrders.push(orders[key]);
    }
    this.setState({orders:{isLoading:false,errMess:null,orders:loadedOrders}})
  })
@@ -120,7 +107,7 @@ else{
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(VendorOrdersScreen);
+export default VendorOrdersScreen;
 
 const styles = StyleSheet.create({
   container: {

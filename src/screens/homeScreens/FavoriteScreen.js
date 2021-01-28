@@ -1,26 +1,14 @@
 import React,{PureComponent} from 'react';
 import { View, Text, FlatList, StyleSheet,Image,ActivityIndicator } from 'react-native';
-import { connect } from 'react-redux';
+
 import * as firebase from 'firebase';
 import Card from '../../components/Card';
 import {  Button } from 'native-base';
 import {theme} from '../../core/theme';
 import { fetchProducts,fetchShopProductsList,fetchShops } from '../../redux/ActionCreators';
 import { fetchFavorites} from '../../redux/actions/favoritesActions';
-const mapStateToProps = state => {
-    return {
-
-      favorites: state.favorites,
-     
-    }
-  }
-
-  const mapDispatchToProps = dispatch => ({
-  
 
 
-    fetchFavorites:()=>dispatch(fetchFavorites())
-})
 
 class FavoriteScreen extends PureComponent{
 constructor(props) {
@@ -29,53 +17,70 @@ constructor(props) {
   this.state = {
  
 
-    shopProductsList:{isLoading:true,errMess:null,shopProductsList:[]},
-    products: {isLoading:true,errMess:null,products:[]},
+ 
+    newProducts: {isLoading:true,errMess:null,newProducts:[]},
+   refreshing:false
   }
 }
 
-  componentDidMount(){ 
+load= async ()=>{
+  this.setState({refreshing:true})
+  this.sub1 =  await firebase.database().ref('Users/User_1/Favorites').on('value',async snapShopt=>{
 
-    firebase.database().ref('shopProductsList').on('value', (snapshot) => {
-     const shopProductsList = snapshot.val();
-     const loadedShopProductsList=[];
-     for(const key in shopProductsList){
-         const products=shopProductsList[key].products;
-         const loadedProducts=[];
-         for(const product in products){
-            loadedProducts.push(products[product]);
-         }
-         const obj={
-             id:key,
-             products:loadedProducts,
-             shop_id:shopProductsList[key].shop_id, 
-             shop_name:shopProductsList[key].shop_name                              
-         }
-
-         loadedShopProductsList.push(obj);
-     }
-     this.setState({shopProductsList:{isLoading:false,errMess:null,shopProductsList:loadedShopProductsList}})
-   })
-
- firebase.database()
-   .ref('Products')
-   .on('value', (snapshot) => {
-    const products = snapshot.val();
-    const loadedProducts=[];
-    for(const key in products){
-       loadedProducts.push(products[key]);
+    const val=snapShopt.val();
+    
+    var array=[];
+     
+    const val2=val;
+ 
+    for(const keys in val2){
+    
+    const obj=val2[keys];
+    
+    const query2 = firebase.database().ref(`ShopProducts/${obj.shop_id}/${obj.prod_id}`)
+    await query2.once('value',  snap=>{
+    array.push(snap.val())
+    
+    })
     }
-    this.setState({products:{isLoading:false,errMess:null,products:loadedProducts}})
-  })
-   
+    this.setState({newProducts:{isLoading:false,errMess:null,newProducts:array},refreshing:false})
+     });
+}
+
+async componentDidMount(){ 
+
+  this.sub1 =  await firebase.database().ref('Users/User_1/Favorites').on('value',async snapShopt=>{
+
+    const val=snapShopt.val();
+    
+    var array=[];
+     
+    const val2=val;
+ 
+    for(const keys in val2){
+    
+    const obj=val2[keys];
+    
+    const query2 = firebase.database().ref(`ShopProducts/${obj.shop_id}/${obj.prod_id}`)
+    await query2.once('value',  snap=>{
+    array.push(snap.val())
+    
+    })
+    }
+    this.setState({newProducts:{isLoading:false,errMess:null,newProducts:array}})
+     });
+ 
+
   }
 
-
+componentWillUnmount(){
+  firebase.database().ref('Users/User_1/Favorites').off('value',this.sub1)
+}
 
 
   render(){
    
-    if(this.state.products.isLoading || this.state.shopProductsList.isLoading  ){
+    if(this.state.newProducts.isLoading   ){
       return(
        <View style={[styles.container, styles.horizontal]}>
       
@@ -85,32 +90,30 @@ constructor(props) {
       )
     }
  
-    else if(this.state.products.errMess || this.state.shopProductsList.errMess ){
+    else if(this.state.newProducts.errMess  ){
       return(
        <View style={[styles.horizontal]} > 
        <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
-       <Text style={{fontSize:18,fontWeight:'bold'}} >{this.state.errMess?this.state.errMess:this.state.shopProductsList.errMess} !</Text>
+       <Text style={{fontSize:18,fontWeight:'bold'}} >something went wrong !</Text>
    </View>
       )
     }
     else{
 
     const renderItem = ({item}) => {
-      const obj=this.state.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item.shop_id).products.find((product)=>product.prod_id==item.prod_id);
-      const prodObj=this.state.products.products.find((product)=>product.id==obj.prod_id);
-     console.log(this.state.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item.shop_id))
-       const finalItem={
-          ...prodObj,available:obj.available,price:obj.price,shop_name:this.state.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item.shop_id).shop_name
-        }
+     
+ 
       return (
           <Card 
-              itemData={finalItem} shopId={item.shop_id}
+              itemData={{
+                ...item,id:item.prod_id
+              }} shopId={item.shop_id}
               onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:finalItem,shopId:item.shop_id})}
           />
       );
   };
 
-  if(this.props.favorites.favorites.length==0){
+  if(this.state.newProducts.newProducts.length==0){
     return(
       <View style={styles.container2}>
       <View style={{alignItems:'center'}}>
@@ -131,8 +134,8 @@ constructor(props) {
   }
     return(
       <View style={styles.container}>
-      <FlatList  style={styles.list}
-               data={this.props.favorites.favorites}
+      <FlatList onRefresh={this.load} refreshing={this.state.refreshing}  style={styles.list}
+               data={this.state.newProducts.newProducts}
                renderItem={renderItem}
                keyExtractor={item => Math.random().toString()}
            />
@@ -143,7 +146,7 @@ constructor(props) {
 }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(FavoriteScreen);
+export default FavoriteScreen;
 
 const styles = StyleSheet.create({
   container: {

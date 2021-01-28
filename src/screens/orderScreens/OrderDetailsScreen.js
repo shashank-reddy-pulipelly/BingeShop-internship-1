@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
 import { View, Text, StyleSheet,Image,ScrollView,TouchableWithoutFeedback } from 'react-native';
-import { connect } from 'react-redux';
+
 import * as firebase from 'firebase';
 import {theme} from '../../core/theme';
 import {Rating} from 'react-native-elements';
@@ -9,19 +9,9 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import Toast from 'react-native-tiny-toast';
 import { Button } from 'native-base';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-const mapStateToProps = state => {
-    return {
 
-      favorites: state.favorites,
-   
-      products:state.products,
-      shops:state.shops
-    }
-  }
 
-  const mapDispatchToProps = dispatch => ({
-    deleteFavorite: (dishId) => dispatch(deleteFavorite(dishId))
-})
+
 
 class OrderDetailsScreen extends Component {
   constructor(props) {
@@ -30,10 +20,29 @@ class OrderDetailsScreen extends Component {
     this.state = {
        rating:'',
        ratingOn:false,
-       shop:{rating:null,reviews:null}
+       shop:{rating:null,reviews:null},
+       items:{isLoading:true,errMess:null,items:[]}
     }
   }
-componentDidMount(){
+  load= async ()=>{
+    
+  
+     
+      
+    var array=[];
+    for(const keys in this.props.route.params.orderItem.items){
+    
+    const query2 = firebase.database().ref(`ShopProducts/${this.props.route.params.orderItem.orderDetials.shop_id}/${this.props.route.params.orderItem.items[keys].prod_id}`)
+    await query2.once('value',  snap=>{
+    array.push({title:snap.val().title,image:snap.val().image,quantity:snap.val().quantity,itemAmount:this.props.route.params.orderItem.items[keys].itemAmount,count:this.props.route.params.orderItem.items[keys].count})
+    
+    })
+    }
+    this.setState({items:{isLoading:false,errMess:null,items:array}})
+    
+}
+async componentDidMount(){
+  await  this.load();
 firebase.database().ref('Shops/'+this.props.route.params.orderItem.orderDetials.shop_id).on('value',(snapshot)=>{
 const shop=snapshot.val();
 this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
@@ -155,21 +164,21 @@ this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
   <Text style={{fontWeight:'bold',fontSize:18,marginLeft:10}}>Order Items</Text>
 </View>
         
-          {orderItem.items.map((itemsItem,index)=>{
-           const itemData=this.props.products.products.find(item =>item.id==itemsItem.prod_id);
+          {this.state.items.items.map((itemsItem,index)=>{
+         
             return(
               
               <View key={index} style={styles.card2}>
               <View style={styles.cardImgWrapper}>
                 <Image
-                  source={{uri:itemData.image}}
+                  source={{uri:itemsItem.image}}
                   resizeMode="stretch"
                   style={styles.cardImg}
                 />
               </View>
               <View style={styles.cardInfo}>
       
-                <Text numberOfLines={3} style={styles.cardTitle}>{itemData.title}</Text>
+                <Text numberOfLines={3} style={styles.cardTitle}>{itemsItem.title}</Text>
                 
              
    
@@ -179,7 +188,7 @@ this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
                       <Text style={{fontSize: 14, color: '#616161'
                          ,marginTop:9,marginLeft:'auto',fontWeight:'bold',marginRight:40}}>Quantity :{itemsItem.count}</Text>
                   </View>
-                  <Text style={{alignSelf:'center',paddingVertical:10}} >Net Weight : {itemData.quantity} / <Text style={{fontSize:12}} >per piece</Text></Text>
+                  <Text style={{alignSelf:'center',paddingVertical:10}} >Net Weight : {itemsItem.quantity} / <Text style={{fontSize:12}} >per piece</Text></Text>
                
               
               </View>
@@ -251,7 +260,7 @@ this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(OrderDetailsScreen);
+export default OrderDetailsScreen;
 
 const styles = StyleSheet.create({
   container: {
