@@ -1,15 +1,12 @@
 {
   "expo": {
-    "name": "project1",
+    "name": "BingeShop",
     "slug": "project1",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
+    "sdkVersion":"39.0.0",
+    "icon": "./assets/logo.png",
+   
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -22,11 +19,8 @@
     "android": {
       "googleServicesFile": "./google-services.json",
       "package": "com.Shashank_reddy.BingeShop",
-      "useNextNotificationsApi": true,
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-      }
+      "useNextNotificationsApi": true
+      
     },
     "web": {
       "favicon": "./assets/favicon.png"

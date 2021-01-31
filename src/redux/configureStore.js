@@ -3,13 +3,10 @@ import thunk from 'redux-thunk';
 import logger from 'redux-logger';
 
 
-import { carts } from './cart';
+
 
 import {address} from './address';
-import {products} from './products';
-import {shops} from './shops';
 
-import {shopProductsList} from './shopProductsList';
 
 
 export const ConfigureStore = () => {
@@ -17,9 +14,9 @@ export const ConfigureStore = () => {
     const store = createStore(
         combineReducers({
  
-           carts,address,shops,products,shopProductsList
+          address
         }),
-        applyMiddleware(thunk,logger)
+        applyMiddleware(thunk)
     );
 
 

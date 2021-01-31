@@ -4,11 +4,7 @@ import { connect } from 'react-redux';
 
 import Card from '../../components/CartCard';
 import Amount from '../../components/Amount';
-import { 
-  postOrder,deleteOrder,addAddress,deleteAddress,fetchProducts,fetchShopProductsList,fetchShops  } from '../../redux/ActionCreators';
-
-  import { fetchCarts, addCart, deleteCart,decreaseCart,
-    deleteCartArray} from '../../redux/actions/cartActions';
+import { addAddress } from '../../redux/ActionCreators';
 import * as firebase from 'firebase';
 import {  Button } from 'native-base';
 import {theme} from '../../core/theme';
@@ -18,28 +14,19 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 const mapStateToProps = state => {
     return {
 
-      carts: state.carts,
+   
       address:state.address.address,
-      shops:state.shops,
-      products: state.products,
-      shopProductsList:state.shopProductsList,
+      
     }
   }
 
   const mapDispatchToProps = dispatch => ({
     
-    deleteCart: (prod_id,shop_id) => dispatch(deleteCart(prod_id,shop_id)),
-    decreaseCart:(prod_id,shop_id)=>dispatch(decreaseCart(prod_id,shop_id)),
-    addCart:(prod_id,shop_id)=>dispatch(addCart(prod_id,shop_id)),
-    postOrder:(orderObject)=>dispatch(postOrder(orderObject)),
-    deleteOrder:()=>dispatch(deleteOrder()),
-    deleteCartArray:()=>dispatch(deleteCartArray()),
+ 
     addAddress:(object)=>dispatch(addAddress(object)),
-    deleteAddress:()=>dispatch(deleteAddress()),
-    fetchCarts:()=>dispatch(fetchCarts()),
-    fetchShops:()=>dispatch(fetchShops()),
-    fetchProducts:()=>dispatch(fetchProducts()),
-    fetchShopProductsList:()=>dispatch(fetchShopProductsList()),
+   
+   
+
 
 
 })
@@ -49,45 +36,84 @@ class CartSummaryScreen extends Component{
     super(props)
   
     this.state = {
-       orderPlaced:false
+       orderPlaced:false,
+       carts:{isLoading:true,errMess:null,carts:[]},
+       productsAvaialable:true
     }
 
   }
+  async componentDidMount(){    
+
+   
+this.quer=firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).on('value',async snap=>{
+  if(snap.exists()){
+    this.setState({productsAvaialable:true})
+  }
+var val=snap.val();
+var array=[];
+for(var shop in val){
+  const products=val[shop];
+  var shop_name=null;
+  var arr=[];
+for(var product in products){
+          
+var count=products[product];
+const query2=   firebase.database().ref(`ShopProducts/${shop}/${product}`);
+await query2.once('value',snapShot=>{
+const value=snapShot.val();
+if(!value.available){
+  this.setState({productsAvaialable:false})
+}
+shop_name=value.shop_name;
+arr.push({title:value.title,image:value.image,
+  price:value.price,available:value.available,
+  quantity:value.quantity,prod_id:value.prod_id,count:count})
+          })
+        }
+        array.push({products:arr,shop_id:shop,shop_name:shop_name})
+}
+this.setState({carts:{isLoading:false,errMess:null,carts:array}},()=>{
+  console.log(this.state.carts)
+})
+})
   
-  componentDidMount(){    
-    this.props.fetchShops();
-    this.props.fetchProducts();
-    this.props.fetchShopProductsList();
-    this.props.fetchCarts();
 
 
   }
+componentWillUnmount(){
+  firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).off('value',this.quer)
+}
   amountTotal=(shopList)=>{
     const AmountArray=shopList.products.map(item => {
-      const amount=this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==shopList.shop_id).products.find((product)=>product.prod_id==item.prod_id).price;
-      return amount*item.count;
+      
+      return item.price*item.count;
      })
 
       const fun =(total, num) =>{
           return total + num;
         }
   
-      const Amount=AmountArray.reduce(fun);
+      const Amount=AmountArray.reduce(fun,0);
   
   
      
       return Amount;
   }
-  postOrders=()=>{
-
-    this.props.carts.carts.map(item1=>{
+  postOrders=async ()=>{
+    var pushToken=1;
+  await firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/pushToken`).once('value',snap=>{
+      if(snap.exists()){
+        pushToken=snap.val();
+      }
+    })
+    this.state.carts.carts.map(item1=>{
       var d = new Date();
       var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
        const date=d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
-       
+  
       const items=item1.products.map(item => {
-        const amount=this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item1.shop_id).products.find((product)=>product.prod_id==item.prod_id).price;
-        return ({...item,itemAmount:amount*item.count});
+       
+        return ({prod_id:item.prod_id,itemAmount:item.price*item.count,count:item.count});
        })
 
        const obj={
@@ -110,18 +136,37 @@ class CartSummaryScreen extends Component{
         orderDetials:{
           orderId:(new Date()).getTime(),
           invoiceId:'',
+          rating:false,
           shop_id:item1.shop_id,
-          shop_name:this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item1.shop_id).shop_name
+          shop_name:item1.shop_name
         },
-        UserPhoneNumber:firebase.auth().currentUser.phoneNumber
+        UserPhoneNumber:firebase.auth().currentUser.phoneNumber,
+        userPushToken:pushToken
     }
 
-    this.props.postOrder(obj);
+    firebase.database().ref('Orders').push(obj)
+ firebase.database().ref(`Shops/${item1.shop_id}/pushToken`).once('value',snap=>{
+  fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-Encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      to: snap.val(),
+      sound: 'default',
+      title: 'New Order Received ',
+      body: 'Please check your orders for details',
+    }),
+  });
+ })
 
     })
+
   }
 
-  placeOrder=()=>{
+  placeOrder= async ()=>{
     if(!this.props.address.pinCode){
       Alert.alert(
         "No delivery Address",
@@ -138,12 +183,31 @@ class CartSummaryScreen extends Component{
       );
     }
     else{
-      this.postOrders();
-      this.setState({orderPlaced:true})
-      this.props.deleteCartArray();
-      setTimeout(()=>{
-        this.props.navigation.navigate('HomeDrawer',{screen:'Home'});
-      },2000);
+      if(!this.state.productsAvaialable){
+        Alert.alert(
+          "Some of Your Cart Items are Currently Unavailable",
+          "Please Remove them from your Cart ",
+          [
+            {
+              text: "Ok",
+              onPress: () => {},
+              style: "cancel"
+            }
+          ],
+          { cancelable: false }
+        );
+      }
+      else{
+        await this.postOrders();
+        this.setState({orderPlaced:true},()=>{
+          firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).remove();
+        })
+      
+        setTimeout(()=>{
+          this.props.navigation.navigate('HomeDrawer',{screen:'Home'});
+        },3000);
+      }
+
  
    
     }
@@ -153,25 +217,22 @@ class CartSummaryScreen extends Component{
   address=()=>{
   
     return(
-<View style={[{backgroundColor:"white",marginBottom:10,paddingVertical:14,borderBottomWidth: 1,
+      <View>
+      
+<View style={[{backgroundColor:"white",marginBottom:5,paddingVertical:10,borderBottomWidth: 1,
  borderColor:'#E0E0E0',paddingHorizontal:10}]} >
+   
       <View style={{marginHorizontal:20}}>
       <Text style={{fontWeight:'bold',fontSize:18,}}>Delivery Address</Text>
-        <Text style={{padding:3}}>{this.props.address.name}</Text>
+        <Text style={{padding:3}}>Name :- {this.props.address.name}</Text>
       <Text numberOfLines={1} style={{padding:3}}>{this.props.address.roadNo} , {this.props.address.houseNo} </Text>
       <Text style={{padding:3}}>{this.props.address.city} , {this.props.address.state} - {this.props.address.pinCode} </Text>
       <Text style={{padding:3}}>Phone Number : {this.props.address.number}</Text>
       </View>
-      <View style={{paddingVertical:0}}>
-        
-      <Button block onPress={()=>{
-                this.props.navigation.navigate('AddressScreen')
-              }} style={{backgroundColor:theme.colors.primary,borderRadius:0,
-              marginHorizontal:10,marginVertical:10,paddingHorizontal:'auto',paddingVertical:3}}>
-              <Text style={{padding:0,margin:0,fontSize:17,color:'white'}}>Change Address</Text>
-            </Button>
+      
     </View>
-    </View>
+      </View>
+
     )
   }
 
@@ -187,7 +248,7 @@ class CartSummaryScreen extends Component{
    
       
       <View style={styles.row}>
-        <Text style={{marginRight:'auto'}}> Price ( {this.props.carts.length} items)</Text>
+        <Text style={{marginRight:'auto'}}> Price ( {this.state.carts.carts.length} items)</Text>
         <Text> {'\u20B9'} <Amount shopList={shopList} /> </Text>
       </View>
       <View style={styles.row}>
@@ -226,7 +287,7 @@ class CartSummaryScreen extends Component{
 
   render(){
    
-    if(this.props.products.isLoading || this.props.shopProductsList.isLoading || this.props.shops.isLoading){
+    if(this.state.carts.isLoading ){
       return(
        <View style={[styles.container, styles.horizontal]}>
       
@@ -236,11 +297,11 @@ class CartSummaryScreen extends Component{
       )
     }
  
-    else if(this.props.products.errMess || this.props.shopProductsList.errMess || this.props.shops.errMess){
+    else if(this.state.carts.errMess ){
       return(
        <View style={[styles.horizontal]} > 
        <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
-       <Text style={{fontSize:18,fontWeight:'bold'}} >{this.props.products.errMess?this.props.products.errMess:this.props.shopProductsList.errMess?this.props.shopProductsList.errMess:this.props.shops.errMess} !</Text>
+       <Text style={{fontSize:18,fontWeight:'bold'}} >something went wrong !</Text>
    </View>)
     }
 else{
@@ -264,7 +325,7 @@ else{
    
 
 
-  if(this.props.carts.carts.length==0 && !this.state.orderPlaced){
+  if(this.state.carts.carts.length==0 && !this.state.orderPlaced && !this.state.carts.isLoading){
     return(
       <View style={styles.container2}>
       <View style={{alignItems:'center'}}>
@@ -290,43 +351,18 @@ else{
   
    <ScrollView>
     {this.address()}
-    {this.props.carts.carts.map((item2,index)=>{
- const shop=this.props.shops.shops.find((shop)=>shop.id==item2.shop_id);
+    {this.state.carts.carts.map((item2,index)=>{
+
  
 
 
  const renderItem=({item})=>{
  
-   const obj=this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item2.shop_id).products.find((product)=>product.prod_id==item.prod_id);
-   const prodObj=this.props.products.products.find((product)=>product.id==obj.prod_id);
- 
-    const finalItem={
-       ...prodObj,available:obj.available,price:obj.price,shop_name:shop.title,
-       shop_id:item2.shop_id,
-       count:item.count
-     }
  
    return(
-     <Card postCart={()=>this.props.addCart(item.prod_id,item2.shop_id)}
-           deleteCart={()=>{
-             Alert.alert(
-               "Delete Item ?",
-               "Are you sure to delete this Item ?",
-               [
-                 {
-                   text: "Cancel",
-                   onPress: () => console.log("Cancel Pressed"),
-                   style: "cancel"
-                 },
-                 { text: "DELETE", onPress: () => this.props.deleteCart(item.prod_id,item2.shop_id) }
-               ],
-               { cancelable: false }
-             );
-             }}
-               decreaseCart={()=>this.props.decreaseCart(item.prod_id,item2.shop_id)}
-               itemData={finalItem}
-               onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:finalItem,shopId:item2.shop_id})}
-           />
+    <Card itemData={item} shopId={item2.shop_id}
+    onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:item.prod_id,shopId:item2.shop_id})}
+/>
    )
  }
  
@@ -341,7 +377,7 @@ else{
       borderTopWidth:1,
       borderBottomWidth:1,
       borderColor:'#E0E0E0'}}> 
-      <Text style={{fontSize:16,fontWeight:'bold'}}>Shop Name : {shop.title}</Text></View>}
+      <Text style={{fontSize:16,fontWeight:'bold'}}>Shop Name : {item2.shop_name}</Text></View>}
       ListFooterComponent={()=>this.priceDetail(item2)}
   />
         </View>
@@ -359,7 +395,7 @@ else{
         }}>
   <View style={{flex:1,justifyContent:'center'}}>
   <View >
-               <Text style={{fontSize:20,paddingLeft:20 ,fontWeight: 'bold',}}>Total : {'\u20B9'} <TotalPrice /> </Text>
+               <Text style={{fontSize:20,paddingLeft:20 ,fontWeight: 'bold',}}>Total : {'\u20B9'} <TotalPrice carts={this.state.carts.carts} /> </Text>
                <Text style={{color:'#09af00',fontSize:12,paddingLeft:20}}>      {'\u20B9'} 100   Savings  </Text>
              </View>
     </View>

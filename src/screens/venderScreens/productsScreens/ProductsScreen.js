@@ -2,30 +2,80 @@ import React,{memo,useEffect,useState} from 'react';
 import { View, Text, StyleSheet,ActivityIndicator } from 'react-native';
 import Search from '../../../components/vendorComponents/Search';
 import * as firebase from 'firebase';
-
-
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+import { LogBox } from 'react-native';
 
 
 
 const ProductsScreen= (props) => {
 
   const [shopProducts,setShopProducts]=useState({isLoading:true,errMess:null,shopProducts:[]})
-  
+  const [pushToken,setPushToken]=useState('');
 
   React.useEffect(() => {
-   
-     firebase.database().ref(`ShopProducts/Shop_1`).once('value',snap=>{
-      var val=snap.val();
-      const loadedProducts=[];
-      for(const key in val){
-    
-        loadedProducts.push({...val[key],id:val[key].prod_id})
-    
-      }
-      setShopProducts({isLoading:false,errMess:null,shopProducts:loadedProducts})
-    })
-    
+    LogBox.ignoreAllLogs();
+    var shopId=null;
+firebase.database().ref(`Shops`).orderByChild('phone_num').equalTo(firebase.auth().currentUser.phoneNumber).once('value',snapShot=>{
 
+  for(const key in snapShot.val()){
+    shopId=key;
+  }
+  firebase.database().ref(`ShopProducts/${shopId}`).once('value',snap=>{
+    var val=snap.val();
+    const loadedProducts=[];
+    for(const key in val){
+  
+      loadedProducts.push({...val[key],id:val[key].prod_id})
+  
+    }
+    setShopProducts({isLoading:false,errMess:null,shopProducts:loadedProducts})
+  })
+})
+   
+
+    Permissions.getAsync(Permissions.NOTIFICATIONS)
+    .then((statusObj) => {
+      if (statusObj.status !== 'granted') {
+        return Permissions.askAsync(Permissions.NOTIFICATIONS);
+      }
+      return statusObj;
+    })
+    .then((statusObj) => {
+      if (statusObj.status !== 'granted') {
+        throw new Error('Permission not granted!');
+      }
+    })
+    .then(() => {
+      return Notifications.getExpoPushTokenAsync();
+    })
+    .then((response) => {
+      const token = response.data;
+      setPushToken(token)
+      firebase.database().ref(`Shops/${shopId}`).update({pushToken:response.data})
+      console.log(response)
+    })
+    .catch((err) => {
+      console.log(err);
+      return null;
+    });
+
+
+   const  backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+       
+      }
+    );
+const foregroundSubscription = Notifications.addNotificationReceivedListener(
+      (notification) => {
+     
+      }
+    );
+    
+return ()=>{
+  backgroundSubscription();
+  foregroundSubscription();
+}
         
       }, []);
 

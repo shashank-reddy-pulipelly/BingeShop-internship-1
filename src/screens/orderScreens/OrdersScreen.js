@@ -6,7 +6,7 @@ import { Button } from 'native-base';
 import {theme} from '../../core/theme';
 import * as firebase from 'firebase';
 import OrderCard from '../../components/orderCard';
-
+import { LogBox } from 'react-native';
 
 
 
@@ -20,9 +20,8 @@ constructor(props) {
 }
 
   componentDidMount(){ 
-
-   const query = firebase.database().ref('Orders').orderByChild('UserPhoneNumber').equalTo(firebase.auth().currentUser.phoneNumber)
-    query.on('value', (snapshot) => {
+    LogBox.ignoreAllLogs();
+   this.query = firebase.database().ref('Orders').orderByChild('UserPhoneNumber').equalTo(firebase.auth().currentUser.phoneNumber).on('value', (snapshot) => {
       
      const orders = snapshot.val();
      
@@ -30,12 +29,15 @@ constructor(props) {
      for(const key in orders){
     
    
-        loadedOrders.push(orders[key]);
+        loadedOrders.push({...orders[key],id:key});
      }
      this.setState({orders:{isLoading:false,errMess:null,orders:loadedOrders}})
    })
    
   
+  }
+  componentWillUnmount(){
+    firebase.database().ref('Orders').off('value',this.query)
   }
   render(){
 

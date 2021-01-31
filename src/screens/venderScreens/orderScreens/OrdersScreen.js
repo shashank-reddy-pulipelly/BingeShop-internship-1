@@ -7,7 +7,7 @@ import * as firebase from 'firebase';
 import {theme} from '../../../core/theme';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-
+import { LogBox } from 'react-native';
 
   
 
@@ -16,20 +16,32 @@ constructor(props) {
   super(props)
 
   this.state = {
-     orders:{isLoading:true,errMess:null,orders:[]}
+     orders:{isLoading:true,errMess:null,orders:[]},
+     shopId:null
   }
 }
 
-componentDidMount(){
-  
-  const query = firebase.database().ref('Orders').orderByChild('orderDetials/shop_id').equalTo('Shop_1')
+ async componentDidMount(){
+  LogBox.ignoreAllLogs();
+ await firebase.database().ref(`Shops`).orderByChild('phone_num').equalTo(firebase.auth().currentUser.phoneNumber).once('value',snapShot=>{
+ var id=null;
+    for(const key in snapShot.val()){
+      id=key;
+    }
+    this.setState({shopId:id},()=>{
+      console.log(id)
+    })
+ 
+  })
+ 
+  const query = firebase.database().ref('Orders').orderByChild('orderDetials/shop_id').equalTo(this.state.shopId)
   query.on('value', (snapshot) => {
     
    const orders = snapshot.val();
    
    const loadedOrders=[];
    for(const key in orders){
-      loadedOrders.push(orders[key]);
+      loadedOrders.push({...orders[key],id:key});
    }
    this.setState({orders:{isLoading:false,errMess:null,orders:loadedOrders}})
  })

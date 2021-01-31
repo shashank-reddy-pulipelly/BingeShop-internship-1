@@ -17,7 +17,8 @@ class ModalCustom extends Component {
              price:String(this.props.price),
              globalStatus:this.props.globalStatus,
              input:String(this.props.price),
-             localStatus:this.props.globalStatus
+             localStatus:this.props.globalStatus,
+             error:false
         }
     }
     
@@ -30,9 +31,13 @@ class ModalCustom extends Component {
              <Text style={{fontSize:18,fontWeight:'bold'}} >Edit Product Price </Text>
              </View>
             
-                 <TextInput placeholder="Enter Price"  keyboardType="phone-pad"
+                 <TextInput placeholder="Enter Price (in Rupees) "  keyboardType="phone-pad"
                             value={this.state.input} style={styles.textInput}  
                             onChangeText={(value) =>   this.setState({input:value})} /> 
+                            {this.state.error?<View style={{paddingHorizontal:7}}>
+                              <Text style={{color:'red',fontSize:15,paddingHorizontal:7}} >Price is invalid   </Text>
+                              <Text style={{color:'gray',fontSize:15,paddingHorizontal:7,paddingVertical:4}}>Price should be as follows  eg : 100  ,  230.12  ,  135.1</Text>
+                            </View>:null}
 <View style={{paddingTop:20,marginLeft:20,paddingBottom:10}}>
              <Text style={{fontSize:18,fontWeight:'bold'}} >Edit Product Status </Text>
              </View>
@@ -48,8 +53,16 @@ class ModalCustom extends Component {
    <View style={{flexDirection:'row',paddingTop:15,paddingBottom:10,marginLeft:'auto',marginRight:10}}>
    <PaperButton mode="text" labelStyle={{fontSize:16}} onPress={()=>{this.props.modalToggle()}}>Cancel </PaperButton>
    <PaperButton mode="text"labelStyle={{fontSize:16}} onPress={()=>{
-console.log(this.state.localStatus)
-this.props.EditProduct(this.state.input,this.state.localStatus)
+const reg=/^\d+(\.\d{1})?$/gm;
+if(reg.test(this.state.input)){
+  console.log(this.state.input)
+  this.props.EditProduct(this.state.input,this.state.localStatus)
+}
+else{
+  this.setState({error:true})
+
+}
+
 }}> Confirm </PaperButton>
 
 
@@ -158,7 +171,7 @@ const styles = StyleSheet.create({
       paddingHorizontal: 16, 
       borderBottomColor:theme.colors.primary, 
       borderBottomWidth: 2, 
-      marginBottom: 20, 
+      marginBottom: 5, 
       fontSize:18,
       marginLeft:20
   }, 

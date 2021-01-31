@@ -1,13 +1,15 @@
 
-import {View, Text, Image, StyleSheet,TouchableWithoutFeedback, TouchableOpacity} from 'react-native';
+import {View, Text, Image, StyleSheet,TouchableWithoutFeedback, TouchableOpacity,ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import { Button } from 'react-native-elements';
-import * as firebase from 'firebase';
 
+import * as firebase from 'firebase';
+import { Button } from 'native-base';
 import React, { Component } from 'react';
 import Toast from 'react-native-tiny-toast';
 import { theme } from '../core/theme';
+import { LogBox } from 'react-native';
+
 
 
 
@@ -20,16 +22,86 @@ import { theme } from '../core/theme';
      this.state = {
         isFavorite:false,
         price:this.props.itemData.price,
-        available:this.props.itemData.available
+        available:this.props.itemData.available,
+        loading:false
      }
    }
+postCart=(prod_id,shop_id)=>{
+    this.setState({loading:true},()=>{
+      firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}`).once('value',snapShot=>{
+        if(snapShot.exists()){
+          firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).once('value',snap=>{
+            if(snap.exists()){
+              firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(Number(snap.val()+1),(error)=>{
+                if(!error){
+                  this.setState({loading:false})
+                  Toast.show('  Item Added to Cart  Successfully  ',{
+                    position:-.00001,
+                    containerStyle:{
+                      borderRadius:0,
+                      paddingHorizontal:0,
+                      width:'100%'
+                    }
+                  })
+                }
+                else{
+                  this.setState({loading:false})
+                  console.log('cart adding error',error);
+                }
+              })
+            }
+            else{
+              firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(Number(1),(error)=>{
+                if(!error){
+                  this.setState({loading:false})
+                  Toast.show('  Item Added to Cart  Successfully  ',{
+                    position:-.00001,
+                    containerStyle:{
+                      borderRadius:0,
+                      paddingHorizontal:0,
+                      width:'100%'
+                    }
+                  })
+                
+                }
+                else{
+                  this.setState({loading:false})
+                  console.log('cart adding error',error);
+                }
+              })
+            }
+          })
+        }
+        else{
+          firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(Number(1),(error)=>{
+            if(error){
+              this.setState({loading:false})
+              console.log('cart adding error',error);
+            }
+            else{
+              this.setState({loading:false})
+              Toast.show('  Item Added to Cart  Successfully  ',{
+                position:-.00001,
+                containerStyle:{
+                  borderRadius:0,
+                  paddingHorizontal:0,
+                  width:'100%'
+                }
+              })
+            }
+          })
+        }
+      })
+    });
 
+
+}
    toggleFavorite=()=>{
-  
+    LogBox.ignoreAllLogs();
      if(this.state.isFavorite){
       this.setState({isFavorite:!this.state.isFavorite},()=>{
 
-        firebase.database().ref('Users/User_1/Favorites').orderByChild('prod_id').equalTo(this.props.itemData.id).once('value',snapShot=>{
+        firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).orderByChild('prod_id').equalTo(this.props.itemData.id).once('value',snapShot=>{
          var key=null;
          var val=snapShot.val();
          for(const pro in val){
@@ -42,7 +114,7 @@ import { theme } from '../core/theme';
       
           if(a){
            
-            firebase.database().ref(`Users/User_1/Favorites/${key}`).remove();
+            firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites/${key}`).remove();
           }
         })
       });
@@ -50,14 +122,15 @@ import { theme } from '../core/theme';
      }
      else{
       this.setState({isFavorite:!this.state.isFavorite},()=>{
-        firebase.database().ref(`Users/User_1/Favorites`).push({prod_id:this.props.itemData.id,shop_id:this.props.shopId})
+        firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).push({prod_id:this.props.itemData.id,shop_id:this.props.shopId})
  
       });
 
      }
    }
    componentDidMount(){
-     firebase.database().ref('Users/User_1/Favorites').orderByChild('prod_id').equalTo(this.props.itemData.id).once('value',snapShot=>{
+    LogBox.ignoreAllLogs();
+   this.sub2=  firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).orderByChild('prod_id').equalTo(this.props.itemData.id).on('value',snapShot=>{
        var a=snapShot.exists();
        this.setState({isFavorite:a})
      })
@@ -68,7 +141,8 @@ import { theme } from '../core/theme';
         })
    }
    componentWillUnmount(){
-    firebase.database().ref(`ShopProducts/${this.props.shopId}/${this.props.itemData.id}`).off('value',this.sub1)
+    firebase.database().ref(`Users/${firebase.auth().currentUser.uid}/Favorites`).off('value',this.sub2);
+    firebase.database().ref(`ShopProducts/${this.props.shopId}/${this.props.itemData.id}`).off('value',this.sub1);
    }
   render() {
     const {itemData, onPress}=this.props;
@@ -122,20 +196,13 @@ import { theme } from '../core/theme';
              
            
             </View>
-        
-            <Button buttonStyle={{marginVertical:10,marginLeft:'auto',paddingVertical:10,paddingHorizontal:15,backgroundColor:theme.colors.primary,flex:1}}  
-  titleStyle={{fontSize:15}} onPress={()=>{
-    Toast.show('  Item Added to Cart  Successfully  ',{
-      position:-.00001,
-      containerStyle:{
-        borderRadius:0,
-        paddingHorizontal:0,
-        width:'100%'
-      }
-    });
-    this.props.addCart(itemData.id,this.props.shopId)}
+        {this.state.available?<Button style={{marginVertical:10,marginLeft:'auto',paddingVertical:10,paddingHorizontal:15,backgroundColor:theme.colors.primary,flex:1,justifyContent:'center', borderRadius:5}}  
+  onPress={()=>{
+
+    this.postCart(itemData.id,this.props.shopId)}
   }
-                title="Add to Cart"/>
+               >{this.state.loading?<View><ActivityIndicator  size="small" color="white" /></View>:<Text style={{fontSize:15,color:'white'}}>Add to Cart</Text>}</Button>:<View style={{paddingVertical:5}}><Text style={{color:'red',fontSize:18,paddingVertical:15,fontWeight:'bold'}}>Not Available</Text></View>}
+     
             </View>
         
         </View>

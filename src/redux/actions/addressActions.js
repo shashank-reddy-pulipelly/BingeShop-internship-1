@@ -1,5 +1,5 @@
 import * as ActionTypes from '../ActionTypes';
-
+import * as firebase from 'firebase';
 
 export const addressLoading = () => ({
     type: ActionTypes.ADDRESS_LOADING
@@ -20,62 +20,25 @@ export const fetchAddress = () => (dispatch) => {
 
     dispatch(addressLoading());
 
-     fetch('https://projectalpha-c313c-default-rtdb.firebaseio.com/Users/User_1/Address.json')
-    .then(response => {
-        if (response.ok) {                   
-          return response;
-        } else {
-          var error = new Error('Error ' + response.status + ': ' + response.statusText);
-          error.response = response;
-          throw error;
-        }
-      },
-      error => {
-            var errmess = new Error(error.message);
-            throw errmess;
-      })
-    .then(response => response.json())
-    .then(address => {
-
-        dispatch(addAddress(address));
-    })
-    .catch(error => dispatch(addressFailed(error.message)));
+     firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Address`).once('value',snap=>{
+       if(snap.exists()){
+        dispatch(addAddress(snap.val()));
+       }
+     })
 };
 
 
 
 export const editAddress = (object)  => (dispatch) => {
 
-    fetch('https://projectalpha-c313c-default-rtdb.firebaseio.com/Users/User_1/Address.json',{
-        method: "PUT",
-    
-        body: JSON.stringify({
-           ...object
-        }),
-        headers: {
-          "Content-Type": "application/json"
-        },
-        credentials: "same-origin"
-    })
-    .then(response => {
-        if (response.ok) {                   
-          return response;
-        } else {
-          var error = new Error('Error ' + response.status + ': ' + response.statusText);
-          error.response = response;
-          throw error;
-        }
-      },
-      error => {
-            var errmess = new Error(error.message);
-            throw errmess;
-      })
-    .then(response => response.json())
-    .then(address => {
-
-      dispatch(addAddress(address));
-    })
-    .catch(error => dispatch(addressFailed(error.message)));
+  firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Address`).set(object,(error)=>{
+    if(error){
+      console.log('error in address update',error)
+    }
+    else{
+      dispatch(addAddress(object));
+    }
+  })
   
 };
 

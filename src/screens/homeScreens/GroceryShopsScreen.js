@@ -14,13 +14,13 @@ const GroceryShopsScreen = (props) => {
 const [shops,setShops]=useState({isLoading:true,errMess:null,shops:[]})
 const [isRefreshing,setRefreshing]=useState(false);
 
-const load= async ()=>{
+const load =  ()=>{
   setRefreshing(true);
- const query =await firebase.database().ref('Shops').once('value',snapShot=>{
+ firebase.database().ref('Shops').once('value',snapShot=>{
 var val=snapShot.val();
 const loadedShops=[];
 for(const key in val){
-  loadedShops.push(val[key]);
+  loadedShops.push({...val[key],title:val[key].shop_name});
 }
 
 setShops({isLoading:false,errMess:null,shops:loadedShops})
@@ -60,11 +60,11 @@ setShops({isLoading:false,errMess:null,shops:loadedShops})
    }
 
    else{
-     const data=shops.shops.filter(shop=>shop.shop_type.is_groceries==true)
+     
     return (
       <View style={styles.container}>
       
-        <Search cardType='shop' shopType='Groceries'  title={props.route.params.title} isRefreshing={isRefreshing} load={load} data={data} navigation={props.navigation}/>
+        <Search cardType='shop' shopType='Groceries'  title={props.route.params.title} isRefreshing={isRefreshing} load={load} data={shops.shops.filter(shop=>shop.shop_type.is_groceries==true)} navigation={props.navigation}/>
      
         
       </View>

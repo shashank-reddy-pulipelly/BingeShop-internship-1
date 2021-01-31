@@ -1,32 +1,95 @@
-import {View, Text, Image, StyleSheet,} from 'react-native';
+import {View, Text, Image, StyleSheet,ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { connect } from 'react-redux';
+
 
 import React, { Component } from 'react';
 import { Button } from 'native-base';
 import Toast from 'react-native-tiny-toast';
 import { theme } from '../core/theme';
-import { addCart} from '../redux/actions/cartActions';
-const mapStateToProps = state => {
-  return { 
- 
- 
-  }
-}
+import * as firebase from 'firebase';
 
-const mapDispatchToProps = dispatch => ({
 
-  addCart: (prod_id,shop_id) => dispatch(addCart(prod_id,shop_id)),
-})
+
+
  class Card extends Component {
      constructor(props) {
          super(props)
      
          this.state = {
-            showToast: false
+            showToast: false,
+            loading:false
           };
      }
-     
+     postCart=(prod_id,shop_id)=>{
+      this.setState({loading:true},()=>{
+        firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}`).once('value',snapShot=>{
+          if(snapShot.exists()){
+            firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).once('value',snap=>{
+              if(snap.exists()){
+                firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(Number(snap.val()+1),(error)=>{
+                  if(!error){
+                    this.setState({loading:false})
+                    Toast.show('  Item Added to Cart  Successfully  ',{
+                      position:-.00001,
+                      containerStyle:{
+                        borderRadius:0,
+                        paddingHorizontal:0,
+                        width:'100%'
+                      }
+                    })
+                  }
+                  else{
+                    this.setState({loading:false})
+                    console.log('cart adding error',error);
+                  }
+                })
+              }
+              else{
+                firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(Number(1),(error)=>{
+                  if(!error){
+                    this.setState({loading:false})
+                    Toast.show('  Item Added to Cart  Successfully  ',{
+                      position:-.00001,
+                      containerStyle:{
+                        borderRadius:0,
+                        paddingHorizontal:0,
+                        width:'100%'
+                      }
+                    })
+                  
+                  }
+                  else{
+                    this.setState({loading:false})
+                    console.log('cart adding error',error);
+                  }
+                })
+              }
+            })
+          }
+          else{
+            firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(Number(1),(error)=>{
+              if(error){
+                this.setState({loading:false})
+                console.log('cart adding error',error);
+              }
+              else{
+                this.setState({loading:false})
+                Toast.show('  Item Added to Cart  Successfully  ',{
+                  position:-.00001,
+                  containerStyle:{
+                    borderRadius:0,
+                    paddingHorizontal:0,
+                    width:'100%'
+                  }
+                })
+              }
+            })
+          }
+        })
+      });
+  
+  
+  } 
   render() {
     const {itemData, onPress}=this.props;
     return (
@@ -67,8 +130,8 @@ const mapDispatchToProps = dispatch => ({
             </View>
             <View style={styles.row}>
                 <Text style={{fontSize:15,padding:0,paddingVertical:0,margin:0,paddingTop:8,alignSelf:'center',paddingLeft:20}}>{'\u20B9'} </Text>
-                <Text style={{ marginTop:6,marginLeft:0,fontSize:15, fontWeight: 'bold',}}>100</Text>
-                <Text style={{textDecorationLine: 'line-through',fontSize: 11, color: '#444' ,marginTop:6,marginLeft:10}}>{100+100} </Text>
+                <Text style={{ marginTop:6,marginLeft:0,fontSize:15, fontWeight: 'bold',}}>{this.props.itemData.price}</Text>
+                <Text style={{textDecorationLine: 'line-through',fontSize: 11, color: '#444' ,marginTop:6,marginLeft:10}}>{this.props.itemData.price+100} </Text>
                
             </View>
            
@@ -86,10 +149,10 @@ const mapDispatchToProps = dispatch => ({
                         width:'100%'
                       }
                     });
-            this.props.addCart(this.props.itemData.id,this.props.itemData.shop_id)
+            this.postCart(this.props.itemData.prod_id,this.props.itemData.shop_id)
             }  
-            } style={styles.filterButton2}>
-            <Text style={{fontSize:14,color:'white',fontWeight:'bold'}}>Add</Text>
+            } style={styles.filterButton2}>{this.state.loading?<ActivityIndicator size="small" color="white" />:<Text style={{fontSize:14,color:'white',fontWeight:'bold'}}>Add</Text>}
+            
           </Button>
             </View>
         
@@ -99,7 +162,7 @@ const mapDispatchToProps = dispatch => ({
   }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(Card);
+export default Card;
 
 
 const styles = StyleSheet.create({
@@ -187,6 +250,7 @@ width:400,
     borderRadius:5,
   paddingHorizontal:55, 
   alignSelf:'center',
-    height:35
+    height:35,
+    justifyContent:'center'
   }
 });

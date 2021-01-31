@@ -24,12 +24,23 @@ const mapStateToProps = state => {
     super(props)
   
     this.state = {
-       orders:0
+       orders:0,
+       shopId:null
     }
   }
-  componentDidMount(){
-const query=firebase.database().ref('Orders').orderByChild('orderDetials/shop_id').equalTo('Shop_1');
-query.on("value",(snapshot) =>{
+  async componentDidMount(){
+    await firebase.database().ref(`Shops`).orderByChild('phone_num').equalTo(firebase.auth().currentUser.phoneNumber).once('value',snapShot=>{
+      var id=null;
+         for(const key in snapShot.val()){
+           id=key;
+         }
+         this.setState({shopId:id},()=>{
+           console.log(id)
+         })
+      
+       })
+this.query=firebase.database().ref('Orders').orderByChild('orderDetials/shop_id').equalTo('Shop_1');
+this.query.on("value",(snapshot) =>{
   var count=0;
   snapshot.forEach((childSnapshot)=> {
    
@@ -42,6 +53,10 @@ query.on("value",(snapshot) =>{
 })
 this.setState({orders:count});
 })
+  }
+
+  componentWillUnmount(){
+    firebase.database().ref('Orders').off('value',this.query)
   }
   render() {
    const {navigation}=this.props;

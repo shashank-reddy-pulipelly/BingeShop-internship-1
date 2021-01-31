@@ -38,7 +38,7 @@ class Shop extends Component {
                           <FontAwesome name="star" color='white' size={16}/>
                       </View>
                       <View>
-                          <Text>  {shop.rating}/5</Text>
+                          <Text>  {(shop.rating).toFixed(1)}/5</Text>
                       </View>
                       </View>
                     

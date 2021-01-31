@@ -16,8 +16,7 @@ import HeaderButton from '../../../components/HeaderButton';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const mapStateToProps = state => {
   return {
-  orders:state.orders,
-  carts:state.carts.carts
+
   }
 }
  class OrdersStackScreen extends Component {
@@ -47,7 +46,7 @@ const mapStateToProps = state => {
           right:5,
           backgroundColor: '#FF6D00'}
         }
-        Hidden={this.props.carts.length==0}
+        Hidden={true}
         />
     </TouchableOpacity>
     )

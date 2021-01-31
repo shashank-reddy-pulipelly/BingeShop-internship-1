@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
 import { Button } from 'native-base';
 import * as firebase from 'firebase';
-
+import Toast from 'react-native-tiny-toast';
 import React, { Component } from 'react';
 import ModalCustom from './Modal';
 import { theme } from '../../core/theme';
@@ -34,23 +34,36 @@ const { width, height } = Dimensions.get("window");
        this.setState({modalVisible:!this.state.modalVisible})
      }
      EditProduct=(input,status)=>{
-
-       firebase.database().ref(`ShopProducts/Shop_1/${this.props.itemData.id}`).update({available:status,price:Number(input)},(error)=>{
+firebase.database().ref('Shops').orderByChild('phone_num').equalTo(firebase.auth().currentUser.phoneNumber).once('value',snap=>{
+  var shopId=null;
+  for(const key in snap.val()){
+    shopId=key;
+  }
+  firebase.database().ref(`ShopProducts/${shopId}/${this.props.itemData.id}`).update({available:status,price:Number(input)},(error)=>{
       
-      if(error){
-        console.log(error)
-        
-      }
-      else{
-        this.setState({globalStatus:status,
-          price:input,modalVisible:!this.state.modalVisible},()=>{
-   
+    if(error){
+      console.log(error)
+      
+    }
+    else{
+      this.setState({globalStatus:status,
+        price:input,modalVisible:!this.state.modalVisible},()=>{
+          Toast.show('Product Details changed Successfully ',{
+            position:-.00001,
+            containerStyle:{
+              borderRadius:0,
+              paddingHorizontal:0,
+              width:'100%'
+            }
           })
-      }
-        
-         
+        })
+    }
+      
        
-       })
+     
+     })
+})
+  
       
      
      }

@@ -1,68 +1,156 @@
-import React,{PureComponent} from 'react';
-import {View, Text , Image, StyleSheet,TouchableHighlight,TouchableWithoutFeedback,Alert, TouchableOpacity} from 'react-native';
+import React,{Component} from 'react';
+import {View, Text , Image, StyleSheet,TouchableHighlight,TouchableWithoutFeedback,Alert, TouchableOpacity,ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { connect } from 'react-redux';
+
 import { Button } from 'native-base';
 import { theme } from '../core/theme';
-import { addCart, deleteCart,decreaseCart,
-  } from '../redux/actions/cartActions';
+import * as firebase from 'firebase';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-const mapStateToProps = state => {
-  return {
 
 
-  }
-}
 
-const mapDispatchToProps = dispatch => ({
-  deleteCart: (prod_id,shop_id) => dispatch(deleteCart(prod_id,shop_id)),
-  decreaseCart:(prod_id,shop_id)=>dispatch(decreaseCart(prod_id,shop_id)),
-  addCart:(prod_id,shop_id)=>dispatch(addCart(prod_id,shop_id)),
-})
 
-class Card extends PureComponent {
+
+class Card extends Component {
 
   constructor(props) {
     super(props)
     
     this.state = {
-    
+      loading:false
     }
  
   }
-  countInc=()=>{
+  countInc=(prod_id,shop_id)=>{
     
     
-    this.props.addCart(this.props.itemData.id,this.props.itemData.shop_id)
+    this.setState({loading:true},()=>{
+      firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}`).once('value',snapShot=>{
+        if(snapShot.exists()){
+          firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).once('value',snap=>{
+            if(snap.exists()){
+              firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(Number(snap.val()+1),(error)=>{
+                if(!error){
+                  this.setState({loading:false})
+           
+                }
+                else{
+                  this.setState({loading:false})
+                  console.log('cart adding error',error);
+                }
+              })
+            }
+            else{
+              firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(Number(1),(error)=>{
+                if(!error){
+                  this.setState({loading:false})
+               
+                
+                }
+                else{
+                  this.setState({loading:false})
+                  console.log('cart adding error',error);
+                }
+              })
+            }
+          })
+        }
+        else{
+          firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(Number(1),(error)=>{
+            if(error){
+              this.setState({loading:false})
+              console.log('cart adding error',error);
+            }
+            else{
+              this.setState({loading:false})
+           
+            }
+          })
+        }
+      })
+    });
   }
-  countDec=()=>{
-    if(this.props.itemData.count!=1){
+  countDec=(prod_id,shop_id)=>{
     
+      
+    this.setState({loading:true},()=>{
+      firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}`).once('value',snapShot=>{
+        if(snapShot.exists()){
+          firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).once('value',snap=>{
+            if(snap.exists() && Number(snap.val())>1 ){
+              firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(Number(snap.val()-1),(error)=>{
+                if(!error){
+                  this.setState({loading:false})
+           
+                }
+                else{
+                  this.setState({loading:false})
+                  console.log('cart adding error',error);
+                }
+              })
+            }
+            else if(snap.exists() && Number(snap.val())==1 ){
+              Alert.alert(
+                "Delete Item ?",
+                "Are you sure to delete this Item ?",
+                [
+                  {
+                    text: "Cancel",
+                    onPress: () =>{
+                      this.setState({loading:false})
+                    },
+                    style: "cancel"
+                  },
+                  { text: "DELETE", onPress: () => {
+                    firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(null,(error)=>{
+                      if(!error){
+                        this.setState({loading:false})
+                 
+                      }
+                      else{
+                        this.setState({loading:false})
+                        console.log('cart adding error',error);
+                      }
+                    })
+                  } }
+                ],
+                { cancelable: false }
+              );
+          
+            }
+        
+          })
+        }
+      
+      })
+    });
+
+  
     
   
-     this.props.decreaseCart(this.props.itemData.id,this.props.itemData.shop_id)
-    }
-    else{
-
-        Alert.alert(
-          "Delete Item ?",
-          "Are you sure to delete this Item ?",
-          [
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel"
-            },
-            { text: "DELETE", onPress: () => this.props.deleteCart(this.props.itemData.id,this.props.itemData.shop_id) }
-          ],
-          { cancelable: false }
-        );
-      
-    }
-   
   }
+    
+  
+   delete=(prod_id,shop_id)=>{
+    this.setState({loading:true},()=>{
+     
+            firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(null,(error)=>{
+              if(!error){
+                this.setState({loading:false})
+         
+              }
+              else{
+                this.setState({loading:false})
+                console.log('cart adding error',error);
+              }
+            })
+       
+    
+    })
+   }
+  
   render(){
-    const {itemData, onPress,deleteCart}=this.props;
+    const {itemData, onPress}=this.props;
     return(
       <TouchableWithoutFeedback >
       <View style={styles.screen}>
@@ -71,6 +159,7 @@ class Card extends PureComponent {
     <TouchableWithoutFeedback onPress={onPress} >
       <View style={styles.card}>
       <View style={styles.cardImgWrapper}>
+       
         <Image
           source={{uri:itemData.image}}
           resizeMode="cover"
@@ -86,8 +175,8 @@ class Card extends PureComponent {
 
           <View style={styles.row}>
           <Text style={{fontSize:18,padding:0,paddingVertical:0,margin:0,paddingTop:8,alignSelf:'center'}}>{'\u20B9'} </Text>
-              <Text style={{ marginTop:6,marginLeft:2,fontSize:18,  fontWeight: 'bold',}}>{itemData.price*this.props.itemData.count}</Text>
-              <Text style={{textDecorationLine: 'line-through',fontSize: 13, color: '#444' ,marginTop:9,marginLeft:10}}>{itemData.price+100} </Text>
+              <Text style={{ marginTop:6,marginLeft:2,fontSize:18,  fontWeight: 'bold',}}>{(this.props.itemData.price*this.props.itemData.count).toFixed(1)}</Text>
+              <Text style={{textDecorationLine: 'line-through',fontSize: 13, color: '#444' ,marginTop:9,marginLeft:10}}>{(this.props.itemData.price*this.props.itemData.count+100).toFixed(1)} </Text>
               <Text style={{fontSize: 13, color: '#09af00' ,marginTop:9,marginLeft:10}}>33% off</Text>
           </View>
         
@@ -101,28 +190,32 @@ class Card extends PureComponent {
             <Text> Quantity : </Text>
         </View>
       <View style={styles.count}>
-     
-          <TouchableHighlight  style={styles.countButton} onPress={this.countDec}>
+     {this.props.itemData.available? <Button   style={styles.countButton} onPress={()=>{this.countDec(this.props.itemData.prod_id,this.props.shopId)}}>
       <Icon name='minus' color='white' size={16}></Icon>
-          </TouchableHighlight>
+          </Button>:null}
+         
             
             <View style={{
                 paddingHorizontal:15,
                 backgroundColor:'#E0E0E0',
-                paddingVertical:9,
+                paddingVertical:9.2,
                 borderTopWidth:1,
                 borderBottomWidth:1,
-                borderColor:'#E0E0E0'
-            }}>
-                <Text>{this.props.itemData.count}</Text>
+                borderColor:'#E0E0E0',width:40,
+                height:45
+            }}>{this.state.loading?<ActivityIndicator  size="small" color="black" />: <Text>{this.props.itemData.count}</Text>}
+               
             </View>
-            <TouchableHighlight style={styles.countButton2} onPress={this.countInc}>
+            {this.props.itemData.available?<Button style={styles.countButton2} onPress={()=>{this.countInc(this.props.itemData.prod_id,this.props.shopId)}}>
         
-          <Icon name='plus' color='white' size={16}></Icon>
-      
-            </TouchableHighlight>
-      </View>
+        <Icon name='plus' color='white' size={16}></Icon>
     
+          </Button>:null}
+            
+      </View>
+    {!this.props.itemData.available?<View><View style={{}}>
+          <Text style={{color:'red',fontSize:16,fontWeight:'bold'}}> Currently{'\n'}Unavailable</Text>
+        </View></View>:null}
             <Button onPress={()=>{
                       Alert.alert(
                         "Delete Item ?",
@@ -133,7 +226,7 @@ class Card extends PureComponent {
                             onPress: () => console.log("Cancel Pressed"),
                             style: "cancel"
                           },
-                          { text: "DELETE", onPress: () => this.props.deleteCart(this.props.itemData.id,this.props.itemData.shop_id) }
+                          { text: "DELETE", onPress: () => this.delete(this.props.itemData.prod_id,this.props.shopId) }
                         ],
                         { cancelable: false }
                       );
@@ -154,7 +247,7 @@ class Card extends PureComponent {
 
 
 
-export default connect(mapStateToProps,mapDispatchToProps)(Card);
+export default Card;
 
 const styles = StyleSheet.create({
     screen:{
@@ -238,6 +331,7 @@ const styles = StyleSheet.create({
     backgroundColor:theme.colors.primary,
     borderBottomLeftRadius:3,
     borderTopLeftRadius:3,
+ 
 },
   countButton2:{
       paddingHorizontal:15,

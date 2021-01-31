@@ -9,7 +9,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'native-base';
 
 import * as firebase from 'firebase';
-
+import { LogBox } from 'react-native';
 
 
 class VendorOrderDetailsScreen extends Component {
@@ -40,7 +40,7 @@ class VendorOrderDetailsScreen extends Component {
       
   }
  async componentDidMount(){
-
+  LogBox.ignoreAllLogs();
   await  this.load();
   }
 
@@ -93,10 +93,26 @@ if(error){
 
 }
 else{
-  this.setState({orderItem:{...this.state.orderItem,orderStatus:{...this.state.orderItem.orderStatus,delivered:true,deliveredDate:date}}})
+
+  this.setState({orderItem:{...this.state.orderItem,orderStatus:{...this.state.orderItem.orderStatus,delivered:true,deliveredDate:date}}},()=>{
+    fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-Encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        to: this.props.route.params.orderItem.userPushToken,
+        sound: 'default',
+        title: 'Your Order Delivered just Now !',
+        body: 'Please check your orders for details',
+      }),
+    });
+  })
 }
             })
-          } }
+          }}
         ],
         { cancelable: false }
       );
@@ -130,7 +146,22 @@ else{
                               
                               }
                               else{
-                                this.setState({orderItem:{...this.state.orderItem,orderStatus:{...this.state.orderItem.orderStatus,orderAccepted:true,orderAcceptedDate:date}}})
+                                this.setState({orderItem:{...this.state.orderItem,orderStatus:{...this.state.orderItem.orderStatus,orderAccepted:true,orderAcceptedDate:date}}},()=>{
+                                  fetch('https://exp.host/--/api/v2/push/send', {
+                                    method: 'POST',
+                                    headers: {
+                                      Accept: 'application/json',
+                                      'Accept-Encoding': 'gzip, deflate',
+                                      'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                      to: this.props.route.params.orderItem.userPushToken,
+                                      sound: 'default',
+                                      title: 'Your Order Accepted just Now !',
+                                      body: 'Please check your orders for details',
+                                    }),
+                                  });
+                                })
                               }
                                           })
                           } }

@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
-import { View, Text, StyleSheet,Image,ScrollView,TouchableWithoutFeedback } from 'react-native';
-
+import { View, Text, StyleSheet,Image,ScrollView,TouchableWithoutFeedback,Modal,Dimensions } from 'react-native';
+import { Rating as Ratings, AirbnbRating } from 'react-native-ratings';
 import * as firebase from 'firebase';
 import {theme} from '../../core/theme';
 import {Rating} from 'react-native-elements';
@@ -9,17 +9,19 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import Toast from 'react-native-tiny-toast';
 import { Button } from 'native-base';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { LogBox } from 'react-native';
+import {Button as PaperButton } from 'react-native-paper';
 
-
-
-
+const { width, height } = Dimensions.get("window");
 class OrderDetailsScreen extends Component {
   constructor(props) {
     super(props)
   
     this.state = {
        rating:'',
-       ratingOn:false,
+       modal:false,
+       userRating:this.props.route.params.orderItem.orderDetials.rating,
+       localRating:false,
        shop:{rating:null,reviews:null},
        items:{isLoading:true,errMess:null,items:[]}
     }
@@ -32,8 +34,7 @@ class OrderDetailsScreen extends Component {
     var array=[];
     for(const keys in this.props.route.params.orderItem.items){
     
-    const query2 = firebase.database().ref(`ShopProducts/${this.props.route.params.orderItem.orderDetials.shop_id}/${this.props.route.params.orderItem.items[keys].prod_id}`)
-    await query2.once('value',  snap=>{
+    await firebase.database().ref(`ShopProducts/${this.props.route.params.orderItem.orderDetials.shop_id}/${this.props.route.params.orderItem.items[keys].prod_id}`).once('value',  snap=>{
     array.push({title:snap.val().title,image:snap.val().image,quantity:snap.val().quantity,itemAmount:this.props.route.params.orderItem.items[keys].itemAmount,count:this.props.route.params.orderItem.items[keys].count})
     
     })
@@ -42,25 +43,29 @@ class OrderDetailsScreen extends Component {
     
 }
 async componentDidMount(){
+  LogBox.ignoreAllLogs();
   await  this.load();
-firebase.database().ref('Shops/'+this.props.route.params.orderItem.orderDetials.shop_id).on('value',(snapshot)=>{
+this.query2=firebase.database().ref('Shops/'+this.props.route.params.orderItem.orderDetials.shop_id).on('value',(snapshot)=>{
 const shop=snapshot.val();
 this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
 })
 }
-  
+  componentWillUnmount(){
+
+    firebase.database().ref('Shops/'+this.props.route.params.orderItem.orderDetials.shop_id).off('value',this.query2)
+  }
   
   render(){
     const orderItem=this.props.route.params.orderItem;
     const orderStatus=()=>{
-      if(orderItem.orderStatus.delivered){
-       return({status:'Delivered',date:orderItem.orderStatus.deliveredDate})
+      if(this.props.route.params.orderItem.orderStatus.delivered){
+       return({status:'Delivered',date:this.props.route.params.orderItem.orderStatus.deliveredDate})
       }
-      else if(orderItem.orderStatus.orderAccepted){
-        return({status:'Order Accepted',date:orderItem.orderStatus.orderAcceptedDate})
+      else if(this.props.route.params.orderItem.orderStatus.orderAccepted){
+        return({status:'Order Accepted',date:this.props.route.params.orderItem.orderStatus.orderAcceptedDate})
       }
-      if(orderItem.orderStatus.ordered){
-        return({status:'Ordered',date:orderItem.orderStatus.orderedDate})
+      if(this.props.route.params.orderItem.orderStatus.ordered){
+        return({status:'Ordered',date:this.props.route.params.orderItem.orderStatus.orderedDate})
       }
     }
 
@@ -72,7 +77,7 @@ this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
           <View style={styles.status}>
             <View style={{flexDirection:'row',flex:1}}>
            <View style={{flex:1}}>
-           <Text style={orderItem.orderStatus.delivered?{fontWeight:'bold',fontSize:20,color:'black'}:{fontWeight:'bold',fontSize:20,color:'#FF8F00'}}>{orderStatus().status}</Text>
+           <Text style={this.props.route.params.orderItem.orderStatus.delivered?{fontWeight:'bold',fontSize:20,color:'black'}:{fontWeight:'bold',fontSize:20,color:'#FF8F00'}}>{orderStatus().status}</Text>
         <Text style={{fontSize:16,fontWeight:'bold',marginTop:10,
         color:'black'}}>{orderStatus().date}</Text>
            </View>
@@ -131,30 +136,86 @@ this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
    
   </View>
   <View>
-    {this.state.ratingOn==false?<View>
-      <Button onPress={()=>this.setState({ratingOn:true})} style={styles.filterButton2}>
+    <Modal animationType="fade" 
+                   transparent visible={this.state.modal}  
+                   presentationStyle="overFullScreen" >
+                     <View style={{  
+      flex: 1, 
+      alignItems: "center", 
+      justifyContent: "center", 
+      backgroundColor: "rgba(0, 0, 0, 0.5)", 
+   }}>
+     <View style={{    margin: 0,
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 10,
+    width:width*.9}}>
+                     <Rating
+  showRating
+  onFinishRating = { rating =>
+  
+    { 
+      this.setState({localRating:rating})
+    }}
+  style={{ paddingVertical: 20 }}
+/>
+                     <View style={{flexDirection:'row',paddingTop:15,paddingBottom:10,marginLeft:'auto',marginRight:10}}>
+   <PaperButton mode="text" labelStyle={{fontSize:16}} onPress={()=>{this.setState({modal:false})}}>Cancel </PaperButton>
+   <PaperButton mode="text"labelStyle={{fontSize:16}} onPress={()=>{
+
+  const newRating=(this.state.shop.rating*this.state.shop.reviews+this.state.localRating)/(this.state.shop.reviews+1);
+  firebase.database().ref('Shops/'+this.props.route.params.orderItem.orderDetials.shop_id).update({rating:newRating,reviews:this.state.shop.reviews+1},(error)=>{
+    if(error){
+      console.log('error in rating',error)
+    }
+    else{
+      firebase.database().ref(`Orders/${this.props.route.params.orderItem.id}/orderDetials`).update({rating:this.state.localRating},(error)=>{
+        if(error){
+          console.log('error in rating',error)
+        }
+        else{
+          this.setState({modal:false,userRating:this.state.localRating})
+          Toast.show('Thank You for rating ',{
+            position:-.00001,
+             containerStyle:{
+               borderRadius:0,
+               paddingHorizontal:0,
+               width:'100%'
+             }
+           })
+        }
+
+      })
+ 
+    }
+  })
+
+
+}
+
+}> Confirm </PaperButton>
+
+
+       </View> 
+     </View>
+
+                     </View>
+
+    </Modal>
+ {this.props.route.params.orderItem.orderStatus.delivered?  (this.state.userRating==false?<View>
+      <Button onPress={()=>this.setState({modal:true})} style={styles.filterButton2}>
             <Text style={{fontSize:17,color:'white'}}>Rate the Shop</Text>
           </Button>
 
 </View>:<Rating style={{marginBottom:30}} type='custom' 
                                 fractions = { 0 }
-                                startingValue = { 3 }
+                                startingValue={this.state.userRating}
                                 ratingColor={theme.colors.primary}
                                 ratingBackgroundColor='#c8c7c8'
                                 imageSize = { 35 }
-                                onFinishRating = { rating =>
-                                    { 
-                                      const newRating=(this.state.shop.rating*this.state.shop.reviews+rating)/(this.state.shop.reviews+1);
-                                      firebase.database().ref('Shops/'+this.props.route.params.orderItem.orderDetials.shop_id).update({rating:newRating,reviews:this.state.shop.reviews+1})
-                                    Toast.show('Thank You for rating ',{
-                                     position:-.00001,
-                                      containerStyle:{
-                                        borderRadius:0,
-                                        paddingHorizontal:0,
-                                        width:'100%'
-                                      }
-                                    });}}
-                                showRating/>}
+                                readonly={true}
+                                showRating/>):null}
+  
     
                    
                       </View>     

@@ -1,7 +1,7 @@
 import { createStackNavigator,TransitionPresets, CardStyleInterpolators  } from '@react-navigation/stack';
 import React, {Component } from 'react';
 
-
+import CountDown from 'react-native-countdown-component';
 import CartScreen from './CartScreen';
 import CartSummaryScreen from './CartSummaryScreen';
 import AddressScreen from './AddressScreen';
@@ -10,23 +10,35 @@ import {HeaderButtons,Item} from 'react-navigation-header-buttons';
 import {
   View,
   Text,TouchableOpacity} from 'react-native';
-
+  import * as firebase from 'firebase';
 import { connect } from 'react-redux';
 import IconBadge from 'react-native-icon-badge';
 import HeaderButton from '../../components/HeaderButton';
 import {theme} from '../../core/theme';
 const CartStack = createStackNavigator();
 
-const mapStateToProps = state => {
-  return {
-  carts:state.carts.carts
+
+ class CartStackScreen extends Component {
+constructor(props) {
+  super(props)
+
+  this.state = {
+     cartExists:false
   }
 }
- class CartStackScreen extends Component {
-  constructor(props) {
-    super(props)
-  
-    
+
+componentDidMount(){
+  this.sub1=firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).on('value',snap=>{
+   if(snap.exists()){
+     this.setState({cartExists:true})
+   }
+   else{
+    this.setState({cartExists:false})
+   }
+  })
+  }
+  componentWillUnmount(){
+    firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).off('value',this.sub1)
   }
   
   render() {
@@ -45,8 +57,7 @@ const mapStateToProps = state => {
         />
         }
         BadgeElement={
-          <TouchableOpacity onPress={() => {navigation.navigate('CartScreen')}}> 
-            <Text style={{fontSize:12,color:'#FFFFFF'}}>{this.props.carts.length}</Text></TouchableOpacity>
+      <View></View>
          
         }
         IconBadgeStyle={
@@ -56,7 +67,7 @@ const mapStateToProps = state => {
           right:5,
           backgroundColor: '#FF6D00'}
         }
-        Hidden={this.props.carts.length==0}
+        Hidden={true}
         />
     </TouchableOpacity>
     )
@@ -72,6 +83,27 @@ const mapStateToProps = state => {
    
   </HeaderButtons>
   </View>
+     )
+   }
+   const count=()=>{
+     return(
+       <View style={{marginRight:20}}>
+         {this.state.cartExists?          
+       <CountDown 
+        size={17}
+        until={1*60}
+        onFinish={() => navigation.navigate('CartScreen')}
+        
+        digitStyle={{backgroundColor: theme.colors.primary}}
+        digitTxtStyle={{color: 'white',fontSize:20}}
+        timeLabelStyle={{color: 'red', fontWeight: 'bold'}}
+        separatorStyle={{color: 'white'}}
+        timeToShow={['M', 'S']}
+        timeLabels={{m: null, s: null}}
+        showSeparator
+    />:<View></View>}
+         
+       </View>
      )
    }
     return (
@@ -139,7 +171,7 @@ const mapStateToProps = state => {
             fontSize:18,
             marginLeft:20
           },
-       
+          headerRight:()=>count(),
           title: "Order Summary ",
           headerBackTitleVisible: false
         })}
@@ -150,7 +182,7 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(CartStackScreen);
+export default CartStackScreen;
 
 
 

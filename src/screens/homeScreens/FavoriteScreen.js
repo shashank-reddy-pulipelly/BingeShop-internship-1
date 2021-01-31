@@ -5,8 +5,7 @@ import * as firebase from 'firebase';
 import Card from '../../components/Card';
 import {  Button } from 'native-base';
 import {theme} from '../../core/theme';
-import { fetchProducts,fetchShopProductsList,fetchShops } from '../../redux/ActionCreators';
-import { fetchFavorites} from '../../redux/actions/favoritesActions';
+
 
 
 
@@ -25,7 +24,7 @@ constructor(props) {
 
 load= async ()=>{
   this.setState({refreshing:true})
-  this.sub1 =  await firebase.database().ref('Users/User_1/Favorites').on('value',async snapShopt=>{
+  this.sub1 =  await firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).on('value',async snapShopt=>{
 
     const val=snapShopt.val();
     
@@ -49,7 +48,7 @@ load= async ()=>{
 
 async componentDidMount(){ 
 
-  this.sub1 =  await firebase.database().ref('Users/User_1/Favorites').on('value',async snapShopt=>{
+  this.sub1 =  await firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).on('value',async snapShopt=>{
 
     const val=snapShopt.val();
     
@@ -74,7 +73,7 @@ async componentDidMount(){
   }
 
 componentWillUnmount(){
-  firebase.database().ref('Users/User_1/Favorites').off('value',this.sub1)
+  firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).off('value',this.sub1)
 }
 
 
@@ -108,7 +107,7 @@ componentWillUnmount(){
               itemData={{
                 ...item,id:item.prod_id
               }} shopId={item.shop_id}
-              onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:finalItem,shopId:item.shop_id})}
+              onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:finalItem.id,shopId:item.shop_id})}
           />
       );
   };

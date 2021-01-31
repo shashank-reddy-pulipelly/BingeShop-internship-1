@@ -11,9 +11,10 @@ import OrderStackScreen from './screens/orderScreens/OrderStackScreen';
 import OfferStackScreen from './screens/offersScreens/OfferStackScreen';
 import { AuthContext } from './components/context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {loginReducer} from './redux/loginReducer';
+
+
 import {   NavigationContainer } from '@react-navigation/native';
-import { StyleSheet,  View,Dimensions,StatusBar } from 'react-native';
+import { StyleSheet,  View,Dimensions,StatusBar,Platform } from 'react-native';
 const Drawer = createDrawerNavigator();
 import * as Animatable from 'react-native-animatable';
 import { theme } from './core/theme';
@@ -39,7 +40,7 @@ export default function App() {
  
      },2000)
     
-  
+
   },[])
 
   if(isLoading) {

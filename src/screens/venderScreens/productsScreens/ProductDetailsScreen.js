@@ -12,7 +12,7 @@ import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-
+import { LogBox } from 'react-native';
 import {theme} from '../../../core/theme';
 
 

@@ -7,14 +7,7 @@ import { ConfigureStore } from './src/redux/configureStore';
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import * as firebase from 'firebase';
-import * as Notifications from 'expo-notifications';
-Notifications.setNotificationHandler({
-  handleNotification: async () => {
-    return {
-      shouldShowAlert: true,
-    };
-  },
-});
+
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyAcasnVPElbZmhBMej-ElxFllPh6PGkGYQ",
     authDomain: "projectalpha-c313c.firebaseapp.com",

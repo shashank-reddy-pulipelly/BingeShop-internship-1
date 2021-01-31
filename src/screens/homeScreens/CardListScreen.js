@@ -4,11 +4,6 @@ import Search from '../../components/Search';
 
 import * as firebase from 'firebase';
 
-
-
-
-
-
 const CardListScreen = (props) => {
   const [shopProducts,setShopProducts]=useState({isLoading:true,errMess:null,shopProducts:[]})
   const [isRefreshing,setRefreshing]=useState(false);
@@ -35,7 +30,7 @@ const CardListScreen = (props) => {
 
 
     
-  }, []);
+  },[]);
 
     
          if(shopProducts.isLoading){

@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 
 const mapStateToProps = state => {
   return {
-    carts: state.carts.carts,
+
     shops:state.shops,
     shopProductsList:state.shopProductsList,
     products:state.products
@@ -22,8 +22,8 @@ class Amount extends Component {
   render(){
  
    const AmountArray=this.props.shopList.products.map(item => {
-    const amount=this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==this.props.shopList.shop_id).products.find((product)=>product.prod_id==item.prod_id).price;
-    return amount*item.count;
+   
+    return item.price*item.count;
    })
     
    
@@ -33,11 +33,11 @@ class Amount extends Component {
         return total + num;
       }
 
-    const Amount=AmountArray.reduce(fun);
+    const Amount=AmountArray.reduce(fun,0);
 
 
    
-    return Amount;
+    return Amount.toFixed(1);
   }
 }
 

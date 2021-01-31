@@ -1,35 +1,14 @@
 import React,{Component} from 'react';
 import { View, Text, FlatList, StyleSheet,Image,ActivityIndicator } from 'react-native';
-import { connect } from 'react-redux';
-
 import Card from '../../components/Card';
-import {  Button } from 'native-base';
-import {theme} from '../../core/theme';
-import { fetchProducts,fetchShopProductsList,fetchShops } from '../../redux/ActionCreators';
-
-const mapStateToProps = state => {
-    return {
-
-     
-      shops:state.shops,
-      products: state.products,
-      shopProductsList:state.shopProductsList,
-    }
-  }
-
-  const mapDispatchToProps = dispatch => ({
-  
-    fetchShops:()=>dispatch(fetchShops()),
-    fetchProducts:()=>dispatch(fetchProducts()),
-    fetchShopProductsList:()=>dispatch(fetchShopProductsList()),
-})
+import * as firebase from 'firebase';
 
 class FavoriteScreen extends Component{
   constructor(props) {
     super(props);
     this.state = {
  
-        data: [],
+        data: {isLoading:true,errMess:null,data:[]},
         isRefreshing:false
     
       
@@ -38,62 +17,85 @@ class FavoriteScreen extends Component{
 
   
 }
-load=()=>{
-  this.setState({isRefreshing:true},()=>{
-    this.props.fetchShops();
-    this.props.fetchProducts();
-    this.props.fetchShopProductsList();
-    this.setState({isRefreshing:false}) 
+load=async ()=>{
+  this.setState({isRefreshing:true},async ()=>{
+  await firebase.database().ref('ShopProducts').on('value',snapShot=>{
+      var Products=[];
+      const val=snapShot.val();
+      for(const key in val){
+          const pros=val[key];
+          for(const product in pros){
+            Products.push({...pros[product],id:pros[product].prod_id});
+  
+          }
+  
+      }
+      console.log(Products)
+      const filterProducts=Products.filter(Prod=>{
+        const prodTitle=Prod.title.toLowerCase();
+        if(prodTitle.includes(this.props.route.params.title.toLowerCase())){
+          return true;
+        }
+        else{
+          return false;
+        }
+      })
+      this.setState({
+        data:{isLoading:false,errMess:null,data:filterProducts},isRefreshing:false
+        },()=>{
+          console.log(filterProducts)
+        })
+    })
+  
   })
 
 }
-componentDidMount(){ 
-  this.props.fetchShops();
-  this.props.fetchProducts();
-  this.props.fetchShopProductsList();
-  this._unsubscribe = this.props.navigation.addListener('focus', () => {
-    this.props.fetchShops();
-  this.props.fetchProducts();
-  this.props.fetchShopProductsList();
-  const Products=[];
-  this.props.shopProductsList.shopProductsList.map(item=>{
-    
-   
-  
-   item.products.map((shopProduct)=>{
-      const Product=this.props.products.products.find((product)=>product.id==shopProduct.prod_id);
-       Products.push({...Product,available:shopProduct.available,price:shopProduct.price,shop_name:this.props.shops.shops.find((shop)=>shop.id===item.shop_id).title,shop_id:item.shop_id});
-       return ;
+async componentDidMount(){ 
+
+
+
+  this.unsubscribe = this.props.navigation.addListener('focus', () => {
+
+  firebase.database().ref('ShopProducts').once('value',snapShot=>{
+    var Products=[];
+    const val=snapShot.val();
+    for(const key in val){
+        const pros=val[key];
+        for(const product in pros){
+          Products.push({...pros[product],id:pros[product].prod_id});
+
+        }
+
+    }
+    const filterProducts=Products.filter(Prod=>{
+      const prodTitle=Prod.title.toLowerCase();
+      if(prodTitle.includes(this.props.route.params.title.toLowerCase())){
+        return true;
+      }
+      else{
+        return false;
+      }
     })
-    return ;
+    this.setState({
+      data:{isLoading:false,errMess:null,data:filterProducts}
+      })
   })
-  
- const filterProducts=Products.filter(Prod=>{
-    const prodTitle=Prod.title.toLowerCase();
-    if(prodTitle.includes(this.props.route.params.title.toLowerCase())){
-      return true;
-    }
-    else{
-      return false
-    }
+
+ 
   })
 
 
 
-  this.setState({
+
     
-  
-  data:filterProducts
-  })
-     });
 }
 
 componentWillUnmount() {
-  this._unsubscribe();
+this.unsubscribe();
 }
   render(){
    
-    if(this.props.products.isLoading || this.props.shopProductsList.isLoading || this.props.shops.isLoading){
+    if(this.state.data.isLoading){
       return(
        <View style={[styles.container, styles.horizontal]}>
       
@@ -103,11 +105,11 @@ componentWillUnmount() {
       )
     }
  
-    else if(this.props.products.errMess || this.props.shopProductsList.errMess || this.props.shops.errMess){
+    else if(this.state.data.errMess){
       return(
        <View style={[styles.horizontal]} > 
        <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
-       <Text style={{fontSize:18,fontWeight:'bold'}} >{this.props.products.errMess?this.props.products.errMess:this.props.shopProductsList.errMess?this.props.shopProductsList.errMess:this.props.shops.errMess} !</Text>
+       <Text style={{fontSize:18,fontWeight:'bold'}} >something went wrong !</Text>
    </View>
       )
     }
@@ -118,7 +120,7 @@ componentWillUnmount() {
       return (
           <Card 
               itemData={item} shopId={item.shop_id}
-              onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:item,shopId:item.shop_id})}
+              onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:item.id,shopId:item.shop_id})}
           />
       );
   };
@@ -127,7 +129,7 @@ componentWillUnmount() {
     return(
       <View style={styles.container}>
       <FlatList onRefresh={this.load} refreshing={this.state.isRefreshing} style={styles.list}
-               data={this.state.data}
+               data={this.state.data.data}
                renderItem={renderItem}
                keyExtractor={(item,index) =>index.toString()}
            />
@@ -138,7 +140,7 @@ componentWillUnmount() {
 }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(FavoriteScreen);
+export default FavoriteScreen;
 
 const styles = StyleSheet.create({
   container: {

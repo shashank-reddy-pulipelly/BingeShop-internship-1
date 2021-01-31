@@ -1,71 +1,97 @@
 import React,{Component} from 'react';
 import { View, Text, FlatList,Image, StyleSheet,SafeAreaView,
-  Alert,TouchableWithoutFeedback,ActivityIndicator,LogBox } from 'react-native';
+  Alert,TouchableWithoutFeedback,ActivityIndicator,LogBox,TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
-
+import * as firebase from 'firebase';
 import Card from '../../components/CartCard';
 import Amount from '../../components/Amount';
 import TotalPrice from '../../components/TotalPrice';
-import {fetchProducts,fetchShopProductsList,fetchShops,deleteOrder } from '../../redux/ActionCreators';
- import { addCart, deleteCart,decreaseCart,
- deleteCartArray} from '../../redux/actions/cartActions';
-import {  Button } from 'native-base';
+import { LinearGradient } from 'expo-linear-gradient';
+import {  Button,Content } from 'native-base';
 import {theme} from '../../core/theme';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ScrollView } from 'react-native-gesture-handler';
+
 const mapStateToProps = state => {
     return {
-
-      carts: state.carts,
-      address:state.address,
-      shops:state.shops,
-      products: state.products,
-      shopProductsList:state.shopProductsList,
+      address:state.address.address,
     }
   }
 
   const mapDispatchToProps = dispatch => ({
     
-    deleteCart: (prod_id,shop_id) => dispatch(deleteCart(prod_id,shop_id)),
-    decreaseCart:(prod_id,shop_id)=>dispatch(decreaseCart(prod_id,shop_id)),
-    addCart:(prod_id,shop_id)=>dispatch(addCart(prod_id,shop_id)),
-    deleteOrder:()=>dispatch(deleteOrder()),
-    deleteCartArray:()=>dispatch(deleteCartArray()),    
-    fetchShops:()=>dispatch(fetchShops()),
-    fetchProducts:()=>dispatch(fetchProducts()),
-    fetchShopProductsList:()=>dispatch(fetchShopProductsList()),
+
+   
+
+   
+
    
 
 })
 
 class CartScreen extends Component{
 
+  constructor(props) {
+    super(props)
   
-load=()=>{
-  this.props.fetchShops();
-    this.props.fetchProducts();
-    this.props.fetchShopProductsList();
+    this.state = {
+      carts:{isLoading:true,errMess:null,carts:[]},
+      productsAvaialable:true
+    }
+  }
+  
+
+
+
+ async componentDidMount(){   
+  LogBox.ignoreLogs(['VirtualizedLists should never be nested']); 
+    this.sub1=this.props.navigation.addListener('focus',async ()=>{
+      this.quer=firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).on('value',async snap=>{
+        if(snap.exists()){
+          this.setState({productsAvaialable:true})
+        }
+        var val=snap.val();
+        var array=[];
+        for(var shop in val){
+          const products=val[shop];
+          var shop_name=null;
+          var arr=[];
+        for(var product in products){
+                  
+        var count=products[product];
+        const query2 =   firebase.database().ref(`ShopProducts/${shop}/${product}`);
+        await query2.once('value',snapShot=>{
+        const value=snapShot.val();
+        if(!value.available){
+          this.setState({productsAvaialable:false})
+        }
+        shop_name=value.shop_name;
+        arr.push({title:value.title,image:value.image,
+          price:value.price,available:value.available,
+          quantity:value.quantity,prod_id:value.prod_id,count:count})
+                  })
+                }
+                array.push({products:arr,shop_id:shop,shop_name:shop_name})
+        }
+        this.setState({carts:{isLoading:false,errMess:null,carts:array}},()=>{
+         
+        })
+        })
+    })
    
-}
 
-
-  componentDidMount(){    
-
-    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-
-    this._unsubscribe = this.props.navigation.addListener('focus', () => {
-   this.load();
- 
-    });
+  
 
 
   }
   
   componentWillUnmount() {
-    this._unsubscribe();
+    this.sub1();
+    firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).off('value',this.quer);
+
   }
   placeOrder=()=>{
-    if(!this.props.address.address.number){
+    if(!this.props.address.number){
       Alert.alert(
         "No delivery Address",
         "Please Add delivery Address",
@@ -81,8 +107,24 @@ load=()=>{
       );
     }
     else{
- 
-      this.props.navigation.navigate('CartSummaryScreen')
+  if(!this.state.productsAvaialable){
+        Alert.alert(
+          "Some of Your Cart Items are Currently Unavailable",
+          "Please Remove them from your Cart ",
+          [
+            {
+              text: "Ok",
+              onPress: () => {},
+              style: "cancel"
+            }
+          ],
+          { cancelable: false }
+        );
+      }
+      else{
+        this.props.navigation.navigate('CartSummaryScreen')
+      }
+      
     
     }
   
@@ -90,20 +132,56 @@ load=()=>{
 
   address=()=>{
     return(
-<View style={[{alignItems:'center',backgroundColor:"white",marginBottom:10,paddingVertical:14},styles.row]} >
       <View>
-        {this.props.address.address.city?<Text> Deliver to {this.props.address.address.city}- {this.props.address.address.pinCode} </Text>:<Text>Add delivery Details </Text>}
-      
+        {this.props.address.number?      <View style={[{backgroundColor:"white",marginBottom:10,paddingVertical:14,borderBottomWidth: 1,
+ borderColor:'#E0E0E0',paddingHorizontal:10}]} >
+      <View style={{marginHorizontal:20}}>
+      <Text style={{fontWeight:'bold',fontSize:18,}}>Delivery Address</Text>
+        <Text style={{padding:3}}>{this.props.address.name}</Text>
+      <Text numberOfLines={1} style={{padding:3}}>{this.props.address.roadNo} , {this.props.address.houseNo} </Text>
+      <Text style={{padding:3}}>{this.props.address.city} , {this.props.address.state} - {this.props.address.pinCode} </Text>
+      <Text style={{padding:3}}>Phone Number : {this.props.address.number}</Text>
       </View>
-      <View style={{flex:1,paddingVertical:0}}>
-          <TouchableWithoutFeedback onPress={()=>this.props.navigation.navigate('AddressScreen')} >
-           <View style={{backgroundColor:"white",marginHorizontal:10,paddingVertical:5,paddingHorizontal:5,marginLeft:'auto',borderWidth:1,borderColor:'#BDBDBD'}}>
-             <Text style={{padding:0,margin:0,fontSize:15,marginHorizontal:10,color:theme.colors.primary}}>Change</Text>
-             </View> 
-          </TouchableWithoutFeedback>
+      <View style={{paddingTop:10}}>
+      <TouchableOpacity activeOpacity={.9}
+  style={styles.signIn}
+  onPress={() => {this.props.navigation.navigate('AddressScreen')}}
+>
+<LinearGradient
+  colors={['#448AFF','#0000d6']}
+  style={styles.signIn}
+>
+  <Text style={[styles.textSign, {
+      color:'#fff'
+  }]}>Change Address</Text>
+</LinearGradient>
+</TouchableOpacity>
       
     </View>
-    </View>
+    </View>:
+
+ <View style={[{backgroundColor:"white",marginBottom:10,paddingVertical:14,borderBottomWidth: 1,
+ borderColor:'#E0E0E0',paddingHorizontal:10}]}>
+     <TouchableOpacity activeOpacity={.9}
+  style={styles.signIn}
+  onPress={() => {this.props.navigation.navigate('AddressScreen')}}
+>
+<LinearGradient
+  colors={['#448AFF','#0000d6']}
+  style={styles.signIn}
+>
+  <Text style={[styles.textSign, {
+      color:'#fff'
+  }]}>Add Address</Text>
+</LinearGradient>
+</TouchableOpacity>
+
+        </View>}
+       
+  
+   
+      </View>
+
     )
   }
 
@@ -119,7 +197,7 @@ load=()=>{
    
       
       <View style={styles.row}>
-        <Text style={{marginRight:'auto'}}> Price ( {this.props.carts.length} items)</Text>
+        <Text style={{marginRight:'auto'}}> Price ( {this.state.carts.carts.length} items)</Text>
         <Text> {'\u20B9'} <Amount shopList={shopList} /> </Text>
       </View>
       <View style={styles.row}>
@@ -159,7 +237,7 @@ load=()=>{
   render(){
 
 
-    if(this.props.products.isLoading || this.props.shopProductsList.isLoading || this.props.shops.isLoading || this.props.address.isLoading ){
+    if(this.state.carts.isLoading ){
       return(
        <View style={[styles.container, styles.horizontal]}>
       
@@ -169,16 +247,16 @@ load=()=>{
       )
     }
  
-    else if(this.props.products.errMess || this.props.shopProductsList.errMess || this.props.shops.errMess){
+    else if(this.state.carts.errMess ){
       return(
        <View style={[styles.horizontal]} > 
        <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
-       <Text style={{fontSize:18,fontWeight:'bold'}} >{this.props.products.errMess?this.props.products.errMess:this.props.shopProductsList.errMess?this.props.shopProductsList.errMess:this.props.shops.errMess} !</Text>
+       <Text style={{fontSize:18,fontWeight:'bold'}} >something went wrong !</Text>
    </View>
       )
     }
     else{
-    if(this.props.carts.carts.length==0){
+    if(!this.state.carts.isLoading && this.state.carts.carts.length==0){
       return(
         <View style={styles.container2}>
           <View style={{alignItems:'center'}}>
@@ -197,31 +275,24 @@ load=()=>{
         </View>
       )
     }
-   
+   else{
     return(
       <SafeAreaView style={styles.container} >
    <ScrollView  >
     {this.address()}
-    {this.props.carts.carts.map((item2,index)=>{
- const shop=this.props.shops.shops.find((shop)=>shop.id==item2.shop_id);
+    {this.state.carts.carts.map((item2,index)=>{
+
  
 
 
  const renderItem=({item})=>{
  
-   const obj=this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item2.shop_id).products.find((product)=>product.prod_id==item.prod_id);
-   const prodObj=this.props.products.products.find((product)=>product.id==obj.prod_id);
  
-    const finalItem={
-       ...prodObj,available:obj.available,price:obj.price,shop_name:shop.title,
-       shop_id:item2.shop_id,
-       count:item.count
-     }
  
    return(
      <Card 
-               itemData={finalItem}
-               onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:finalItem,shopId:item2.shop_id})}
+               itemData={item} shopId={item2.shop_id}
+               onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:item.prod_id,shopId:item2.shop_id})}
            />
    )
  }
@@ -237,7 +308,7 @@ load=()=>{
       borderTopWidth:1,
       borderBottomWidth:1,
       borderColor:'#E0E0E0'}}> 
-      <Text style={{fontSize:16,fontWeight:'bold'}}>Shop Name : {shop.title}</Text></View>}
+      <Text style={{fontSize:16,fontWeight:'bold'}}>Shop Name : {item2.shop_name}</Text></View>}
       ListFooterComponent={()=>this.priceDetail(item2)}
   />
         </View>
@@ -253,7 +324,7 @@ load=()=>{
         }}>
   <View style={{flex:1,justifyContent:'center'}}>
   <View >
-               <Text style={{fontSize:20,paddingLeft:20 ,fontWeight: 'bold',}}>Total : {'\u20B9'} <TotalPrice /> </Text>
+               <Text style={{fontSize:20,paddingLeft:20 ,fontWeight: 'bold',}}>Total : {'\u20B9'} <TotalPrice carts={this.state.carts.carts} /> </Text>
                <Text style={{color:'#09af00',fontSize:12,paddingLeft:20}}>      {'\u20B9'} 100   Savings  </Text>
              </View>
     </View>
@@ -273,7 +344,7 @@ load=()=>{
     </SafeAreaView>
 
     )
-
+  }
   }
 }
 
@@ -312,6 +383,20 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingBottom:50,
     backgroundColor:'#fff'
-  }
+  },
+  signIn: {
+    width: '100%',
+    height: 46,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    paddingHorizontal:10,
+  
+  
+},
+textSign: {
+    fontSize: 18,
+    fontWeight: 'bold'
+}
  
 });

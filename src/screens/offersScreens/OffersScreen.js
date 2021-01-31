@@ -3,10 +3,6 @@ import { View, Text, StyleSheet,ActivityIndicator,ScrollView,Image,SafeAreaView 
 
 import * as firebase from 'firebase';
 
-
-
-
-
 const OffersScreen = (props) => {
 
  const [offers,setOffers]=useState({isLoading:true,errMess:null,offers:[]})
@@ -52,6 +48,7 @@ const OffersScreen = (props) => {
              return(
 <SafeAreaView style={styles.container}>
                 <ScrollView >
+                
                     {offers.offers.map(image=>{
 
                         return(

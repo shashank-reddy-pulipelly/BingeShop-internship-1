@@ -19,13 +19,28 @@ import {theme} from '../../core/theme';
 import HeaderButton from '../../components/HeaderButton';
 import SearchContentScreen from './SearchContentScreen';
 const STATUSBAR_HEIGHT = StatusBar.currentHeight;
-const mapStateToProps = state => {
-  return {
-  carts:state.carts.carts
-  }
-}
+import * as firebase from 'firebase';
  class HomeStackScreen extends Component {
+  constructor(props) {
+    super(props)
   
+    this.state = {
+       cartLength:0
+    }
+  }
+  componentDidMount(){
+  this.sub1=firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).on('value',snap=>{
+    var count=[];
+    for(const key in snap.val()){
+        count.push(1);
+    }
+    
+    this.setState({cartLength:count.length})
+  })
+  }
+  componentWillUnmount(){
+    firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).off('value',this.sub1)
+  }
   render() {
    const {navigation}=this.props;
    const CartBadge=()=>{
@@ -43,7 +58,7 @@ const mapStateToProps = state => {
         }
         BadgeElement={
           <TouchableOpacity onPress={() => {navigation.navigate('CartDrawer',{screen:'CartScreen'})}}> 
-            <Text style={{fontSize:12,color:'#FFFFFF'}}>{this.props.carts.length}</Text></TouchableOpacity>
+            <Text style={{fontSize:12,color:'#FFFFFF'}}>{this.state.cartLength}</Text></TouchableOpacity>
          
         }
         IconBadgeStyle={
@@ -53,7 +68,7 @@ const mapStateToProps = state => {
           right:5,
           backgroundColor: '#FF6D00'}
         }
-        Hidden={this.props.carts.length==0}
+        Hidden={this.state.cartLength==0}
         />
     </TouchableOpacity>
     )
@@ -202,7 +217,7 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(HomeStackScreen);
+export default HomeStackScreen;
 
 
 

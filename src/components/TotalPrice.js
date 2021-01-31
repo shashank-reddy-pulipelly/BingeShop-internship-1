@@ -1,30 +1,12 @@
 import React,{Component} from 'react';
 
-
-import { connect } from 'react-redux';
-
-
-const mapStateToProps = state => {
-  return {
-    carts: state.carts,
-    shops:state.shops,
-    shopProductsList:state.shopProductsList,
-    products:state.products
-  }
-}
-
-const mapDispatchToProps = dispatch => ({
-
-})
-
 class Amount extends Component {
- 
+  
   render(){
- 
-   const AmountArray=this.props.carts.carts.map(item1 => {
+   const AmountArray=this.props.carts.map(item1 => {
        const produ=item1.products.map(item=>{
-        const amount=this.props.shopProductsList.shopProductsList.find((shopProduct)=>shopProduct.shop_id==item1.shop_id).products.find((product)=>product.prod_id==item.prod_id).price;
-        return amount*item.count;
+       
+        return item.price*item.count;
        })
 
        const fun1 =(total, num) =>{
@@ -41,16 +23,16 @@ class Amount extends Component {
         return total + num;
       }
 
-    const Amount=AmountArray.reduce(fun);
+    const Amount=AmountArray.reduce(fun,0);
 
 
    
-    return Amount;
+    return Amount.toFixed(1);
   }
 }
 
 
 
 
-export default connect(mapStateToProps,mapDispatchToProps)(Amount);
+export default Amount;
 

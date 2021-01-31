@@ -6,13 +6,13 @@ const VegetableShopsScreen = (props) => {
   const [shops,setShops]=useState({isLoading:true,errMess:null,shops:[]})
   const [isRefreshing,setRefreshing]=useState(false);
 
-  const load= async ()=>{
+  const load= ()=>{
     setRefreshing(true);
-   const query =await firebase.database().ref('Shops').once('value',snapShot=>{
+  firebase.database().ref('Shops').once('value',snapShot=>{
   var val=snapShot.val();
   const loadedShops=[];
   for(const key in val){
-    loadedShops.push(val[key]);
+    loadedShops.push({...val[key],title:val[key].shop_name});
   }
 
   setShops({isLoading:false,errMess:null,shops:loadedShops})
@@ -25,7 +25,7 @@ const VegetableShopsScreen = (props) => {
         var val=snapShot.val();
         const loadedShops=[];
         for(const key in val){
-          loadedShops.push(val[key]);
+          loadedShops.push({...val[key],title:val[key].shop_name});
         }
         setShops({isLoading:false,errMess:null,shops:loadedShops})
          })
@@ -51,11 +51,11 @@ const VegetableShopsScreen = (props) => {
   }
 
   else{
-    const data=shops.shops.filter(shop=>shop.shop_type.is_vegetables===true)
+   
    return (
      <View style={styles.container}>
     
-       <Search cardType='shop' shopType='Vegetables' isRefreshing={isRefreshing} load={load} title={props.route.params.title} data={data} navigation={props.navigation}/>
+       <Search cardType='shop' shopType='Vegetables' isRefreshing={isRefreshing} load={load} title={props.route.params.title} data={shops.shops.filter(shop=>shop.shop_type.is_vegetables===true)} navigation={props.navigation}/>
     
        
      </View>

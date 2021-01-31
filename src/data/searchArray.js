@@ -11,11 +11,11 @@
     },
     {
       id: '3',
-      title: 'Aashirvaad Atta ',     
+      title: 'Aashirvaad Atta',     
     },
     {
       id: '2',   
-      title: 'Pansari Biryani Rice ', 
+      title: 'Pansari Biryani Rice', 
     },
     {
       id: '4',    
@@ -23,16 +23,16 @@
     },
     {
       id: '5',     
-      title: 'Nestle Maggie ',
+      title: 'Nestle Maggie',
     },
     {
       id: '6',   
-      title: 'Pavizham Rice Bran Oil ',
+      title: 'Pavizham Rice Bran Oil',
  
     },
     {
       id: '7',    
-      title: 'Santoor Aloe Soap ',    
+      title: 'Santoor Aloe Soap',    
     },
     {
       id: '8',      

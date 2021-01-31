@@ -120,8 +120,10 @@ class Search extends React.Component{
           
      <View style={{flex:10}}>
      <FlatList onRefresh={()=>{
+       this.props.load();
+       console.log('skks')
        this.load();
-       this.props.load();}} refreshing={this.props.isRefreshing}
+       }} refreshing={this.props.isRefreshing}
             data={this.state.data}
             renderItem={({ item }) => (
               <Shop 
@@ -155,7 +157,7 @@ return(
     renderItem={({ item }) => (
       <Card 
       itemData={item} shopId={this.props.shopId} 
-      onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData: item,shopId:this.props.shopId})}
+      onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData: item.id,shopId:this.props.shopId})}
        />
     )}
     keyExtractor={item => item.id.toString()}

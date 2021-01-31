@@ -6,66 +6,165 @@ import {
   StyleSheet,
   Dimensions,
   SafeAreaView,ScrollView,TouchableOpacity,
-  Platform,
+  Platform,ActivityIndicator,LogBox
 } from 'react-native';
+import * as firebase from 'firebase';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { connect } from 'react-redux';
-import {postCart } from '../../redux/ActionCreators';
+
 import Toast from 'react-native-tiny-toast';
 import { Button } from 'native-base';
-import { postFavorite, deleteFavorite,} from '../../redux/actions/favoritesActions';
+
 import {theme} from '../../core/theme';
 const { width, height } = Dimensions.get("window");
 const MIN_HEIGHT = Platform.OS === 'ios' ? 90 : 70;
 const MAX_HEIGHT = 350;
 
-
-
-const mapStateToProps = state => {
-  return {
- 
-    favorites: state.favorites.favorites,
-   
-
-  }
-}
-
-const mapDispatchToProps = dispatch => ({
-  postFavorite: (prod_id,shop_id) => dispatch(postFavorite(prod_id,shop_id)),
-  deleteFavorite: (id,prod_id,shop_id) => dispatch(deleteFavorite(id,prod_id,shop_id)),
-  postCart: (ItemId) => dispatch(postCart(ItemId)),
-})
 class  CardItemDetails extends Component {
 
-   itemData = this.props.route.params.itemData;
-   shopId=this.props.route.params.shopId;
+
+ 
  constructor(props) {
    super(props)
  
    this.state = {
-    isFavorite:this.props.favorites.some(el => el.prod_id == this.itemData.id && el.shop_id==this.shopId)
+    isFavorite:false,
+    item:{isLoading:true,errMess:null,item:null}
  }
  }
- toggleFavorite=()=>{
-  
-  if(this.state.isFavorite){
-   this.setState({isFavorite:!this.state.isFavorite},()=>{
-    this.props.deleteFavorite(this.props.favorites.find(el => el.prod_id == this.itemData.id && el.shop_id==this.shopId).id,this.itemData.id,this.shopId);
-   });
- 
-  }
-  else{
-   this.setState({isFavorite:!this.state.isFavorite},()=>{
-    this.props.postFavorite(this.itemData.id,this.shopId);
-   });
+ postCart=(prod_id,shop_id)=>{
 
-  }
+  firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}`).once('value',snapShot=>{
+    if(snapShot.exists()){
+      firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).once('value',snap=>{
+        if(snap.exists()){
+          firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(Number(snap.val()+1),(error)=>{
+            if(!error){
+              Toast.show('  Item Added to Cart  Successfully  ',{
+                position:-72,
+                containerStyle:{
+                  borderRadius:0,
+                  paddingHorizontal:0,
+                  width:'100%'
+                }
+              })
+            }
+            else{
+       
+              console.log('cart adding error',error);
+            }
+          })
+        }
+        else{
+          firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(Number(1),(error)=>{
+            if(!error){
+              Toast.show('  Item Added to Cart  Successfully  ',{
+                position:-70,
+                containerStyle:{
+                  borderRadius:0,
+                  paddingHorizontal:0,
+                  width:'100%'
+                }
+              })
+            
+            }
+            else{
+              console.log('cart adding error',error);
+            }
+          })
+        }
+      })
+    }
+    else{
+      firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(Number(1),(error)=>{
+        if(error){
+          console.log('cart adding error',error);
+        }
+        else{
+          Toast.show('  Item Added to Cart  Successfully  ',{
+            position:-70,
+            containerStyle:{
+              borderRadius:0,
+              paddingHorizontal:0,
+              width:'100%'
+            }
+          })
+        }
+      })
+    }
+  })
+
 }
+   toggleFavorite=()=>{
+    LogBox.ignoreAllLogs();
+     if(this.state.isFavorite){
+      this.setState({isFavorite:!this.state.isFavorite},()=>{
+
+        firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).orderByChild('prod_id').equalTo(this.props.route.params.itemData).once('value',snapShot=>{
+         var key=null;
+         var val=snapShot.val();
+         for(const pro in val){
+           key=pro;
+         }
+
+         
+        
+          var a=snapShot.exists();
+      
+          if(a){
+           
+            firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites/${key}`).remove();
+          }
+        })
+      });
+    
+     }
+     else{
+      this.setState({isFavorite:!this.state.isFavorite},()=>{
+        firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).push({prod_id:this.props.route.params.itemData,shop_id:this.props.route.params.shopId})
+ 
+      });
+
+     }
+   }
+   componentDidMount(){
+    LogBox.ignoreAllLogs();
+     firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).orderByChild('prod_id').equalTo(this.props.route.params.itemData).once('value',snapShot=>{
+       var a=snapShot.exists();
+       this.setState({isFavorite:a})
+     })
+   this.sub1=  firebase.database().ref(`ShopProducts/${this.props.route.params.shopId}/${this.props.route.params.itemData}`).on('value',snap=>{
+      const val=snap.val();
+     
+    this.setState({item:{isLoading:false,errMess:null,item:val}})
+        })
+   }
+   componentWillUnmount(){
+    firebase.database().ref(`ShopProducts/${this.props.route.params.shopId}/${this.props.route.params.itemData}`).off('value',this.sub1)
+   }
   
   render(){
-    return(
+    
+      if(this.state.item.isLoading){
+return(
+  <View style={[styles.container2, styles.horizontal]}>
+          
+     
+           <ActivityIndicator size="large" color="#600EE6" />
+         </View>
+)
+      }
+      else if(this.state.item.errMess){
+return(
+  <View style={[styles.horizontal]} > 
+           <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
+           <Text style={{fontSize:18,fontWeight:'bold'}} >something went wrong !</Text>
+       </View>
+)
+      }
+      else{
+return(
 <SafeAreaView style={styles.container} >
     <ScrollView >
  
@@ -75,21 +174,18 @@ class  CardItemDetails extends Component {
   </View>
   
   <View style={styles.section}>
-  <Image style={styles.image}  source={{uri:this.itemData.image}} />
-   <Text style={styles.title}>{this.itemData.title}</Text>
+  <Image style={styles.image}  source={{uri:this.state.item.item.image}} />
+   <Text style={styles.title}>{this.state.item.item.title}</Text>
 
    <View style={styles.ratings}>
               <View style={styles.star}>
-<Text style={{color:'white',paddingLeft:10}}>ff</Text>
+<Text style={{color:'white',paddingLeft:10}}>5</Text>
 <View style={{paddingRight:10,paddingLeft:5}}>
 <Icon name="star"  size={14} color="#fff" />
 </View>
 
               </View>
-              <View style={styles.reviews}>
-                <Text style={{ fontSize: 14,
-    color: '#444',}}>({this.itemData.reviews}) </Text>
-              </View>
+             
              
             </View>
 
@@ -97,15 +193,15 @@ class  CardItemDetails extends Component {
             <View style={styles.row}>
                 <Text style={{fontSize:22,paddingVertical:0,marginTop:10}}>{'\u20B9'}</Text>
                 
-                <Text style={{ marginTop:6,marginLeft:5,fontSize:24,}}>{this.itemData.price}</Text>
-                <Text style={{textDecorationLine: 'line-through',fontSize: 14, color: '#444' ,marginTop:5,marginLeft:15}}>{this.itemData.price+100} </Text>
+                <Text style={{ marginTop:6,marginLeft:5,fontSize:24,fontWeight:'bold'}}>{this.state.item.item.price}</Text>
+                <Text style={{textDecorationLine: 'line-through',fontSize: 14, color: '#444' ,marginTop:5,marginLeft:15}}>{this.state.item.item.price+100} </Text>
                 <Text style={{fontSize: 13, color: '#09af00' ,marginTop:5,marginLeft:15}}>33% off</Text>
             </View>
 
             <View style={{flexDirection:'row',paddingVertical:10,overflow:'hidden'}}>
               <Text style={{fontSize:18}} >Seller :  </Text>
               <View style={{padding:4,backgroundColor:'#E8EAF6',paddingHorizontal:8,borderRadius:5,borderColor:'#7986CB',borderWidth:.5}} >
-              <Text numberOfLines={1} >{this.itemData.shop_name} </Text>
+              <Text numberOfLines={1} >{this.state.item.item.shop_name} </Text>
               </View>
        
             </View>
@@ -136,48 +232,39 @@ class  CardItemDetails extends Component {
        </View>
       <View style={styles.section}>
 <Text style={styles.title}>Description</Text>
-<Text style={styles.text}>{this.itemData.description}</Text>
+<Text style={styles.text}>{this.state.item.item.description}</Text>
                   </View>
  
 
     </ScrollView>
   
-  <View style={{backgroundColor:'white',flexDirection:'row',borderTopColor:'#EEEEEE',borderTopWidth:2}}>
-            <Button onPress={()=>{Toast.show('  Item Added to Cart  Successfully  ',{
-      position:-70,
-      containerStyle:{
-        borderRadius:0,
-        paddingHorizontal:0,
-        width:'100%'
-      }
-    });
-    this.props.postCart({prod_id:this.itemData.id,shop_id:this.shopId});
+    {this.state.item.item.available?<View style={{backgroundColor:'white',borderTopColor:'#EEEEEE',borderTopWidth:2,flexDirection:'row'}}>
+  <Button onPress={()=>{
+    this.postCart(this.props.route.params.itemData,this.props.route.params.shopId);
     this.props.navigation.navigate('CartDrawer');}} style={styles.filterButton1}>
             <Text style={{fontSize:17,color:theme.colors.primary}}>Buy Now</Text>
           </Button>
-            <Button onPress={()=>{Toast.show('  Item Added to Cart  Successfully  ',{
-      position:-70,
-      containerStyle:{
-        borderRadius:0,
-        paddingHorizontal:0,
-        width:'100%'
-      }
-    });
-    this.props.postCart({prod_id:this.itemData.id,shop_id:this.shopId});}} style={styles.filterButton2}>
+            <Button onPress={()=>{
+
+    this.postCart(this.props.route.params.itemData,this.props.route.params.shopId);}} style={styles.filterButton2}>
             <Text style={{fontSize:17,color:'white'}}>Add to Cart</Text>
           </Button>
-            </View>
+    
+         
+            </View>:<View style={{justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
+            <Text style={{paddingVertical:10,fontSize:19,fontWeight:'bold',color:'red'}}>Currently UnAvailable </Text>
+            </View>}
+  
     </SafeAreaView>
-    );
+)
+      }
+
+   
   }
 } 
 
- 
 
-
-
-
-export default connect(mapStateToProps,mapDispatchToProps)(CardItemDetails)
+export default CardItemDetails;
 
 const styles = StyleSheet.create({
   container: {
@@ -277,6 +364,21 @@ const styles = StyleSheet.create({
     marginLeft:'auto',
     height:50,
    
+  },
+  container2: {
+    flex: 1, 
+    width: '100%',
+    alignSelf: 'center',
+    backgroundColor:"#fff",
+    flexDirection:'row'
+  },
+  horizontal: {
+    flex:1,
+    justifyContent: "center",
+    alignItems:'center',
+    padding: 10,
+    paddingBottom:50,
+    backgroundColor:'#fff'
   }
 
 });

@@ -15,9 +15,9 @@ const App = (props) => (
           <Text style={{fontFamily:'serif',fontSize:16,fontWeight:'bold'}}>  Deals of   </Text>
           <Text style={{fontFamily:'serif',fontSize:16,fontWeight:'bold'}} >  the Week</Text>
           </View>
-          {props.data.map((item)=>{
+          {props.data.map((item,index)=>{
             return(
-<TouchableWithoutFeedback onPress={()=>props.navigation.navigate('CardItemDetails', {itemData: item,shopId:item.shop_id})} key={item.id}>
+<TouchableWithoutFeedback onPress={()=>props.navigation.navigate('CardItemDetails', {itemData: item.prod_id,shopId:item.shop_id})} key={index}>
 
               <View>
               <View >

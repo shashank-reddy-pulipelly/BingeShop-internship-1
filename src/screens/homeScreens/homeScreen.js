@@ -23,16 +23,22 @@ import Background from '../../components/BackgroundImage';
 import {theme} from '../../core/theme';
 
 import { fetchAddress} from '../../redux/actions/addressActions';
-import { fetchCarts} from '../../redux/actions/cartActions';
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => {
+    return {
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    };
+  },
+});
 
 
 
 
 const mapStateToProps = state => {
   return {
-
-  
   }
 }
 
@@ -41,7 +47,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 
   fetchAddress:()=>dispatch(fetchAddress()),
-  fetchCarts:()=>dispatch(fetchCarts()),
+
 
 })
 class HomeScreen extends PureComponent{
@@ -53,22 +59,7 @@ constructor(props) {
     token:''
   }
 }
-triggerNotificationHandler = () => {
-  fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Accept-Encoding': 'gzip, deflate',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      to: this.state.token,
-      data: { extraData: 'Some data' },
-      title: 'Sent via the app',
-      body: 'This push notification was sent via the app!',
-    }),
-  });
-};
+
 
   componentDidMount(){
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
@@ -90,6 +81,7 @@ triggerNotificationHandler = () => {
     .then((response) => {
       const token = response.data;
       this.setState({token})
+      firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}`).update({pushToken:response.data})
       console.log(response)
     })
     .catch((err) => {
@@ -100,16 +92,17 @@ triggerNotificationHandler = () => {
 
      this.backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
       (response) => {
-        console.log('back',response);
+   
       }
     );
 
     this.foregroundSubscription = Notifications.addNotificationReceivedListener(
       (notification) => {
-        console.log('front',notification);
+        
       }
     );
-    
+ 
+
    this.sub1= firebase.database()
     .ref('Famous_products_1')
     .on('value', (snapshot) => {
@@ -123,7 +116,7 @@ triggerNotificationHandler = () => {
      this.setState({Famous_Products_1:{isLoading:false,errMess:null,Famous_Products_1:loadedProducts}})
    })
     this.props.fetchAddress();
-    this.props.fetchCarts();
+   
 
   }
 
@@ -179,9 +172,7 @@ return(
     <View style={styles.sliderContainer}>
   
    <HomeSwiper  />
- <Button title="click"  onPress={()=>{
-  this.triggerNotificationHandler()
- }} />
+
     </View>
     <View style={{flexDirection:'row',alignItems:'center',marginHorizontal:10,paddingHorizontal:15,
     backgroundColor:'#D50000',paddingVertical:10,marginTop:20,borderRadius:10}} >
