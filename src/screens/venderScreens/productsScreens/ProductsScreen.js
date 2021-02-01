@@ -16,6 +16,9 @@ const ProductsScreen= (props) => {
   React.useEffect(() => {
     LogBox.ignoreAllLogs();
     var shopId=null;
+    if(firebase.auth().currentUser){
+
+
 firebase.database().ref(`Shops`).orderByChild('phone_num').equalTo(firebase.auth().currentUser.phoneNumber).once('value',snapShot=>{
 
   for(const key in snapShot.val()){
@@ -61,23 +64,23 @@ firebase.database().ref(`Shops`).orderByChild('phone_num').equalTo(firebase.auth
     });
 
 
-   const  backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
+   var  backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
       (response) => {
        
       }
     );
-const foregroundSubscription = Notifications.addNotificationReceivedListener(
+var foregroundSubscription = Notifications.addNotificationReceivedListener(
       (notification) => {
      
       }
     );
     
 return ()=>{
-  backgroundSubscription();
-  foregroundSubscription();
+  backgroundSubscription.remove();
+  foregroundSubscription.remove();
 }
         
-      }, []);
+} }, []);
 
   if(shopProducts.isLoading){
     return(

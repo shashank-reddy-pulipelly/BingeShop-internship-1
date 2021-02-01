@@ -19,17 +19,22 @@ export const addAddress = (object) => ({
 export const fetchAddress = () => (dispatch) => {
 
     dispatch(addressLoading());
+if(firebase.auth().currentUser){
+
 
      firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Address`).once('value',snap=>{
        if(snap.exists()){
         dispatch(addAddress(snap.val()));
        }
      })
+    }
 };
 
 
 
 export const editAddress = (object)  => (dispatch) => {
+if(firebase.auth().currentUser){
+
 
   firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Address`).set(object,(error)=>{
     if(error){
@@ -39,7 +44,7 @@ export const editAddress = (object)  => (dispatch) => {
       dispatch(addAddress(object));
     }
   })
-  
+}
 };
 
 

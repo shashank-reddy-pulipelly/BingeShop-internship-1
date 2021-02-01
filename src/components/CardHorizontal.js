@@ -22,6 +22,9 @@ import * as firebase from 'firebase';
      }
      postCart=(prod_id,shop_id)=>{
       this.setState({loading:true},()=>{
+        if(firebase.auth().currentUser){
+
+      
         firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}`).once('value',snapShot=>{
           if(snapShot.exists()){
             firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).once('value',snap=>{
@@ -86,6 +89,7 @@ import * as firebase from 'firebase';
             })
           }
         })
+      }
       });
   
   

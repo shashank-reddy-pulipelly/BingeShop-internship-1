@@ -6,7 +6,7 @@ import {
     DrawerContentScrollView,
     DrawerItem
 } from '@react-navigation/drawer';
-
+import * as firebase from 'firebase';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme } from '../../core/theme';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -76,7 +76,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
                     )}
                     label="Sign Out"
                     labelStyle={{fontWeight:'bold'}}
-                    onPress={() => {}}
+                    onPress={() => {await firebase.auth().signOut()}}
                 />
             </Drawer.Section>
         </View>

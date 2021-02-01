@@ -28,6 +28,9 @@ import { LogBox } from 'react-native';
    }
 postCart=(prod_id,shop_id)=>{
     this.setState({loading:true},()=>{
+      if(firebase.auth().currentUser){
+
+
       firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}`).once('value',snapShot=>{
         if(snapShot.exists()){
           firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).once('value',snap=>{
@@ -92,14 +95,18 @@ postCart=(prod_id,shop_id)=>{
           })
         }
       })
+    }
     });
 
 
 }
    toggleFavorite=()=>{
     LogBox.ignoreAllLogs();
+    if(firebase.auth().currentUser){
      if(this.state.isFavorite){
       this.setState({isFavorite:!this.state.isFavorite},()=>{
+
+
 
         firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).orderByChild('prod_id').equalTo(this.props.itemData.id).once('value',snapShot=>{
          var key=null;
@@ -117,6 +124,7 @@ postCart=(prod_id,shop_id)=>{
             firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites/${key}`).remove();
           }
         })
+   
       });
     
      }
@@ -127,22 +135,29 @@ postCart=(prod_id,shop_id)=>{
       });
 
      }
+    }
    }
    componentDidMount(){
     LogBox.ignoreAllLogs();
-   this.sub2=  firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).orderByChild('prod_id').equalTo(this.props.itemData.id).on('value',snapShot=>{
-       var a=snapShot.exists();
-       this.setState({isFavorite:a})
-     })
-   this.sub1=  firebase.database().ref(`ShopProducts/${this.props.shopId}/${this.props.itemData.id}`).on('value',snap=>{
-      const val=snap.val();
-      console.log('shah');
-      this.setState({price:val.price,available:val.available})
-        })
+    if(firebase.auth().currentUser){
+      this.sub2=  firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).orderByChild('prod_id').equalTo(this.props.itemData.id).on('value',snapShot=>{
+        var a=snapShot.exists();
+        this.setState({isFavorite:a})
+      })
+    this.sub1=  firebase.database().ref(`ShopProducts/${this.props.shopId}/${this.props.itemData.id}`).on('value',snap=>{
+       const val=snap.val();
+       console.log('shah');
+       this.setState({price:val.price,available:val.available})
+         })
+    }
+ 
    }
    componentWillUnmount(){
-    firebase.database().ref(`Users/${firebase.auth().currentUser.uid}/Favorites`).off('value',this.sub2);
-    firebase.database().ref(`ShopProducts/${this.props.shopId}/${this.props.itemData.id}`).off('value',this.sub1);
+     if(firebase.auth().currentUser){
+      firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).off('value',this.sub2);
+      firebase.database().ref(`ShopProducts/${this.props.shopId}/${this.props.itemData.id}`).off('value',this.sub1);
+     }
+   
    }
   render() {
     const {itemData, onPress}=this.props;

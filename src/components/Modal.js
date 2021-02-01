@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Button, List, ListItem, Text as BaseText, Left,} from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { RadioButton, Checkbox  } from 'react-native-paper';
+import { RadioButton  } from 'react-native-paper';
 const { width, height } = Dimensions.get("window");
 import FilterItems from './filterItems';
 import {theme} from '../core/theme';

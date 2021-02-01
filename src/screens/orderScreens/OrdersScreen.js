@@ -21,6 +21,9 @@ constructor(props) {
 
   componentDidMount(){ 
     LogBox.ignoreAllLogs();
+    if(firebase.auth().currentUser){
+
+
    this.query = firebase.database().ref('Orders').orderByChild('UserPhoneNumber').equalTo(firebase.auth().currentUser.phoneNumber).on('value', (snapshot) => {
       
      const orders = snapshot.val();
@@ -34,7 +37,7 @@ constructor(props) {
      this.setState({orders:{isLoading:false,errMess:null,orders:loadedOrders}})
    })
    
-  
+  }
   }
   componentWillUnmount(){
     firebase.database().ref('Orders').off('value',this.query)

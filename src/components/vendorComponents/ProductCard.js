@@ -34,35 +34,38 @@ const { width, height } = Dimensions.get("window");
        this.setState({modalVisible:!this.state.modalVisible})
      }
      EditProduct=(input,status)=>{
-firebase.database().ref('Shops').orderByChild('phone_num').equalTo(firebase.auth().currentUser.phoneNumber).once('value',snap=>{
-  var shopId=null;
-  for(const key in snap.val()){
-    shopId=key;
-  }
-  firebase.database().ref(`ShopProducts/${shopId}/${this.props.itemData.id}`).update({available:status,price:Number(input)},(error)=>{
-      
-    if(error){
-      console.log(error)
-      
-    }
-    else{
-      this.setState({globalStatus:status,
-        price:input,modalVisible:!this.state.modalVisible},()=>{
-          Toast.show('Product Details changed Successfully ',{
-            position:-.00001,
-            containerStyle:{
-              borderRadius:0,
-              paddingHorizontal:0,
-              width:'100%'
+       if(firebase.auth().currentUser){
+        firebase.database().ref('Shops').orderByChild('phone_num').equalTo(firebase.auth().currentUser.phoneNumber).once('value',snap=>{
+          var shopId=null;
+          for(const key in snap.val()){
+            shopId=key;
+          }
+          firebase.database().ref(`ShopProducts/${shopId}/${this.props.itemData.id}`).update({available:status,price:Number(input)},(error)=>{
+              
+            if(error){
+              console.log(error)
+              
             }
-          })
+            else{
+              this.setState({globalStatus:status,
+                price:input,modalVisible:!this.state.modalVisible},()=>{
+                  Toast.show('Product Details changed Successfully ',{
+                    position:-.00001,
+                    containerStyle:{
+                      borderRadius:0,
+                      paddingHorizontal:0,
+                      width:'100%'
+                    }
+                  })
+                })
+            }
+              
+               
+             
+             })
         })
-    }
-      
-       
-     
-     })
-})
+       }
+
   
       
      

@@ -1,5 +1,5 @@
 import React,{useState,Component} from 'react'
-import { RadioButton, Checkbox  } from 'react-native-paper';
+import {  Checkbox  } from 'react-native-paper';
 import {
     Alert,
     Modal,

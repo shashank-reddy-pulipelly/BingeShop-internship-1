@@ -29,6 +29,9 @@ import * as firebase from 'firebase';
     }
   }
   componentDidMount(){
+    if(firebase.auth().currentUser){
+
+
   this.sub1=firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).on('value',snap=>{
     var count=[];
     for(const key in snap.val()){
@@ -37,9 +40,15 @@ import * as firebase from 'firebase';
     
     this.setState({cartLength:count.length})
   })
+}
   }
   componentWillUnmount(){
+    if(firebase.auth().currentUser){
+
+
     firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).off('value',this.sub1)
+  
+  }
   }
   render() {
    const {navigation}=this.props;

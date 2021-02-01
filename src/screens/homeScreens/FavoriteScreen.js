@@ -24,6 +24,9 @@ constructor(props) {
 
 load= async ()=>{
   this.setState({refreshing:true})
+  if(firebase.auth().currentUser){
+
+
   this.sub1 =  await firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).on('value',async snapShopt=>{
 
     const val=snapShopt.val();
@@ -44,9 +47,12 @@ load= async ()=>{
     }
     this.setState({newProducts:{isLoading:false,errMess:null,newProducts:array},refreshing:false})
      });
+    }
 }
 
 async componentDidMount(){ 
+if(firebase.auth().currentUser){
+
 
   this.sub1 =  await firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).on('value',async snapShopt=>{
 
@@ -69,11 +75,14 @@ async componentDidMount(){
     this.setState({newProducts:{isLoading:false,errMess:null,newProducts:array}})
      });
  
-
+    }
   }
 
 componentWillUnmount(){
-  firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).off('value',this.sub1)
+  if(firebase.auth().currentUser){
+    firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).off('value',this.sub1)
+  }
+  
 }
 
 

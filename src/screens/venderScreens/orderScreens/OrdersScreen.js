@@ -23,6 +23,9 @@ constructor(props) {
 
  async componentDidMount(){
   LogBox.ignoreAllLogs();
+  if(firebase.auth().currentUser){
+
+ 
  await firebase.database().ref(`Shops`).orderByChild('phone_num').equalTo(firebase.auth().currentUser.phoneNumber).once('value',snapShot=>{
  var id=null;
     for(const key in snapShot.val()){
@@ -34,8 +37,7 @@ constructor(props) {
  
   })
  
-  const query = firebase.database().ref('Orders').orderByChild('orderDetials/shop_id').equalTo(this.state.shopId)
-  query.on('value', (snapshot) => {
+  this.query = firebase.database().ref('Orders').orderByChild('orderDetials/shop_id').equalTo(this.state.shopId).on('value', (snapshot) => {
     
    const orders = snapshot.val();
    
@@ -45,6 +47,10 @@ constructor(props) {
    }
    this.setState({orders:{isLoading:false,errMess:null,orders:loadedOrders}})
  })
+}
+}
+componentWillUnmount(){
+  firebase.database().ref('Orders').orderByChild('orderDetials/shop_id').equalTo(this.state.shopId).off('value',this.query)
 }
   render(){
     

@@ -25,6 +25,9 @@ class Card extends Component {
     
     
     this.setState({loading:true},()=>{
+      if(firebase.auth().currentUser){
+
+      
       firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}`).once('value',snapShot=>{
         if(snapShot.exists()){
           firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).once('value',snap=>{
@@ -68,12 +71,16 @@ class Card extends Component {
           })
         }
       })
+    }
     });
   }
   countDec=(prod_id,shop_id)=>{
     
       
     this.setState({loading:true},()=>{
+      if(firebase.auth().currentUser){
+
+
       firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}`).once('value',snapShot=>{
         if(snapShot.exists()){
           firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).once('value',snap=>{
@@ -123,6 +130,7 @@ class Card extends Component {
         }
       
       })
+    }
     });
 
   
@@ -133,7 +141,9 @@ class Card extends Component {
   
    delete=(prod_id,shop_id)=>{
     this.setState({loading:true},()=>{
-     
+     if(firebase.auth().currentUser){
+
+ 
             firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}/${prod_id}`).set(null,(error)=>{
               if(!error){
                 this.setState({loading:false})
@@ -144,7 +154,7 @@ class Card extends Component {
                 console.log('cart adding error',error);
               }
             })
-       
+          }
     
     })
    }

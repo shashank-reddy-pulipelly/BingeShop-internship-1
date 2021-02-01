@@ -63,59 +63,65 @@ constructor(props) {
 
   componentDidMount(){
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-    Permissions.getAsync(Permissions.NOTIFICATIONS)
-    .then((statusObj) => {
-      if (statusObj.status !== 'granted') {
-        return Permissions.askAsync(Permissions.NOTIFICATIONS);
-      }
-      return statusObj;
-    })
-    .then((statusObj) => {
-      if (statusObj.status !== 'granted') {
-        throw new Error('Permission not granted!');
-      }
-    })
-    .then(() => {
-      return Notifications.getExpoPushTokenAsync();
-    })
-    .then((response) => {
-      const token = response.data;
-      this.setState({token})
-      firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}`).update({pushToken:response.data})
-      console.log(response)
-    })
-    .catch((err) => {
-      console.log(err);
-      return null;
-    });
-
-
-     this.backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-   
-      }
-    );
-
-    this.foregroundSubscription = Notifications.addNotificationReceivedListener(
-      (notification) => {
-        
-      }
-    );
- 
-
-   this.sub1= firebase.database()
-    .ref('Famous_products_1')
-    .on('value', (snapshot) => {
-      
-     const products = snapshot.val();
+    if(firebase.auth().currentUser){
+      Permissions.getAsync(Permissions.NOTIFICATIONS)
+      .then((statusObj) => {
+        if (statusObj.status !== 'granted') {
+          return Permissions.askAsync(Permissions.NOTIFICATIONS);
+        }
+        return statusObj;
+      })
+      .then((statusObj) => {
+        if (statusObj.status !== 'granted') {
+          throw new Error('Permission not granted!');
+        }
+      })
+      .then(() => {
+        return Notifications.getExpoPushTokenAsync();
+      })
+      .then((response) => {
+        const token = response.data;
+        this.setState({token})
      
-     const loadedProducts=[];
-     for(const key in products){
-        loadedProducts.push(products[key]);
-     }
-     this.setState({Famous_Products_1:{isLoading:false,errMess:null,Famous_Products_1:loadedProducts}})
-   })
-    this.props.fetchAddress();
+          firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}`).update({pushToken:response.data})
+  
+    
+       
+      })
+      .catch((err) => {
+        console.log(err);
+        return null;
+      });
+  
+  
+       this.backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
+        (response) => {
+     
+        }
+      );
+  
+      this.foregroundSubscription = Notifications.addNotificationReceivedListener(
+        (notification) => {
+          
+        }
+      );
+   
+  
+     this.sub1= firebase.database()
+      .ref('Famous_products_1')
+      .on('value', (snapshot) => {
+        
+       const products = snapshot.val();
+       
+       const loadedProducts=[];
+       for(const key in products){
+          loadedProducts.push(products[key]);
+       }
+       this.setState({Famous_Products_1:{isLoading:false,errMess:null,Famous_Products_1:loadedProducts}})
+     })
+      this.props.fetchAddress();
+    }
+ 
    
 
   }

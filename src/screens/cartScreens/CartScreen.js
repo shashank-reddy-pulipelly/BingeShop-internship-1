@@ -45,7 +45,11 @@ class CartScreen extends Component{
 
  async componentDidMount(){   
   LogBox.ignoreLogs(['VirtualizedLists should never be nested']); 
+  
     this.sub1=this.props.navigation.addListener('focus',async ()=>{
+      if(firebase.auth().currentUser){
+
+    
       this.quer=firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).on('value',async snap=>{
         if(snap.exists()){
           this.setState({productsAvaialable:true})
@@ -77,6 +81,7 @@ class CartScreen extends Component{
          
         })
         })
+      }
     })
    
 
@@ -87,8 +92,11 @@ class CartScreen extends Component{
   
   componentWillUnmount() {
     this.sub1();
-    firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).off('value',this.quer);
+    if(firebase.auth().currentUser){
+      firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).off('value',this.quer);
 
+    }
+   
   }
   placeOrder=()=>{
     if(!this.props.address.number){

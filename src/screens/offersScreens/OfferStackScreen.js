@@ -28,6 +28,9 @@ constructor(props) {
 }
 
 componentDidMount(){
+  if(firebase.auth().currentUser){
+
+  
   this.sub1=firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).on('value',snap=>{
     var count=[];
     for(const key in snap.val()){
@@ -36,9 +39,13 @@ componentDidMount(){
     
     this.setState({cartLength:count.length})
   })
+}
   }
   componentWillUnmount(){
-    firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).off('value',this.sub1)
+    if(firebase.auth().currentUser){
+      firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).off('value',this.sub1)
+    }
+    
   }
   render() {
    const {navigation}=this.props;

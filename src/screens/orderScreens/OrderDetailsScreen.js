@@ -28,7 +28,7 @@ class OrderDetailsScreen extends Component {
   }
   load= async ()=>{
     
-  
+ 
      
       
     var array=[];

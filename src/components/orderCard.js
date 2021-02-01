@@ -17,7 +17,7 @@ class OrderCard extends Component{
     load= async ()=>{    
         var array=[];
         for(const keys in this.props.items){
-        
+      
         const query2 = firebase.database().ref(`ShopProducts/${this.props.shop_id}/${this.props.items[keys].prod_id}`)
         await query2.once('value',  snap=>{
         array.push({title:snap.val().title,image:snap.val().image})

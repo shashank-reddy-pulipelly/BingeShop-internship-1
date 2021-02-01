@@ -34,6 +34,8 @@ class  CardItemDetails extends Component {
  }
  }
  postCart=(prod_id,shop_id)=>{
+if(firebase.auth().currentUser){
+
 
   firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts/${shop_id}`).once('value',snapShot=>{
     if(snapShot.exists()){
@@ -94,10 +96,13 @@ class  CardItemDetails extends Component {
       })
     }
   })
-
+}
 }
    toggleFavorite=()=>{
     LogBox.ignoreAllLogs();
+    if(firebase.auth().currentUser){
+
+  
      if(this.state.isFavorite){
       this.setState({isFavorite:!this.state.isFavorite},()=>{
 
@@ -127,9 +132,13 @@ class  CardItemDetails extends Component {
       });
 
      }
+    }
    }
    componentDidMount(){
     LogBox.ignoreAllLogs();
+    if(firebase.auth().currentUser){
+
+
      firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Favorites`).orderByChild('prod_id').equalTo(this.props.route.params.itemData).once('value',snapShot=>{
        var a=snapShot.exists();
        this.setState({isFavorite:a})
@@ -139,6 +148,7 @@ class  CardItemDetails extends Component {
      
     this.setState({item:{isLoading:false,errMess:null,item:val}})
         })
+      }
    }
    componentWillUnmount(){
     firebase.database().ref(`ShopProducts/${this.props.route.params.shopId}/${this.props.route.params.itemData}`).off('value',this.sub1)

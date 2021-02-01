@@ -16,7 +16,7 @@ const OffersScreen = (props) => {
         for(const key in offers){
             array.push(offers[key])
         }
-        console.log(array);
+   
         setOffers({isLoading:false,errMess:null,offers:array})
     })
    

@@ -44,7 +44,9 @@ class CartSummaryScreen extends Component{
   }
   async componentDidMount(){    
 
-   
+   if(firebase.auth().currentUser){
+
+  
 this.quer=firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).on('value',async snap=>{
   if(snap.exists()){
     this.setState({productsAvaialable:true})
@@ -78,10 +80,13 @@ this.setState({carts:{isLoading:false,errMess:null,carts:array}},()=>{
 })
   
 
-
+}
   }
 componentWillUnmount(){
-  firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).off('value',this.quer)
+  if(firebase.auth().currentUser){
+    firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).off('value',this.quer)
+  }
+  
 }
   amountTotal=(shopList)=>{
     const AmountArray=shopList.products.map(item => {
@@ -101,6 +106,9 @@ componentWillUnmount(){
   }
   postOrders=async ()=>{
     var pushToken=1;
+    if(firebase.auth().currentUser){
+
+
   await firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/pushToken`).once('value',snap=>{
       if(snap.exists()){
         pushToken=snap.val();
@@ -163,7 +171,7 @@ componentWillUnmount(){
  })
 
     })
-
+  }
   }
 
   placeOrder= async ()=>{
@@ -200,7 +208,10 @@ componentWillUnmount(){
       else{
         await this.postOrders();
         this.setState({orderPlaced:true},()=>{
-          firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).remove();
+          if(firebase.auth().currentUser){
+            firebase.database().ref(`Users/${firebase.auth().currentUser.phoneNumber}/Carts`).remove();
+          }
+         
         })
       
         setTimeout(()=>{
