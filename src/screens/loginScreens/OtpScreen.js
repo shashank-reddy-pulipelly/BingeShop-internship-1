@@ -3,28 +3,24 @@ import {
     View, 
     Text, 
     TouchableOpacity, 
-    TextInput,
-    Platform,
+ 
     StyleSheet ,ActivityIndicator,
     StatusBar,
-    Alert
+
 } from 'react-native';
 
-import * as Animatable from 'react-native-animatable';
+
 import { LinearGradient } from 'expo-linear-gradient';
 import CodeInput from 'react-native-confirmation-code-input';
 import { theme } from '../../core/theme';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
+
+import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
 import * as firebase from 'firebase';
 
 import { useTheme } from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const SignInScreen = ({route,navigation}) => {
- 
   const recaptchaVerifier = React.useRef(null);
-  const verificationCodeTextInput = React.useRef(null);
-
   const [phoneNumber, setPhoneNumber] = React.useState('');
   const [verificationId, setVerificationId] = React.useState(route.params.verificationId);
   const [verifyError, setVerifyError] = React.useState();
@@ -62,8 +58,6 @@ const resend= async ()=>{
 }
 
 const inputRef = useRef('codeInputRef2');
-
-const [disabled, setDisabled] = useState(true)
 
   return (
     <View style={styles.container}>
@@ -103,8 +97,6 @@ const [disabled, setDisabled] = useState(true)
              marginLeft: 10,  alignSelf:'center',marginBottom:20,padding:5,marginTop:20 }}>
           <CodeInput
      ref={inputRef}
-     
-
      activeColor={theme.colors.primary}
      inactiveColor={theme.colors.primary}
      keyboardType="phone-pad"
@@ -112,7 +104,7 @@ const [disabled, setDisabled] = useState(true)
      inputPosition='center'
      size={45}
      onFulfill={(code) => {setVerificationCode(code)}}
-     autoFocus={true}
+    
      containerStyle={{ marginTop: 0 }}
      codeInputStyle={{ borderWidth: 1.5,borderRadius:5,fontSize:17 }}
           />
