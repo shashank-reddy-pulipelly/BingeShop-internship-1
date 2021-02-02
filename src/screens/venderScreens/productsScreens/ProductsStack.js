@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {HeaderButtons,Item} from 'react-navigation-header-buttons';
 import {
   View,
-  Text,TouchableOpacity} from 'react-native';
+  Text,TouchableOpacity,StatusBar,Platform} from 'react-native';
 const ProductsStack = createStackNavigator();
 import { connect } from 'react-redux';
 import IconBadge from 'react-native-icon-badge';
@@ -107,13 +107,14 @@ this.setState({orders:count});
     return (
     
         <ProductsStack.Navigator  screenOptions={{
+          headerStatusBarHeight:Platform.OS === 'ios' ? 30:StatusBar.currentHeight,
         headerStyle:{
           backgroundColor:theme.colors.primary,
           height:70,
                   
         },       
         headerTintColor:'#fff',
-        headerTitleStyle:{fontSize:18,marginLeft:60},    
+        headerTitleStyle:{fontSize:18, alignSelf:'center'},    
     
        ...TransitionPresets.SlideFromRightIOS
       }
@@ -124,7 +125,7 @@ this.setState({orders:count});
           options={{
             title:'My Products', 
             headerTitleStyle:{
-              fontSize:17,
+              fontSize:18,
               alignSelf:'center'
             },  
             headerLeft:()=>(
@@ -151,8 +152,9 @@ this.setState({orders:count});
         component={ProductDetailsScreen}
         options={() => ({
           headerTitleStyle:{
-            fontSize:17,
-            alignSelf:'center'
+            fontSize:18,
+            alignSelf:'center',
+            paddingRight:26
           },   
           headerRight: () => rightHeader(),
           headerBackTitleVisible: false,

@@ -132,14 +132,11 @@ constructor(props) {
     firebase.database().ref('Famous_products_1').off('value',this.sub1)
   }
   render(){
-    let TouchableCmp=TouchableOpacity;
-  if(Platform.OS==='android' && Platform.Version>=21){
-    TouchableCmp=TouchableNativeFeedback;
-  }
+
   if(this.state.Famous_Products_1.isLoading){
     return(
       <View style={[styles.container2, styles.horizontal]}>
-          
+          <StatusBar backgroundColor={theme.colors.primary} barStyle='light-content' />
      
       <ActivityIndicator size="large" color="#600EE6" />
     </View>
@@ -148,6 +145,7 @@ constructor(props) {
   else if(this.state.Famous_Products_1.errMess){
 return(
   <View style={[styles.horizontal]} > 
+  <StatusBar backgroundColor={theme.colors.primary} barStyle='light-content' />
   <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
   <Text style={{fontSize:18,fontWeight:'bold'}} >{this.state.Famous_Products_1.errMess} !</Text>
 </View>
@@ -156,15 +154,15 @@ return(
   else{
     return(
 <View style={styles.container}>
-    
+<StatusBar backgroundColor={theme.colors.primary} barStyle='light-content' />
     <View style={{padding:12,backgroundColor:theme.colors.primary,height:60,paddingTop:5,paddingHorizontal:15}}>
-      <TouchableCmp activeOpacity={.7}  onPress={() =>
+      <TouchableOpacity activeOpacity={.9}  onPress={() =>
           this.props.navigation.navigate('SearchScreen')
-        }>
-        <View style={{flexDirection:'row',flex:1,backgroundColor:'#fff',padding:5,paddingHorizontal:10,borderRadius:5}}>
+        } style={{flexDirection:'row',flex:1,backgroundColor:'#fff',padding:5,paddingHorizontal:10,borderRadius:5}}>
+  
       <Ionicons  name="ios-search" size={23} color="grey" style={{padding:5,paddingHorizontal:10}} />
-      <Text style={{color:'grey',padding:5,fontSize:16}} >Search for products and more </Text></View>
-      </TouchableCmp >
+      <Text style={{color:'grey',padding:5,fontSize:16}} >Search for products and more </Text>
+      </TouchableOpacity >
     </View>
     <ScrollView >
    

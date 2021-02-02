@@ -1,4 +1,4 @@
-import React,{useContext,useRef,useState} from 'react';
+import React,{useRef,useState,memo} from 'react';
 import { 
     View,Text, TouchableOpacity,StyleSheet ,ActivityIndicator,
     StatusBar,
@@ -16,15 +16,11 @@ import { useTheme } from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const SignInScreen = ({route,navigation}) => {
   const recaptchaVerifier = React.useRef(null);
-  const [phoneNumber, setPhoneNumber] = React.useState('');
   const [verificationId, setVerificationId] = React.useState(route.params.verificationId);
   const [verifyError, setVerifyError] = React.useState();
   const [verifyInProgress, setVerifyInProgress] = React.useState(false);
-  
   const [confirmError, setConfirmError] = React.useState();
   const [confirmInProgress, setConfirmInProgress] = React.useState(false);
-
-
   
   const [verificationCode, setVerificationCode] = React.useState();
   const firebaseConfig = firebase.apps.length ? firebase.app().options : undefined;
@@ -38,7 +34,6 @@ const resend= async ()=>{
   const phoneProvider = new firebase.auth.PhoneAuthProvider();
   try {
                        
-    console.log(full);
     setVerifyError(null);
    
     setVerificationId('');
@@ -173,7 +168,7 @@ const inputRef = useRef('codeInputRef2');
   );
 };
 
-export default SignInScreen;
+export default memo(SignInScreen);
 
 const styles = StyleSheet.create({
   container: {

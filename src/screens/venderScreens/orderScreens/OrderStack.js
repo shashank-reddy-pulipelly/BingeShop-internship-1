@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {HeaderButtons,Item} from 'react-navigation-header-buttons';
 import {
   View,
-  Text,TouchableOpacity} from 'react-native';
+  Text,TouchableOpacity,Platform,StatusBar} from 'react-native';
 const OrdersStack = createStackNavigator();
 import { connect } from 'react-redux';
 import IconBadge from 'react-native-icon-badge';
@@ -67,6 +67,7 @@ const mapStateToProps = state => {
     return (
     
         <OrdersStack.Navigator  screenOptions={{
+          headerStatusBarHeight:Platform.OS === 'ios' ? 30:StatusBar.currentHeight,
         headerStyle:{
           backgroundColor:theme.colors.primary,
           height:70,
@@ -108,7 +109,7 @@ const mapStateToProps = state => {
         component={OrderDetailsScreen}
         options={() => ({
           headerTitleStyle:{
-            fontSize:17,
+            fontSize:18,
            alignSelf:'center'
           },   
           headerRight: () => rightHeader(),

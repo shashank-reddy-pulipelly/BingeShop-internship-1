@@ -1,16 +1,16 @@
 import React,{memo,useEffect,useState} from 'react';
-import { View, Text, StyleSheet,ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet,ActivityIndicator,StatusBar } from 'react-native';
 import Search from '../../../components/vendorComponents/Search';
 import * as firebase from 'firebase';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import { LogBox } from 'react-native';
-
+import {theme} from '../../../core/theme';
 
 
 const ProductsScreen= (props) => {
 
-  const [shopProducts,setShopProducts]=useState({isLoading:true,errMess:null,shopProducts:[]})
+  const [shopProducts,setShopProducts]=useState({isLoading:true,errMess:false,shopProducts:[]})
   const [pushToken,setPushToken]=useState('');
 
   React.useEffect(() => {
@@ -20,7 +20,7 @@ const ProductsScreen= (props) => {
 
 
 firebase.database().ref(`Shops`).orderByChild('phone_num').equalTo(firebase.auth().currentUser.phoneNumber).once('value',snapShot=>{
-
+if(snapShot.exists()){
   for(const key in snapShot.val()){
     shopId=key;
   }
@@ -32,48 +32,55 @@ firebase.database().ref(`Shops`).orderByChild('phone_num').equalTo(firebase.auth
       loadedProducts.push({...val[key],id:val[key].prod_id})
   
     }
-    setShopProducts({isLoading:false,errMess:null,shopProducts:loadedProducts})
+    setShopProducts({isLoading:false,errMess:false,shopProducts:loadedProducts})
   })
+  Permissions.getAsync(Permissions.NOTIFICATIONS)
+  .then((statusObj) => {
+    if (statusObj.status !== 'granted') {
+      return Permissions.askAsync(Permissions.NOTIFICATIONS);
+    }
+    return statusObj;
+  })
+  .then((statusObj) => {
+    if (statusObj.status !== 'granted') {
+      throw new Error('Permission not granted!');
+    }
+  })
+  .then(() => {
+    return Notifications.getExpoPushTokenAsync();
+  })
+  .then((response) => {
+    const token = response.data;
+    setPushToken(token)
+    firebase.database().ref(`Shops/${shopId}`).update({pushToken:response.data})
+    console.log(response)
+  })
+  .catch((err) => {
+    console.log(err);
+    return null;
+  });
+
+
+
+
+}
+else{
+  setShopProducts({isLoading:false,errMess:true,shopProducts:[]})
+}
+
 })
    
-
-    Permissions.getAsync(Permissions.NOTIFICATIONS)
-    .then((statusObj) => {
-      if (statusObj.status !== 'granted') {
-        return Permissions.askAsync(Permissions.NOTIFICATIONS);
-      }
-      return statusObj;
-    })
-    .then((statusObj) => {
-      if (statusObj.status !== 'granted') {
-        throw new Error('Permission not granted!');
-      }
-    })
-    .then(() => {
-      return Notifications.getExpoPushTokenAsync();
-    })
-    .then((response) => {
-      const token = response.data;
-      setPushToken(token)
-      firebase.database().ref(`Shops/${shopId}`).update({pushToken:response.data})
-      console.log(response)
-    })
-    .catch((err) => {
-      console.log(err);
-      return null;
-    });
-
-
-   var  backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-       
-      }
-    );
+var  backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
+  (response) => {
+   
+  }
+);
 var foregroundSubscription = Notifications.addNotificationReceivedListener(
-      (notification) => {
-     
-      }
-    );
+  (notification) => {
+ 
+  }
+)
+ 
     
 return ()=>{
   backgroundSubscription.remove();
@@ -86,17 +93,18 @@ return ()=>{
     return(
      <View style={[styles.container, styles.horizontal]}>
     
-
+    <StatusBar backgroundColor={theme.colors.primary} barStyle='light-content' />
      <ActivityIndicator size="large" color="#600EE6" />
    </View>
     )
   }
 
-  else if(shopProducts.errMess ){
+  else if(shopProducts.errMess){
     return(
      <View style={[styles.horizontal]} > 
+     <StatusBar backgroundColor={theme.colors.primary} barStyle='light-content' />
      <Text style={{fontSize:30,fontWeight:'bold'}} >OOPS ...!!</Text>
-     <Text style={{fontSize:18,fontWeight:'bold'}} >{shopProducts.errMess} !</Text>
+     <Text style={{fontSize:18,fontWeight:'bold'}} >This app is only for Shop Vendors !</Text>
  </View>
     )
   }
@@ -105,7 +113,7 @@ return ()=>{
   
     return (
       <View style={styles.container}>
-      
+      <StatusBar backgroundColor={theme.colors.primary} barStyle='light-content' />
         <Search  data={shopProducts.shopProducts}  navigation={props.navigation}/>
      
         

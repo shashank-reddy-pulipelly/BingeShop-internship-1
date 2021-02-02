@@ -14,14 +14,11 @@ class Shop extends Component {
     
     render() {
         const shop=this.props.itemData;
-        let TouchableCmp=TouchableOpacity;
-        if(Platform.OS==='android' && Platform.Version>=21){
-          TouchableCmp=TouchableNativeFeedback;
-        }
+     
         return (
          <View style={styles.card}>
-               <TouchableCmp  activeOpacity={0.8} onPress={()=>this.props.onPress(shop.id)}>
-                <View  style={{flexDirection:'column',flex:1}}>
+               <TouchableOpacity  style={{flexDirection:'column',flex:1}} activeOpacity={0.9} onPress={()=>this.props.onPress(shop.id)}>
+             
                     <View style={{position:'absolute',backgroundColor:'#F44336',top:20,zIndex:5,borderBottomRightRadius:5,borderTopRightRadius:20,paddingVertical:2}}>
                     <Text style={{color:'white',fontFamily:'serif',fontWeight:'bold'}}>  OFF upto 50%   </Text>
                     </View >
@@ -69,8 +66,8 @@ class Shop extends Component {
         </View>
                         </Swiper>
                   </View>
-                </View>
-                </TouchableCmp>
+              
+                </TouchableOpacity>
          
                 </View>
         )

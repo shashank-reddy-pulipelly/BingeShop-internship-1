@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {HeaderButtons,Item} from 'react-navigation-header-buttons';
 import {
   View,
-  Text,TouchableOpacity} from 'react-native';
+  Text,TouchableOpacity,StatusBar,Platform} from 'react-native';
   import * as firebase from 'firebase';
 import { connect } from 'react-redux';
 import IconBadge from 'react-native-icon-badge';
@@ -117,13 +117,14 @@ componentDidMount(){
     return (
     
         <CartStack.Navigator  screenOptions={{
+          headerStatusBarHeight:Platform.OS === 'ios' ? 30:StatusBar.currentHeight,
         headerStyle:{
           backgroundColor:theme.colors.primary,
           height:70,
-          elevation:0,            
+                 
         },       
         headerTintColor:'#fff',
-        headerTitleStyle:{fontSize:18,marginLeft:60},    
+        headerTitleStyle:{fontSize:18},    
     
        ...TransitionPresets.SlideFromRightIOS
       }
@@ -138,6 +139,12 @@ componentDidMount(){
         name="CartScreen"
         component={CartScreen}
         options={({route}) => ({
+          headerTitleStyle:{
+       
+            fontSize:18,
+            alignSelf:'center',
+            paddingRight:40
+          },
             headerLeft:()=>(
                 <View style={{marginLeft:10}}>
                 <HeaderButtons HeaderButtonComponent={HeaderButton} >
@@ -162,6 +169,12 @@ componentDidMount(){
           headerTitleStyle:{
        
             fontSize:18,
+            alignSelf:'center',
+            paddingRight:40
+          },
+          headerTitleStyle:{
+       
+            fontSize:18,
             marginLeft:20
           },
        
@@ -174,6 +187,12 @@ componentDidMount(){
         name="CartSummaryScreen"
         component={CartSummaryScreen}
         options={({route}) => ({
+          headerTitleStyle:{
+       
+            fontSize:18,
+            alignSelf:'center',
+            paddingRight:40
+          },
           headerTitleStyle:{
        
             fontSize:18,

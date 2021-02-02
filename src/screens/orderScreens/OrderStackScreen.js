@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {HeaderButtons,Item} from 'react-navigation-header-buttons';
 import {
   View,
-  Text,TouchableOpacity} from 'react-native';
+  Text,TouchableOpacity,StatusBar,Platform} from 'react-native';
 
 
 import IconBadge from 'react-native-icon-badge';
@@ -97,13 +97,14 @@ constructor(props) {
     return (
     
         <OrderStack.Navigator  screenOptions={{
+          headerStatusBarHeight:Platform.OS === 'ios' ? 30:StatusBar.currentHeight,
         headerStyle:{
           backgroundColor:theme.colors.primary,
           height:70,
-          elevation:0,            
+                 
         },       
         headerTintColor:'#fff',
-        headerTitleStyle:{fontSize:18,marginLeft:60},    
+        headerTitleStyle:{fontSize:18, alignSelf:'center',},    
     
        ...TransitionPresets.SlideFromRightIOS
       }
@@ -114,6 +115,12 @@ constructor(props) {
         name="OrdersScreen"
         component={OrdersScreen}
         options={({route}) => ({
+          headerTitleStyle:{
+       
+            fontSize:18,
+            alignSelf:'center',
+            paddingRight:40
+          },
             headerLeft:()=>(
                 <View style={{marginLeft:10}}>
                 <HeaderButtons HeaderButtonComponent={HeaderButton} >
@@ -137,7 +144,8 @@ constructor(props) {
           headerTitleStyle:{
        
             fontSize:18,
-            marginLeft:40
+            alignSelf:'center',
+            paddingRight:40
           },
           headerRight: () => rightHeader(),
           title: "Order Details",

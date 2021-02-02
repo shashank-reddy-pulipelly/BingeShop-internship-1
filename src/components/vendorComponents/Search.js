@@ -92,7 +92,7 @@ class Search extends React.Component{
   
      <Searchbar
            placeholder='Search for Products ...'
-          inputStyle={{fontSize:16}}
+          inputStyle={{fontSize:15}}
          
           onChangeText={this.handleSearch}
        
@@ -154,7 +154,7 @@ const styles=StyleSheet.create({
        
         flexDirection:"row",
         
-      
+        height:45,
        
         borderRadius:5,
       },
@@ -163,6 +163,7 @@ const styles=StyleSheet.create({
           paddingHorizontal:15,
           paddingBottom:15,
           width: width,
+         
       }
 })
 export default memo(Search);

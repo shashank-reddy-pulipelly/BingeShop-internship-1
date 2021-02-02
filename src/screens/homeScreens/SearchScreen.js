@@ -153,10 +153,10 @@ const styles=StyleSheet.create({
          
      
          
-          marginTop:StatusBar.currentHeight,
+          marginTop:Platform.OS === 'ios' ? 30:StatusBar.currentHeight,
          
         
-          paddingTop:10,
+          paddingTop:0,
           backgroundColor:theme.colors.primary,
           borderRadius:0
 

@@ -11,7 +11,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {HeaderButtons,Item} from 'react-navigation-header-buttons';
 import {
   View,
-  Text,TouchableOpacity, StatusBar} from 'react-native';
+  Text,TouchableOpacity, StatusBar,Platform} from 'react-native';
 const HomeStack = createStackNavigator();
 import { connect } from 'react-redux';
 import IconBadge from 'react-native-icon-badge';
@@ -98,14 +98,14 @@ import * as firebase from 'firebase';
     return (
     
         <HomeStack.Navigator  screenOptions={{
-          headerStatusBarHeight:StatusBar.currentHeight,
+          headerStatusBarHeight:Platform.OS === 'ios' ? 30:StatusBar.currentHeight,
         headerStyle:{
           backgroundColor:theme.colors.primary,
           height:70,
                
         },       
         headerTintColor:'#fff',
-        headerTitleStyle:{fontSize:18,marginLeft:60},    
+        headerTitleStyle:{fontSize:18, alignSelf:'center'},    
     
        ...TransitionPresets.SlideFromRightIOS
       }
@@ -115,7 +115,11 @@ import * as firebase from 'firebase';
           <HomeStack.Screen name="Home" component={HomeScreen}
           options={{
             title:'BingeShop', 
-                 
+            headerTitleStyle:{
+              fontSize:18,
+              alignSelf:'center',
+              paddingRight:30
+            },   
             headerLeft:()=>(
               <View style={{
                 marginLeft:20,
@@ -133,10 +137,16 @@ import * as firebase from 'firebase';
           }
            
           } />
+          
            <HomeStack.Screen 
         name="CardListScreen"
         component={CardListScreen}
         options={({route}) => ({
+          headerTitleStyle:{
+            fontSize:18,
+            alignSelf:'center',
+            paddingRight:30
+          }, 
           headerRight: () => rightHeader(),
           title: route.params.title,
           headerBackTitleVisible: false
@@ -149,7 +159,7 @@ import * as firebase from 'firebase';
           
           headerTitleStyle:{       
             fontSize:18,
-            marginLeft:20
+            marginLeft:25
           },
           headerRight: () => rightHeader(),
           title: route.params.title,
@@ -163,7 +173,7 @@ import * as firebase from 'firebase';
         component={VegetableShopsScreen}
         options={({route}) => ({
           headerTitleStyle:{
-            fontSize:17,
+            fontSize:18,
             marginLeft:20
           },
           headerRight: () => rightHeader(),
@@ -176,6 +186,11 @@ import * as firebase from 'firebase';
         name="CardItemDetails"
         component={CardItemDetails}
         options={() => ({
+          headerTitleStyle:{
+            fontSize:18,
+            alignSelf:'center',
+            paddingRight:30
+          }, 
           headerRight: () => rightHeader(),
           headerBackTitleVisible: false,
           title: "Details",
@@ -188,6 +203,11 @@ import * as firebase from 'firebase';
         name="FavoriteScreen"
         component={FavoriteScreen}
         options={({route}) => ({
+          headerTitleStyle:{
+            fontSize:18,
+            alignSelf:'center',
+            paddingRight:30
+          }, 
           headerRight: () => rightHeader(),
           title: "Favorites",
           headerBackTitleVisible: false

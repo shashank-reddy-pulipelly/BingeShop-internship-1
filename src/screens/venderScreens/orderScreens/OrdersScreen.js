@@ -98,7 +98,7 @@ else{
         {this.state.orders.orders.slice().reverse().map((orderItem,index)=>{
 
           return(
-            <TouchableCmp onPress={()=>this.props.navigation.navigate('VendorOrderDetailsScreen',{orderItem:orderItem})} activeOpacity={.5} key={index} >
+            <TouchableCmp onPress={()=>this.props.navigation.navigate('VendorOrderDetailsScreen',{orderItem:orderItem})} activeOpacity={.6} key={index} >
               <View style={styles.card}>
           <View style={styles.row1}>
           <View style={styles.status}>

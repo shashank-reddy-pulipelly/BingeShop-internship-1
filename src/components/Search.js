@@ -95,7 +95,7 @@ class Search extends React.Component{
   
      <Searchbar
            placeholder={title}
-          inputStyle={{fontSize:16}}
+          inputStyle={{fontSize:15}}
          
           onChangeText={this.handleSearch}
        
@@ -187,7 +187,7 @@ const styles=StyleSheet.create({
        
         flexDirection:"row",
         
-      
+        height:45,
        
         borderRadius:5,
       },
