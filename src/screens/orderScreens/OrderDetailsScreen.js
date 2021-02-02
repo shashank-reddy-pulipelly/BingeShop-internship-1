@@ -20,9 +20,9 @@ class OrderDetailsScreen extends Component {
     this.state = {
        rating:'',
        modal:false,
-       userRating:this.props.route.params.orderItem.orderDetials.rating,
+       userRating:this.props.route.params.orderItem.orderDetails.rating,
        localRating:false,
-       shop:{rating:null,reviews:null},
+       shop:{rating:null,reviews:null,phone_num:''},
        items:{isLoading:true,errMess:null,items:[]}
     }
   }
@@ -34,7 +34,7 @@ class OrderDetailsScreen extends Component {
     var array=[];
     for(const keys in this.props.route.params.orderItem.items){
     
-    await firebase.database().ref(`ShopProducts/${this.props.route.params.orderItem.orderDetials.shop_id}/${this.props.route.params.orderItem.items[keys].prod_id}`).once('value',  snap=>{
+    await firebase.database().ref(`ShopProducts/${this.props.route.params.orderItem.orderDetails.shop_id}/${this.props.route.params.orderItem.items[keys].prod_id}`).once('value',  snap=>{
     array.push({title:snap.val().title,image:snap.val().image,quantity:snap.val().quantity,itemAmount:this.props.route.params.orderItem.items[keys].itemAmount,count:this.props.route.params.orderItem.items[keys].count})
     
     })
@@ -45,14 +45,14 @@ class OrderDetailsScreen extends Component {
 async componentDidMount(){
   LogBox.ignoreAllLogs();
   await  this.load();
-this.query2=firebase.database().ref('Shops/'+this.props.route.params.orderItem.orderDetials.shop_id).on('value',(snapshot)=>{
+this.query2=firebase.database().ref('Shops/'+this.props.route.params.orderItem.orderDetails.shop_id).on('value',(snapshot)=>{
 const shop=snapshot.val();
-this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
+this.setState({shop:{rating:shop.rating,reviews:shop.reviews,phone_num:shop.phone_num}})
 })
 }
   componentWillUnmount(){
 
-    firebase.database().ref('Shops/'+this.props.route.params.orderItem.orderDetials.shop_id).off('value',this.query2)
+    firebase.database().ref('Shops/'+this.props.route.params.orderItem.orderDetails.shop_id).off('value',this.query2)
   }
   
   render(){
@@ -61,9 +61,13 @@ this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
       if(this.props.route.params.orderItem.orderStatus.delivered){
        return({status:'Delivered',date:this.props.route.params.orderItem.orderStatus.deliveredDate})
       }
+      else if(this.props.route.params.orderItem.orderStatus.orderDispatched){
+        return({status:'Order Dispatched',date:this.props.route.params.orderItem.orderStatus.orderDispatchedDate})
+      }
       else if(this.props.route.params.orderItem.orderStatus.orderAccepted){
         return({status:'Order Accepted',date:this.props.route.params.orderItem.orderStatus.orderAcceptedDate})
       }
+    
       if(this.props.route.params.orderItem.orderStatus.ordered){
         return({status:'Ordered',date:this.props.route.params.orderItem.orderStatus.orderedDate})
       }
@@ -76,17 +80,17 @@ this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
           <View style={styles.row1}>
           <View style={styles.status}>
             <View style={{flexDirection:'row',flex:1}}>
-           <View style={{flex:1}}>
+           <View style={{flex:1.3}}>
            <Text style={this.props.route.params.orderItem.orderStatus.delivered?{fontWeight:'bold',fontSize:20,color:'black'}:{fontWeight:'bold',fontSize:20,color:'#FF8F00'}}>{orderStatus().status}</Text>
         <Text style={{fontSize:16,fontWeight:'bold',marginTop:10,
         color:'black'}}>{orderStatus().date}</Text>
            </View>
      <View style={{flex:1,paddingRight:20}}>
        <Text style={{marginLeft:'auto',fontSize:16,paddingVertical:5,color:'#757575'}}>Shop Name</Text>
-       <Text style={{marginLeft:'auto',fontSize:18,fontWeight:'bold'}}>{orderItem.orderDetials.shop_name}</Text>
+       <Text style={{marginLeft:'auto',fontSize:18,fontWeight:'bold'}}>{orderItem.orderDetails.shop_name}</Text>
      </View>
      </View>
-         <Text style={{color:'#757575',paddingVertical:5,fontSize:15}}>Order Id : {orderItem.orderDetials.orderId}</Text>
+         <Text style={{color:'#757575',paddingVertical:5,fontSize:15}}>Order Id : {orderItem.orderDetails.orderId}</Text>
           </View>
        
 
@@ -102,6 +106,10 @@ this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
   
 </View>
 <FontAwesome name="circle" size={13} color={orderItem.orderStatus.orderAccepted?theme.colors.primary:'#9E9E9E'}/>
+<View style={{height:75,borderLeftWidth:3,borderLeftColor:orderItem.orderStatus.orderDispatched?theme.colors.primary:'#9E9E9E'}}>
+  
+</View>
+<FontAwesome name="circle" size={13} color={orderItem.orderStatus.orderDispatched?theme.colors.primary:'#9E9E9E'}/>
 <View style={{height:75,borderLeftWidth:3,borderLeftColor:orderItem.orderStatus.delivered?theme.colors.primary:'#9E9E9E'}}>
   
 </View>
@@ -116,7 +124,7 @@ this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
 </View>
       </View>
       <View style={styles.item1}>
-<FontAwesome name="check-circle" size={40} color={orderItem.orderStatus.orderAccepted?theme.colors.primary:'#9E9E9E'}/>
+<FontAwesome name="thumbs-up" size={40} color={orderItem.orderStatus.orderAccepted?theme.colors.primary:'#9E9E9E'}/>
 <View style={{marginLeft:20 ,}}>
 <Text numberOfLines={1} style={{fontSize:17,color:orderItem.orderStatus.orderAccepted?'black':'#757575'}} >Order Accepted</Text>
 <Text style={{color:'#757575'}}>{orderItem.orderStatus.orderAcceptedDate}</Text>
@@ -124,7 +132,15 @@ this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
 </View>
 <View style={styles.item1}>
 
-<MaterialCommunityIcons  name="truck-delivery" size={40} color={orderItem.orderStatus.delivered?theme.colors.primary:'#9E9E9E'}/>
+<MaterialCommunityIcons  name="truck-delivery" size={40} color={orderItem.orderStatus.orderDispatched?theme.colors.primary:'#9E9E9E'}/>
+<View style={{marginLeft:20 ,}}>
+<Text numberOfLines={1} style={{fontSize:17,color:orderItem.orderStatus.orderDispatched?'black':'#757575'}} >Order Dispatched </Text>
+<Text style={{color:'#757575'}}>{orderItem.orderStatus.orderDispatched?this.state.shop.phone_num:null}</Text>
+</View>
+   </View>
+   <View style={styles.item1}>
+
+<MaterialCommunityIcons  name="check-circle" size={40} color={orderItem.orderStatus.delivered?theme.colors.primary:'#9E9E9E'}/>
 <View style={{marginLeft:20 ,}}>
 <Text numberOfLines={1} style={{fontSize:17,color:orderItem.orderStatus.delivered?'black':'#757575'}} >Delivered</Text>
 <Text style={{color:'#757575'}}>{orderItem.orderStatus.deliveredDate}</Text>
@@ -164,12 +180,12 @@ this.setState({shop:{rating:shop.rating,reviews:shop.reviews}})
    <PaperButton mode="text"labelStyle={{fontSize:16}} onPress={()=>{
 
   const newRating=(this.state.shop.rating*this.state.shop.reviews+this.state.localRating)/(this.state.shop.reviews+1);
-  firebase.database().ref('Shops/'+this.props.route.params.orderItem.orderDetials.shop_id).update({rating:newRating,reviews:this.state.shop.reviews+1},(error)=>{
+  firebase.database().ref('Shops/'+this.props.route.params.orderItem.orderDetails.shop_id).update({rating:newRating,reviews:this.state.shop.reviews+1},(error)=>{
     if(error){
       console.log('error in rating',error)
     }
     else{
-      firebase.database().ref(`Orders/${this.props.route.params.orderItem.id}/orderDetials`).update({rating:this.state.localRating},(error)=>{
+      firebase.database().ref(`Orders/${this.props.route.params.orderItem.id}/orderDetails`).update({rating:this.state.localRating},(error)=>{
         if(error){
           console.log('error in rating',error)
         }

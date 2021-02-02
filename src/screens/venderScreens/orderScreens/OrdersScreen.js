@@ -37,7 +37,7 @@ constructor(props) {
  
   })
  
-  this.query = firebase.database().ref('Orders').orderByChild('orderDetials/shop_id').equalTo(this.state.shopId).on('value', (snapshot) => {
+  this.query = firebase.database().ref('Orders').orderByChild('orderDetails/shop_id').equalTo(this.state.shopId).on('value', (snapshot) => {
     
    const orders = snapshot.val();
    
@@ -50,7 +50,7 @@ constructor(props) {
 }
 }
 componentWillUnmount(){
-  firebase.database().ref('Orders').orderByChild('orderDetials/shop_id').equalTo(this.state.shopId).off('value',this.query)
+  firebase.database().ref('Orders').orderByChild('orderDetails/shop_id').equalTo(this.state.shopId).off('value',this.query)
 }
   render(){
     
@@ -79,9 +79,13 @@ else{
       if(orderItem.orderStatus.delivered){
        return({status:'Delivered',date:orderItem.orderStatus.deliveredDate})
       }
+      else if(orderItem.orderStatus.orderDispatched){
+        return({status:'Ordered Dispatched',date:orderItem.orderStatus.orderDispatchedDate})
+      }
       else if(orderItem.orderStatus.orderAccepted){
         return({status:'Ordered Accepted',date:orderItem.orderStatus.orderAcceptedDate})
       }
+    
       if(orderItem.orderStatus.ordered){
         return({status:'Order Pending',date:orderItem.orderStatus.orderedDate})
       }

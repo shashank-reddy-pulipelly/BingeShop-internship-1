@@ -69,7 +69,21 @@ constructor(props) {
         <ScrollView>
         {this.state.orders.orders.slice().reverse().map((orderItem,index)=>{
         
-         
+        const orderStatus=()=>{
+          if(orderItem.orderStatus.delivered){
+           return({status:'Delivered',date:orderItem.orderStatus.deliveredDate})
+          }
+          else if(orderItem.orderStatus.orderDispatched){
+            return({status:'Dispatched',date:orderItem.orderStatus.orderDispatchedDate})
+          }
+          else if(orderItem.orderStatus.orderAccepted){
+            return({status:'Accepted',date:orderItem.orderStatus.orderAcceptedDate})
+          }
+        
+          if(orderItem.orderStatus.ordered){
+            return({status:'Ordered',date:orderItem.orderStatus.orderedDate})
+          }
+        }
           return(
             <View key={index} style={styles.card}>
               <View style={{backgroundColor:'#EEEEEE',paddingVertical:10,
@@ -77,11 +91,11 @@ constructor(props) {
       borderTopWidth:1,
       borderBottomWidth:1,marginBottom:10,
       borderColor:'#BDBDBD'}}> 
-      <Text style={{fontSize:16,fontWeight:'bold'}}>Shop Name : {orderItem.orderDetials.shop_name}</Text></View>
+      <Text style={{fontSize:16,fontWeight:'bold'}}>Shop Name : {orderItem.orderDetails.shop_name}</Text></View>
           <View style={styles.row1}>
           <View style={styles.status}>
         <Text style={{color:'#757575'}}>Order Status</Text>
-        <Text style={orderItem.orderStatus.delivered?{fontSize:16,fontWeight:'bold',marginTop:5,color:'black'}:{fontSize:16,fontWeight:'bold',marginTop:5,color:'#FF8F00'}}>{orderItem.orderStatus.delivered?'Delivered , '+orderItem.orderStatus.deliveredDate:'Ordered , '+orderItem.orderStatus.orderedDate}</Text>
+        <Text style={orderItem.orderStatus.delivered?{fontSize:16,fontWeight:'bold',marginTop:5,color:'black'}:{fontSize:16,fontWeight:'bold',marginTop:5,color:'#FF8F00'}}>{orderStatus().status} , {orderStatus().date}</Text>
           </View>
           <View style={styles.amount}>
           <Text style={{color:'#757575'}}>Total ({orderItem.items.length} items)</Text>
@@ -90,7 +104,7 @@ constructor(props) {
 
           </View>
       
-          <OrderCard shop_id={orderItem.orderDetials.shop_id}  items={orderItem.items} />
+          <OrderCard shop_id={orderItem.orderDetails.shop_id}  items={orderItem.items} />
          
       
 <View style={{backgroundColor:'white',flexDirection:'row'}}>

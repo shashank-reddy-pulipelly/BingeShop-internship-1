@@ -30,7 +30,7 @@ class VendorOrderDetailsScreen extends Component {
       var array=[];
       for(const keys in this.props.route.params.orderItem.items){
       
-      const query2 = firebase.database().ref(`ShopProducts/${this.props.route.params.orderItem.orderDetials.shop_id}/${this.props.route.params.orderItem.items[keys].prod_id}`)
+      const query2 = firebase.database().ref(`ShopProducts/${this.props.route.params.orderItem.orderDetails.shop_id}/${this.props.route.params.orderItem.items[keys].prod_id}`)
       await query2.once('value',  snap=>{
       array.push({title:snap.val().title,image:snap.val().image,quantity:snap.val().quantity,itemAmount:this.props.route.params.orderItem.items[keys].itemAmount,count:this.props.route.params.orderItem.items[keys].count})
       
@@ -47,6 +47,9 @@ class VendorOrderDetailsScreen extends Component {
   orderStatus=()=>{
     if(this.state.orderItem.orderStatus.delivered){
      return({status:'Delivered'})
+    }
+    else if(this.state.orderItem.orderStatus.orderDispatched){
+      return({status:'Order Dispatched'})
     }
     else if(this.state.orderItem.orderStatus.orderAccepted){
       return({status:'Order Accepted'})
@@ -69,7 +72,8 @@ buttonHandler=()=>{
      
     )
    }
-   else if(this.state.orderItem.orderStatus.orderAccepted){
+ 
+   else if(this.state.orderItem.orderStatus.orderDispatched){
      return(
       <View style={{paddingVertical:5}}>
             <Button onPress={()=>{
@@ -122,6 +126,59 @@ else{
    </View>
      )
    }
+   else if(this.state.orderItem.orderStatus.orderAccepted){
+    return(
+     <View style={{paddingVertical:5}}>
+           <Button onPress={()=>{
+      Alert.alert(
+       "Are you sure Dispatching the Order ?",
+       "Please press ok to Dispatch the Order",
+       [
+         {
+           text: "Cancel",
+           onPress: () => {},
+           style: "cancel"
+         },
+         { text: "OK", onPress: () => {
+           var d = new Date();
+           var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+            const date=d.getDate()+" "+months[d.getMonth()]+" "+d.getFullYear();
+            console.log(this.props.route.params.orderItem.id);
+           firebase.database().ref('Orders/'+this.props.route.params.orderItem.id+'/orderStatus').update({orderDispatched:true,orderDispatchedDate:date},(error)=>{
+if(error){
+ console.log(error);
+
+}
+else{
+
+ this.setState({orderItem:{...this.state.orderItem,orderStatus:{...this.state.orderItem.orderStatus,orderDispatched:true,orderDispatchedDate:date}}},()=>{
+   fetch('https://exp.host/--/api/v2/push/send', {
+     method: 'POST',
+     headers: {
+       Accept: 'application/json',
+       'Accept-Encoding': 'gzip, deflate',
+       'Content-Type': 'application/json',
+     },
+     body: JSON.stringify({
+       to: this.props.route.params.orderItem.userPushToken,
+       sound: 'default',
+       title: 'Your Order Dispatched just Now !',
+       body: 'Please check your orders for details',
+     }),
+   });
+ })
+}
+           })
+         }}
+       ],
+       { cancelable: false }
+     );
+           }} style={styles.filterButton2}>
+        <Text style={{fontSize:17,color:'white'}}>Dispatch Order</Text>
+      </Button>
+  </View>
+    )
+  }
    else if(this.state.orderItem.orderStatus.ordered){
      return(
       <View style={{paddingVertical:5}}>
@@ -206,7 +263,7 @@ return(
           <View style={styles.status}>
            
         <Text style={this.state.orderItem.orderStatus.delivered?{fontWeight:'bold',fontSize:20,color:'black'}:{fontWeight:'bold',fontSize:20,color:'#FF8F00'}}>{this.orderStatus().status}</Text>
-         <Text style={{color:'#757575',paddingVertical:5,fontSize:15,marginTop:10}}>Order Id : {orderItem.orderDetials.orderId}</Text>
+         <Text style={{color:'#757575',paddingVertical:5,fontSize:15,marginTop:10}}>Order Id : {orderItem.orderDetails.orderId}</Text>
           </View>
           <View style={styles.amount}>
           <Text style={{color:'#757575',fontSize:15}}>Total ({orderItem.items.length} items)</Text>

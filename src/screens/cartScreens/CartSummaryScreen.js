@@ -131,7 +131,9 @@ componentWillUnmount(){
           delivered:false,
           deliveredDate:'',
           orderAccepted:false,
-          orderAcceptedDate:''
+          orderAcceptedDate:'',
+          orderDispatched:false,
+          orderDispatchedDate:''
         },
         address:this.props.address,
         priceDetails:{
@@ -141,7 +143,7 @@ componentWillUnmount(){
           total:this.amountTotal(item1)
         },
         items:items,
-        orderDetials:{
+        orderDetails:{
           orderId:(new Date()).getTime(),
           invoiceId:'',
           rating:false,

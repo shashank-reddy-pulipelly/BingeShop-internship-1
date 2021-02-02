@@ -1,12 +1,7 @@
 import React,{useContext,useRef,useState} from 'react';
 import { 
-    View, 
-    Text, 
-    TouchableOpacity, 
- 
-    StyleSheet ,ActivityIndicator,
+    View,Text, TouchableOpacity,StyleSheet ,ActivityIndicator,
     StatusBar,
-
 } from 'react-native';
 
 
