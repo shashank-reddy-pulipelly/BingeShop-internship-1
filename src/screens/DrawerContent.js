@@ -27,8 +27,8 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
                     <View style={styles.userInfoSection}>
                         <View style={{flexDirection:'row',marginTop: 15,alignItems:'center'}}>
                           
-                            <View style={{marginLeft:15, flexDirection:'column'}}>
-                                <Title style={styles.title}>Hello, Shashank reddy</Title>
+                            <View style={{ flexDirection:'column'}}>
+                                <Title style={styles.title}>Welcome to BingeShop</Title>
                               
                             </View>
                         </View>

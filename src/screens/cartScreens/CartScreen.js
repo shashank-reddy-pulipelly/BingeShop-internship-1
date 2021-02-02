@@ -20,11 +20,6 @@ const mapStateToProps = state => {
 
   const mapDispatchToProps = dispatch => ({
     
-
-   
-
-   
-
    
 
 })
@@ -125,6 +120,21 @@ class CartScreen extends Component{
               onPress: () => {},
               style: "cancel"
             }
+          ],
+          { cancelable: false }
+        );
+      }
+      else if(this.props.address.pinCode!="412207"  ){
+        Alert.alert(
+          "There is no Delivery to your Adddress ",
+          "Only with PinCode : 412207 , delivery exists ",
+          [
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel"
+            },
+            { text: "Edit", onPress: () => this.props.navigation.navigate('AddressScreen') }
           ],
           { cancelable: false }
         );
@@ -330,9 +340,9 @@ class CartScreen extends Component{
          <View style={{flexDirection:'row',backgroundColor:"white",bottom:0,  borderTopColor:"#E0E0E0",
     borderTopWidth:1.5,
         }}>
-  <View style={{flex:1,justifyContent:'center'}}>
+  <View style={{flex:1.1,justifyContent:'center'}}>
   <View >
-               <Text style={{fontSize:20,paddingLeft:20 ,fontWeight: 'bold',}}>Total : {'\u20B9'} <TotalPrice carts={this.state.carts.carts} /> </Text>
+               <Text style={{fontSize:20,paddingLeft:15 ,fontWeight: 'bold',}}>Total : {'\u20B9'} <TotalPrice carts={this.state.carts.carts} /> </Text>
                <Text style={{color:'#09af00',fontSize:12,paddingLeft:20}}>      {'\u20B9'} 100   Savings  </Text>
              </View>
     </View>
@@ -342,7 +352,7 @@ class CartScreen extends Component{
         
             this.placeOrder();
             }} style={{backgroundColor:"#FF3D00",borderRadius:0,marginHorizontal:10,marginVertical:5,paddingHorizontal:0,paddingVertical:3,marginLeft:'auto'}}>
-            <Text style={{padding:0,margin:0,fontSize:17,marginHorizontal:40,color:'white'}}>Place Order</Text>
+            <Text style={{padding:0,margin:0,fontSize:17,marginHorizontal:35,color:'white'}}>Place Order</Text>
           </Button>
       
     </View>
@@ -397,7 +407,7 @@ const styles = StyleSheet.create({
     height: 46,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: 5,
     paddingHorizontal:10,
   
   

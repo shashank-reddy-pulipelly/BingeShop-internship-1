@@ -157,10 +157,11 @@ import * as firebase from 'firebase';
         component={GroceryShopsScreen}
         options={({route}) => ({
           
-          headerTitleStyle:{       
+          headerTitleStyle:{
             fontSize:18,
-            marginLeft:25
-          },
+            alignSelf:'center',
+            paddingRight:50
+          }, 
           headerRight: () => rightHeader(),
           title: route.params.title,
           headerBackTitleVisible: false,
@@ -174,8 +175,9 @@ import * as firebase from 'firebase';
         options={({route}) => ({
           headerTitleStyle:{
             fontSize:18,
-            marginLeft:20
-          },
+            alignSelf:'center',
+            paddingRight:55
+          }, 
           headerRight: () => rightHeader(),
           title: route.params.title,
           headerBackTitleVisible: false,

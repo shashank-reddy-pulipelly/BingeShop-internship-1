@@ -280,7 +280,7 @@ return(
   <Text style={{padding:3,fontSize:16}} >{orderItem.address.roadNo}</Text>
   <Text style={{padding:3,fontSize:16}} >H-No : {orderItem.address.houseNo} , {orderItem.address.city} </Text>
   <Text style={{padding:3,fontSize:16}} >{orderItem.address.state} - {orderItem.address.pinCode}</Text>
-  <Text style={{padding:3,fontSize:16}} ><Text style={{fontWeight:'bold'}}>Phone Number</Text> : 6303365901</Text>
+  <Text style={{padding:3,fontSize:16}} ><Text style={{fontWeight:'bold'}}>Phone Number</Text>  {orderItem.address.number}</Text>
 </View>
 
                  

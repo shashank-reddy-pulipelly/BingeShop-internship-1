@@ -115,6 +115,17 @@ this.unsubscribe();
     }
     else{
 
+      if(this.state.data.data.length==0){
+        return(
+          <View style={[styles.horizontal]} > 
+          
+          <Text style={{fontSize:18,fontWeight:'bold'}} >No products found on your Search</Text>
+      </View>
+        )
+      }
+      else{
+
+      }
     const renderItem = ({item}) => {
     
       return (

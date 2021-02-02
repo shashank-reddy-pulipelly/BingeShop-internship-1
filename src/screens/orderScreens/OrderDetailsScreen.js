@@ -135,7 +135,7 @@ this.setState({shop:{rating:shop.rating,reviews:shop.reviews,phone_num:shop.phon
 <MaterialCommunityIcons  name="truck-delivery" size={40} color={orderItem.orderStatus.orderDispatched?theme.colors.primary:'#9E9E9E'}/>
 <View style={{marginLeft:20 ,}}>
 <Text numberOfLines={1} style={{fontSize:17,color:orderItem.orderStatus.orderDispatched?'black':'#757575'}} >Order Dispatched </Text>
-<Text style={{color:'#757575'}}>{orderItem.orderStatus.orderDispatched?this.state.shop.phone_num:null}</Text>
+<Text style={{color:'#757575',fontSize:13}}>{orderItem.orderStatus.orderDispatched?"Seller Phone Number \n "+this.state.shop.phone_num:null}</Text>
 </View>
    </View>
    <View style={styles.item1}>
@@ -372,7 +372,7 @@ paddingLeft:10,
   item1:{
 flexDirection:'row',
 alignItems:'center',
-marginVertical:20,
+marginVertical:15,
 marginHorizontal:10,
 
 

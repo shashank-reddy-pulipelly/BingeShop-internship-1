@@ -8,7 +8,7 @@ import {
 import {useTheme, Avatar} from 'react-native-paper';
 import { Searchbar } from 'react-native-paper';
 import {theme} from '../../core/theme';
-
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {SearchArray} from '../../data/searchArray'
@@ -98,9 +98,11 @@ class Search extends React.Component{
                 <Searchbar autoFocus onSubmitEditing={()=>this.props.navigation.navigate('SearchContentScreen',{title:this.state.searchtext})}
            placeholder='Search for products . . . . '
           inputStyle={{fontSize:17}}
-         
+        icon={()=>(<MaterialIcons name='arrow-back' style={{
+          paddingLeft:2
+         }} size={25}   />)}
           onChangeText={this.handleSearch}
-       
+       onIconPress={()=>this.props.navigation.navigate('Home')}
           value={this.state.searchtext}
           style={{flex:1,paddingLeft:5,fontSize:17,paddingVertical:2,borderRadius:0}}
         />
@@ -153,7 +155,7 @@ const styles=StyleSheet.create({
          
      
          
-          marginTop:Platform.OS === 'ios' ? 30:StatusBar.currentHeight,
+          marginTop:Platform.OS === 'ios' ? 40:StatusBar.currentHeight,
          
         
           paddingTop:0,

@@ -116,7 +116,7 @@ componentWillUnmount(){
               itemData={{
                 ...item,id:item.prod_id
               }} shopId={item.shop_id}
-              onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:finalItem.id,shopId:item.shop_id})}
+              onPress={()=> this.props.navigation.navigate('CardItemDetails', {itemData:item.prod_id,shopId:item.shop_id})}
           />
       );
   };
@@ -133,7 +133,7 @@ componentWillUnmount(){
     
 
      
-    <Button onPress={()=>this.props.navigation.navigate('HomeDrawer')} style={{backgroundColor:theme.colors.primary,alignSelf:'center',marginTop:10}}>
+    <Button onPress={()=>this.props.navigation.navigate('Home')} style={{backgroundColor:theme.colors.primary,alignSelf:'center',marginTop:10}}>
         <Text style={{fontSize:17,marginHorizontal:40,color:'white'}}>Shop Now</Text>
       </Button>
        </View>
