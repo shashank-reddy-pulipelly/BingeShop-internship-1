@@ -1,6 +1,6 @@
 import React,{memo} from 'react';
 import { View, StyleSheet,StatusBar } from 'react-native';
-import { Avatar, Title,Caption,Paragraph,Drawer,Text,
+import { Title,Drawer,
 } from 'react-native-paper';
 import {
     DrawerContentScrollView,
@@ -99,32 +99,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
                             labelStyle={{fontWeight:'bold'}}
                             onPress={() => {props.navigation.navigate('OrderDrawer',{screen:'OrdersScreen'})}}
                         />
-                        <DrawerItem 
-                            icon={({color, size}) => (
-                                <FontAwesome 
-                                name="list" 
-                                color={color}
-                                size={size}
-                                />
-                            )}
-                            label="My Products"
-                            labelStyle={{fontWeight:'bold',padding:0,margin:0}}
-                            style={{margin:0,padding:0}}
-                            onPress={() => {props.navigation.navigate('ProductsDrawer')}}
-                        />
-                         <DrawerItem 
-                            icon={({color, size}) => (
-                                <FontAwesome5 
-                                name="list-alt" 
-                                color={color}
-                                size={size}
-                                />
-                            )}
-                            label="Vendor Orders"
-                            labelStyle={{fontWeight:'bold',padding:0,margin:0}}
-                            style={{margin:0,padding:0}}
-                            onPress={() => {props.navigation.navigate('VendorOrdersDrawer')}}
-                        />
+                     
                    
                       
                     </Drawer.Section>
@@ -188,7 +163,8 @@ const styles = StyleSheet.create({
     drawerSection: {
 
 
-      backgroundColor:'white'
+      backgroundColor:'white',
+      paddingTop:10
     },
     bottomDrawerSection: {
         marginBottom: 15,

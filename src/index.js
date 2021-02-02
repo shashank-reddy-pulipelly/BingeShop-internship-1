@@ -3,16 +3,10 @@ import 'react-native-gesture-handler';
 import LoginStackScreen from './screens/loginScreens/loginStackScreen';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import DrawerContent from './screens/DrawerContent';
-import ProductsStack from './screens/venderScreens/productsScreens/ProductsStack';
-import OrdersStack from './screens/venderScreens/orderScreens/OrderStack';
 import HomeStackScreen from './screens/homeScreens/HomeStackScreen';
 import CartStackScreen from './screens/cartScreens/CartStackScreen';
 import OrderStackScreen from './screens/orderScreens/OrderStackScreen';
 import OfferStackScreen from './screens/offersScreens/OfferStackScreen';
-import { AuthContext } from './components/context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
 import {   NavigationContainer } from '@react-navigation/native';
 import { StyleSheet,  View,Dimensions,StatusBar,Platform } from 'react-native';
 const Drawer = createDrawerNavigator();
@@ -73,8 +67,7 @@ export default function App() {
     <Drawer.Screen name="OfferDrawer" component={OfferStackScreen} /> 
    <Drawer.Screen name="CartDrawer" component={CartStackScreen} />
    <Drawer.Screen name="OrderDrawer" component={OrderStackScreen} /> 
-   <Drawer.Screen name='ProductsDrawer' component={ProductsStack} />
-   <Drawer.Screen name='VendorOrdersDrawer' component={OrdersStack} />
+
 </Drawer.Navigator>):<LoginStackScreen />}
 </NavigationContainer>
 
