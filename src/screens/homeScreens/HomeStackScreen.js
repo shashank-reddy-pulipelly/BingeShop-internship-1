@@ -84,6 +84,7 @@ import * as firebase from 'firebase';
    }
 
    const rightHeader=()=>{
+  
      return(
        <View style={{marginRight:10}}>
   <HeaderButtons HeaderButtonComponent={HeaderButton} >
@@ -101,7 +102,7 @@ import * as firebase from 'firebase';
           headerStatusBarHeight:Platform.OS === 'ios' ? 30:StatusBar.currentHeight,
         headerStyle:{
           backgroundColor:theme.colors.primary,
-          height:70,
+          height:Platform.OS === 'ios' ? 30+40:StatusBar.currentHeight+45,
                
         },       
         headerTintColor:'#fff',

@@ -23,24 +23,28 @@ constructor(props) {
     LogBox.ignoreAllLogs();
     if(firebase.auth().currentUser){
 
-
-   this.query = firebase.database().ref('Orders').orderByChild('UserPhoneNumber').equalTo(firebase.auth().currentUser.phoneNumber).on('value', (snapshot) => {
+      this.sub2=this.props.navigation.addListener('focus',async ()=>{ 
+        this.setState({orders:{isLoading:true,errMess:null,orders:[]}});
+        this.que= firebase.database().ref('Orders').orderByChild('UserPhoneNumber').equalTo(firebase.auth().currentUser.phoneNumber).once('value', (snapshot) => {
       
-     const orders = snapshot.val();
-     
-     const loadedOrders=[];
-     for(const key in orders){
-    
-   
-        loadedOrders.push({...orders[key],id:key});
-     }
-     this.setState({orders:{isLoading:false,errMess:null,orders:loadedOrders}})
-   })
+          const orders = snapshot.val();
+          
+          const loadedOrders=[];
+          for(const key in orders){
+         
+        
+             loadedOrders.push({...orders[key],id:key});
+          }
+          this.setState({orders:{isLoading:false,errMess:null,orders:loadedOrders}})
+        })
+      })
+  
    
   }
   }
   componentWillUnmount(){
-    firebase.database().ref('Orders').off('value',this.query)
+    this.sub2();
+   
   }
   render(){
 
@@ -68,7 +72,7 @@ constructor(props) {
       <View style={styles.container}>
         <ScrollView>
         {this.state.orders.orders.slice().reverse().map((orderItem,index)=>{
-        
+        console.log(orderItem.items)
         const orderStatus=()=>{
           if(orderItem.orderStatus.delivered){
            return({status:'Delivered',date:orderItem.orderStatus.deliveredDate})

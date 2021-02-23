@@ -9,10 +9,7 @@
       id: '11',
       title: 'Atta',
     },
-    {
-      id: '3',
-      title: 'Aashirvaad Atta',     
-    },
+
     {
       id: '2',   
       title: 'Pansari Biryani Rice', 

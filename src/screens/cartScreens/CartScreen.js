@@ -124,21 +124,7 @@ class CartScreen extends Component{
           { cancelable: false }
         );
       }
-      else if(this.props.address.pinCode!="412207"  ){
-        Alert.alert(
-          "There is no Delivery to your Adddress ",
-          "Only with PinCode : 412207 , delivery exists ",
-          [
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel"
-            },
-            { text: "Edit", onPress: () => this.props.navigation.navigate('AddressScreen') }
-          ],
-          { cancelable: false }
-        );
-      }
+
       else{
         this.props.navigation.navigate('CartSummaryScreen')
       }
@@ -204,6 +190,7 @@ class CartScreen extends Component{
   }
 
   priceDetail=(shopList)=>{
+   
     return(
       <View>
       <View style={{backgroundColor:'white',marginBottom:10,marginTop:2}}>
@@ -215,7 +202,7 @@ class CartScreen extends Component{
    
       
       <View style={styles.row}>
-        <Text style={{marginRight:'auto'}}> Price ( {this.state.carts.carts.length} items)</Text>
+        <Text style={{marginRight:'auto'}}> Price ( {shopList.products.length} items)</Text>
         <Text> {'\u20B9'} <Amount shopList={shopList} /> </Text>
       </View>
       <View style={styles.row}>

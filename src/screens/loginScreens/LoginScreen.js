@@ -95,6 +95,7 @@ const { colors } = useTheme();
                         setVerificationId('');
                         const verificationId = await phoneProvider.verifyPhoneNumber(full,recaptchaVerifier.current);
                         setVerifyInProgress(false);
+                        console.log(recaptchaVerifier);
                         setVerificationId(verificationId);
                     if( verificationId  ){
                 

@@ -35,7 +35,7 @@ await this.load();
     render(){
         if(this.state.items.isLoading){
             return(
-                <View style={ styles.horizontal}>
+                <View style={styles.horizontal}>
       
  
                 <ActivityIndicator size="large" color="#600EE6" />

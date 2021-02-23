@@ -74,9 +74,7 @@ arr.push({title:value.title,image:value.image,
         }
         array.push({products:arr,shop_id:shop,shop_name:shop_name})
 }
-this.setState({carts:{isLoading:false,errMess:null,carts:array}},()=>{
-  console.log(this.state.carts)
-})
+this.setState({carts:{isLoading:false,errMess:null,carts:array}})
 })
   
 
@@ -261,7 +259,7 @@ componentWillUnmount(){
    
       
       <View style={styles.row}>
-        <Text style={{marginRight:'auto'}}> Price ( {this.state.carts.carts.length} items)</Text>
+        <Text style={{marginRight:'auto'}}> Price ( {shopList.products.length} items)</Text>
         <Text> {'\u20B9'} <Amount shopList={shopList} /> </Text>
       </View>
       <View style={styles.row}>
@@ -413,12 +411,12 @@ else{
              </View>
     </View>
 
-    <View style={{flex:1.2,paddingVertical:5}}>
+    <View style={{flex:1.1,paddingVertical:5}}>
           <Button onPress={()=>{
         
             this.placeOrder();
             }} style={{backgroundColor:"#FF3D00",borderRadius:0,marginHorizontal:10,marginVertical:5,paddingHorizontal:10,paddingVertical:3,marginLeft:'auto'}}>
-            <Text style={{padding:0,margin:0,fontSize:17,marginHorizontal:20,color:'white'}}>Confirm Order</Text>
+            <Text style={{padding:0,margin:0,fontSize:17,marginHorizontal:10,color:'white'}}>Confirm Order</Text>
           </Button>
       
     </View>
