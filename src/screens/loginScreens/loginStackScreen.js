@@ -11,7 +11,7 @@ import  OtpScreen  from './OtpScreen';
 const LoginStack = createStackNavigator();
 
 const LoginStackScreen = ({navigation}) => (
-    <LoginStack.Navigator  headerMode='none'>
+    <LoginStack.Navigator  headerMode='none'  animation="fade" >
         <LoginStack.Screen name="OpenScreen" component={OpenScreen}/>
         <LoginStack.Screen name="LoginScreen" component={LoginScreen}/>
         <LoginStack.Screen name="OtpScreen" component={OtpScreen}/>

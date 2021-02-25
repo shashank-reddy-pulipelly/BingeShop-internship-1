@@ -33,11 +33,16 @@ const SignInScreen = ({navigation}) => {
   const firebaseConfig = firebase.apps.length ? firebase.app().options : undefined;
 
 const full=fullPhoneNumber+phoneNumber;
-const attemptInvisibleVerification = true;
+const attemptInvisibleVerification = false;
 const { colors } = useTheme();
 
   return (
     <View style={styles.container}>
+       <FirebaseRecaptchaVerifierModal
+          ref={recaptchaVerifier}
+          firebaseConfig={firebaseConfig}
+          attemptInvisibleVerification={attemptInvisibleVerification}
+        />
         <StatusBar backgroundColor='#0000e4' barStyle="light-content"/>
       <View style={styles.header}>
           <Text style={styles.text_header}>Welcome to BingeShop</Text>
@@ -54,11 +59,7 @@ const { colors } = useTheme();
 
       <View style={{flex:1}}>
         <View  >
-        <FirebaseRecaptchaVerifierModal
-          ref={recaptchaVerifier}
-          firebaseConfig={firebaseConfig}
-          attemptInvisibleVerification={attemptInvisibleVerification}
-        />
+       
         
      
         <Text style={styles.text}>User Login</Text>
@@ -89,17 +90,17 @@ const { colors } = useTheme();
                       const phoneProvider = new firebase.auth.PhoneAuthProvider();
                       try {
                        
-                        console.log(full);
+                      
                         setVerifyError(null);
                        
                         setVerificationId('');
                         const verificationId = await phoneProvider.verifyPhoneNumber(full,recaptchaVerifier.current);
                         setVerifyInProgress(false);
-                        console.log(recaptchaVerifier);
+                
                         setVerificationId(verificationId);
                     if( verificationId  ){
                 
-                      navigation.navigate('OtpScreen',{verificationId,full})
+                      navigation.navigate('OtpScreen',{verificationId,full,recaptchaVerifier})
                     }
                       } catch (err) {
                         setVerifyError(err);
@@ -127,7 +128,7 @@ const { colors } = useTheme();
         )}
         </View>
         <View style={{marginBottom:20,marginTop:70}} >
-        {attemptInvisibleVerification && <FirebaseRecaptchaBanner   textStyle={{ fontSize: 13, opacity: .6,textAlign:'center' }}
+        {!attemptInvisibleVerification && <FirebaseRecaptchaBanner   textStyle={{ fontSize: 13, opacity: .6,textAlign:'center' }}
   linkStyle={{ fontWeight: 'bold' }} />}
         </View>
       
