@@ -11,7 +11,9 @@ import {
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import { LinearGradient } from 'expo-linear-gradient';
+import { AuthContext } from '../../components/context';
 
+  
 
 
 import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
@@ -20,7 +22,7 @@ import * as firebase from 'firebase';
 import { useTheme } from 'react-native-paper';
 
 const SignInScreen = ({navigation}) => {
-
+  const { skipOn } = React.useContext(AuthContext);
   const recaptchaVerifier = React.useRef(null);
 
   const[fullPhoneNumber,] = React.useState('+91');
@@ -44,6 +46,19 @@ const { colors } = useTheme();
           attemptInvisibleVerification={attemptInvisibleVerification}
         />
         <StatusBar backgroundColor='#0000e4' barStyle="light-content"/>
+        <TouchableOpacity activeOpacity={.7}
+                    onPress={() => {skipOn();}}
+                    style={[styles.skip, {
+                        borderColor: colors.background,
+                        borderWidth: 1,
+                       
+                    }]}
+                >
+                    <Text style={[styles.textSign, {
+                        color: colors.background
+                    }]}>Skip</Text>
+                </TouchableOpacity>
+     
       <View style={styles.header}>
           <Text style={styles.text_header}>Welcome to BingeShop</Text>
        
@@ -194,6 +209,18 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       borderRadius: 10
   },
+  skip: {
+ 
+   
+    position:'absolute',
+    top:20,
+    right:20,
+    padding:5,
+    paddingHorizontal:20,
+    borderRadius:10
+
+    
+},
   textSign: {
       fontSize: 18,
       fontWeight: 'bold'

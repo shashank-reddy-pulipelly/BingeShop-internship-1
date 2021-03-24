@@ -9,19 +9,21 @@ import {
 import * as firebase from 'firebase';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme } from '../core/theme';
+import { AuthContext } from '../components/context';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
  function DrawerContent(props) {
 
 
- 
+    const { skipOff } = React.useContext(AuthContext);
     
 
     return(
         <View style={{flex:1}}>
             <DrawerContentScrollView {...props}>
             <StatusBar translucent={true} backgroundColor={theme.colors.primary} />
+                
                 <View style={styles.drawerContent}>
                     
                     <View style={styles.userInfoSection}>
@@ -35,7 +37,22 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
                      
                     </View>
-
+                    {firebase.auth().currentUser?null:  <Drawer.Section style={[styles.bottomDrawerSection,{paddingTop:10}]}>
+                <DrawerItem 
+                    icon={({color, size}) => (
+                        <Icon 
+                        name="login-variant" 
+                        color={color}
+                        size={size}
+                        />
+                    )}
+                    label="Login"
+                    labelStyle={{fontWeight:'bold'}}
+                    onPress={() => {
+                    skipOff();}}
+                />
+            </Drawer.Section>}
+                
                     <Drawer.Section style={styles.drawerSection}>
                         <DrawerItem 
                             icon={({color, size}) => (
@@ -110,14 +127,22 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
                 <DrawerItem 
                     icon={({color, size}) => (
                         <Icon 
-                        name="exit-to-app" 
+                        name="logout" 
                         color={color}
                         size={size}
                         />
                     )}
-                    label="Sign Out"
+                    label="log Out"
                     labelStyle={{fontWeight:'bold'}}
-                    onPress={async() => {await firebase.auth().signOut()}}
+                    onPress={async() => {
+                        if(firebase.auth().currentUser){
+                            await firebase.auth().signOut();
+                            skipOff();
+                        }
+                        else{
+                            skipOff();  
+                        }
+                    }}
                 />
             </Drawer.Section>
         </View>

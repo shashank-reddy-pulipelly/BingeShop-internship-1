@@ -8,31 +8,50 @@ import CartStackScreen from './screens/cartScreens/CartStackScreen';
 import OrderStackScreen from './screens/orderScreens/OrderStackScreen';
 import OfferStackScreen from './screens/offersScreens/OfferStackScreen';
 import {   NavigationContainer } from '@react-navigation/native';
-import { StyleSheet,  View,Dimensions,StatusBar,Platform } from 'react-native';
+import { StyleSheet,  View,Dimensions,StatusBar,Platform,ActivityIndicator } from 'react-native';
 const Drawer = createDrawerNavigator();
 import * as Animatable from 'react-native-animatable';
 import { theme } from './core/theme';
 import * as firebase from 'firebase';
+import { AuthContext } from './components/context';
 export default function App() {
 
   const [isLoading,setIsLoading]=useState(true);
   const [userFound,setUserFound]=useState(false);
+  const [skip,setSkip]=useState(false);
 
-
-
+  const authContext=React.useMemo(()=>({
+    skipOn:async () =>{
+  
+      setSkip(true);
+      
+    },
+    skipOff:async () =>{
+  
+      setSkip(false);
+      
+    },
+  
+  
+  }),[])
 
   useEffect(()=>{
-  firebase.auth().onAuthStateChanged(function(user) {
+  firebase.auth().onAuthStateChanged(async function(user) {
       if (user) {
-     setUserFound(true)
-      } else {
-       setUserFound(false)
-      }
-    })
+    await setUserFound(true);
     setTimeout(()=>{
       setIsLoading(false)
  
-     },2000)
+     },1000)
+      } else {
+        await  setUserFound(false);
+        setTimeout(()=>{
+          setIsLoading(false)
+     
+         },1000)
+      }
+    })
+ 
     
 
   },[])
@@ -43,22 +62,23 @@ export default function App() {
 <StatusBar backgroundColor={theme.colors.primary} barStyle="light-content"/>
 <Animatable.Image 
                 animation="bounceIn"
-                duraton="1500"
+                duraton="1000"
             source={require('./assets/logo.png')}
             style={styles.logo}
             resizeMode="stretch"
             />
-     
+            <View style={{marginTop:60}}></View>
+      <ActivityIndicator size="large" color="white" />
       </View>
     );
   }
   return (
 
   
-       
+    <AuthContext.Provider value={authContext}>
      <NavigationContainer >
 
-{userFound ? (<Drawer.Navigator 
+{userFound || skip ? (<Drawer.Navigator 
    drawerContent={props=> <DrawerContent {...props} /> }
    headerMode='none' 
    screenOptions={{
@@ -70,7 +90,7 @@ export default function App() {
 
 </Drawer.Navigator>):<LoginStackScreen />}
 </NavigationContainer>
-
+   </AuthContext.Provider>
    
   );
 }

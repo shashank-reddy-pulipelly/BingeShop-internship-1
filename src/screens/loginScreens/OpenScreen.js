@@ -11,9 +11,9 @@ import {
 import * as Animatable from 'react-native-animatable';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../core/theme';
-
+import { AuthContext } from '../../components/context';
 const OpenScreen = ({navigation}) => {
-
+    const { skipOn } = React.useContext(AuthContext);
 
     return (
       <View style={styles.container}>
@@ -49,10 +49,21 @@ const OpenScreen = ({navigation}) => {
                 >
                     <Text style={[styles.textSign, {
                         color:'#fff'
-                    }]}>Get Started</Text>
+                    }]}>Login</Text>
                 </LinearGradient>
                 </TouchableOpacity>
-
+                <TouchableOpacity
+                    onPress={() => {skipOn();}}
+                    style={[styles.signIn, {
+                        borderColor: theme.colors.primary,
+                        borderWidth: 1,
+                        marginTop: 15
+                    }]}
+                >
+                    <Text style={[styles.textSign, {
+                        color: theme.colors.primary
+                    }]}>Skip</Text>
+                </TouchableOpacity>
             </View>
           
         </Animatable.View>
@@ -71,7 +82,7 @@ const styles = StyleSheet.create({
     backgroundColor:theme.colors.primary
   },
   header: {
-      flex: 2.5,
+      flex: 2,
       justifyContent: 'center',
       alignItems: 'center'
   },

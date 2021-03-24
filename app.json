@@ -6,7 +6,12 @@
     "orientation": "portrait",
     "sdkVersion":"39.0.0",
     "icon": "./assets/log.png",
-   
+    "splash": {
+      "image": "./assets/log.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#fff"
+    },
+  
     "updates": {
       "fallbackToCacheTimeout": 0
     },

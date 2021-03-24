@@ -105,9 +105,7 @@ constructor(props) {
           
         }
       );
-   
-  
-     this.sub1= firebase.database()
+      this.sub1= firebase.database()
       .ref('Famous_products_1')
       .on('value', (snapshot) => {
         
@@ -119,16 +117,35 @@ constructor(props) {
        }
        this.setState({Famous_Products_1:{isLoading:false,errMess:null,Famous_Products_1:loadedProducts}})
      })
+  
+    
       this.props.fetchAddress();
     }
+    else{
+      this.sub1= firebase.database()
+      .ref('Famous_products_1')
+      .on('value', (snapshot) => {
+        
+       const products = snapshot.val();
+       
+       const loadedProducts=[];
+       for(const key in products){
+          loadedProducts.push(products[key]);
+       }
+       this.setState({Famous_Products_1:{isLoading:false,errMess:null,Famous_Products_1:loadedProducts}})
+     })
+    }
  
-   
+  
 
   }
 
   componentWillUnmount(){
-    this.backgroundSubscription.remove();
-    this.foregroundSubscription.remove();
+    if(firebase.auth().currentUser){
+      this.backgroundSubscription.remove();
+      this.foregroundSubscription.remove();
+    }
+  
     firebase.database().ref('Famous_products_1').off('value',this.sub1)
   }
   render(){
